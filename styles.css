@@ -1,0 +1,37 @@
+body {
+    background-color: whitesmoke
+}
+header{
+    padding: 100px;
+    padding-left: 5em;
+    font-size: 20px;
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    text-align: left;
+    background: url(file:///Users/quiana/Documents/Projects/qstodder.github.io/header_background.jpg);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+h2{
+    color: orange;
+    text-align: center;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 4px;
+  }
+  
+  /* Create four equal columns that sits next to each other */
+  .column {
+    flex: 25%;
+    max-width: 50%;
+    padding: 0 4px;
+  }
+  
+  .column img {
+    margin-top: 8px;
+    vertical-align: middle;
+    width: 100%;
+  }
