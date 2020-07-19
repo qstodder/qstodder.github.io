@@ -1,0 +1,13 @@
+header{
+    padding: 100px;
+    font-size: 20px;
+    color: orange;
+    background-color: black;
+    text-align: center;
+}
+
+p {
+    font-size: 20px;
+    color: grey;
+    text-align: center;
+}

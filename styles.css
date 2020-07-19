@@ -1,37 +1,97 @@
 body {
     background-color: whitesmoke
 }
-header{
-    padding: 100px;
-    padding-left: 5em;
-    font-size: 20px;
-    color: white;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    text-align: left;
-    background-image: url("header_background.jpg");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-}
+
 h2{
     color: orange;
     text-align: center;
 }
 
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 4px;
+
+ul {
+  display: flex;
+  flex-wrap: wrap;
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+li {
+  height: 35vh;
+  flex-grow: 1;
+  padding: 4px;
+}
+
+li {
+  height: 35vh;
+  flex-grow: 1;
+  padding: 4px;
+}
+
+img {
+  max-height: 100%;
+  min-width: 100%;
+  object-fit: cover;
+  vertical-align: bottom;
+}
+
+/* img.cover:hover{
+    filter: opacity(40%);
+} */
+
+@media (max-aspect-ratio: 1/1) {
+  li {
+    height: 50vh;
   }
-  
-  /* Create four equal columns that sits next to each other */
-  .column {
-    flex: 25%;
-    max-width: 50%;
-    padding: 0 4px;
+}
+
+
+@media (max-height: 480px) {
+  li {
+    height: 80vh;
   }
-  
-  .column img {
-    margin-top: 8px;
-    vertical-align: middle;
+}
+
+@media (max-aspect-ratio: 1/1) and (max-width: 480px) {
+  ul {
+    flex-direction: row;
+  }
+
+  li {
+    height: auto;
     width: 100%;
   }
+  img {
+    width: 100%;
+    max-height: 75vh;
+    min-width: 0;
+  }
+}
+
+#wrapper {
+  position:relative;
+  text-align: center;
+  font-weight: bold;
+  color: #1c1b1b;
+}
+
+.text {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  visibility:hidden;
+  font-size: 30px;
+}
+
+a:visited {
+  color: #1c1b1b;
+}
+
+#wrapper:hover .text {
+  visibility:visible;
+}
+
+#wrapper:hover img.cover {
+  filter: opacity(40%);
+}
