@@ -1,13 +1,27 @@
 header{
     padding: 100px;
+    padding-top: 60px;
+    /* top */
     font-size: 20px;
     color: orange;
-    background-color: black;
+    background-color: rgb(0, 0, 0);
     text-align: center;
 }
+
+a.return {
+    color: orange;
+    text-align: left;
+}
+
+a.return:link {text-decoration: none}
+a.return:hover {text-decoration: underline}
+
+h1 {text-align: center;}
 
 p {
     font-size: 20px;
     color: grey;
     text-align: center;
 }
+
+

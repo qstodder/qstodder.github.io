@@ -98,4 +98,5 @@ a:visited {
 
 #wrapper:hover img.cover {
   filter: opacity(40%);
+  transition: filter 0.2s
 }
