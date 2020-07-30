@@ -3,12 +3,12 @@
         padding-top: 60px;
         /* top */
         font-size: 20px;
-        color: black;
+        color: lightblue;
         background-color: rgb(0, 0, 0);
         text-align: center;
     }
     a.return {
-        color: orange;
+        color: black;
         text-align: left;
     }
     a.return:link {text-decoration: none}

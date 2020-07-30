@@ -80,7 +80,8 @@ img {
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  visibility:hidden;
+  /* visibility:hidden; */
+  filter: opacity(0%);
   font-size: 30px;
 }
 
@@ -93,10 +94,12 @@ a:visited {
 }
 
 #wrapper:hover .text {
-  visibility:visible;
+  /* visibility:visible; */
+  filter: opacity(100%);
+  transition: filter 0.2s
 }
 
 #wrapper:hover img.cover {
   filter: opacity(40%);
-  transition: filter 0.2s
+  transition: filter 0.2s;
 }

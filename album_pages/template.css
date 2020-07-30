@@ -1,0 +1,27 @@
+header{
+    padding: 100px;
+    padding-top: 60px;
+    /* top */
+    font-size: 20px;
+    color: rgb(116, 60, 8);
+    background-color: lightblue;
+    text-align: center;
+}
+
+a.return {
+    color: rgb(116, 60, 8);
+    text-align: left;
+}
+
+a.return:link {text-decoration: none}
+a.return:hover {text-decoration: underline}
+
+h1 {text-align: center;}
+
+p {
+    font-size: 20px;
+    color: grey;
+    text-align: center;
+}
+
+
