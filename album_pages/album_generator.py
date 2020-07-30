@@ -22,7 +22,7 @@ def mk_html(folder, pics, title, color, description):
     # enter each picture: loop len(pics) times
     str_mid = ""
     for pic in pics:
-        str_mid = str_mid + "<li> <img src='../../"+ pic + "'> </li>" + '\n\t\t'
+        str_mid = str_mid + "<li> <img src='"+ pic + "'> </li>" + '\n\t\t'
 
     str_end= """</ul> 
     </body>
@@ -73,9 +73,13 @@ albums = [x[0] for x in os.walk('album_pages')]
 for i, album in enumerate(albums):
     print(album)
     if i > 0:
-        pics = [x[2] for x in os.walk(album)]
+        files = [x[2] for x in os.walk(album)]
+        pics = []
+        for f in files[0]:
+            if '.jpg' in f or '.png' in f:
+                pics.append(f)
         aI = deets.folder[deets.folder == album.split('/')[1]].index[0]
-        mk_html(album, pics[0], deets.title[aI], deets.background[aI], deets.description[aI])
+        mk_html(album, pics, deets.title[aI], deets.background[aI], deets.description[aI])
         mk_css(album, deets.background[aI], deets.rturn[aI], deets.desc_color[aI])
         
         
