@@ -3,8 +3,8 @@
         padding-top: 60px;
         /* top */
         font-size: 20px;
-        color: black;
-        background-color: rgb(0, 0, 0);
+        color: orange;
+        background-color: black;
         text-align: center;
     }
     a.return {
@@ -16,6 +16,6 @@
     h1 {text-align: center;}
     p {
         font-size: 20px;
-        color: grey; 
+        color: rgb(90, 88, 88); 
         text-align: center; 
     }  
