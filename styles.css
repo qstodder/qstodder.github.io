@@ -1,5 +1,5 @@
 body {
-    background-color: whitesmoke
+    background-color: whitesmoke; /* page background */
 }
 
 h2{
@@ -14,12 +14,6 @@ ul {
   list-style-type: none;
   padding: 0px;
   margin: 0px;
-}
-
-li {
-  height: 35vh;
-  flex-grow: 1;
-  padding: 4px;
 }
 
 li {
@@ -44,14 +38,11 @@ img {
     height: 50vh;
   }
 }
-
-
 @media (max-height: 480px) {
   li {
     height: 80vh;
   }
 }
-
 @media (max-aspect-ratio: 1/1) and (max-width: 480px) {
   ul {
     flex-direction: row;
@@ -69,7 +60,7 @@ img {
 }
 
 #wrapper {
-  position:relative;
+  /* position:relative; */
   text-align: center;
   font-weight: bold;
   color: #1c1b1b;
@@ -91,10 +82,10 @@ img {
 
 }
 
+/* album links (make black regardless of visit) */
 a:link {
   color:  #1c1b1b;
 }
-
 a:visited {
   color: #1c1b1b;
 }
