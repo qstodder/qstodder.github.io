@@ -8,7 +8,10 @@ def mk_html(folder, pics, title, background, description):
         <head>
             <title>""" + title + """</title>
             <link rel="stylesheet" href="../../styles.css">
+            <link rel="stylesheet" href="../../justifiedGallery.min.css" />
             <link rel="stylesheet" href="header.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script src="../../jquery.justifiedGallery.min.js"></script>
         </head>
     <div style="background:""" + background + """;padding:15px;">
         <a href="../../index.html" class="return" style="text-align:left;">q u i n o t o p i a</a>
@@ -17,14 +20,16 @@ def mk_html(folder, pics, title, background, description):
         <h1>""" + title + """</h1>
         <p>""" + description + """ </p>
     </header>
-    <body>
-        <ul>"""
+    <body> 
+    <div id="mygallery" class="justified-gallery">\n\t\t"""
     # enter each picture: loop len(pics) times
     str_mid = ""
     for pic in pics:
-        str_mid = str_mid + "<li> <img src='"+ pic + "'> </li>" + '\n\t\t'
+        add_str = "<a href='" + pic + "'> \n\t\t\t <img src='" + pic + "'> \n\t\t</a>"
+        str_mid = str_mid + add_str + '\n\t\t'
 
-    str_end= """</ul> 
+    str_end= """</div>
+        <script src = "../../main.js"></script>
     </body>
     </html>"""
     str_final = str_start + str_mid + str_end

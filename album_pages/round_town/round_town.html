@@ -3,7 +3,10 @@
         <head>
             <title>Round Town</title>
             <link rel="stylesheet" href="../../styles.css">
+            <link rel="stylesheet" href="../../justifiedGallery.min.css" />
             <link rel="stylesheet" href="header.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script src="../../jquery.justifiedGallery.min.js"></script>
         </head>
     <div style="background:lightblue;padding:15px;">
         <a href="../../index.html" class="return" style="text-align:left;">q u i n o t o p i a</a>
@@ -12,11 +15,21 @@
         <h1>Round Town</h1>
         <p>On the odd occasion I'm not in the ocean or mountains. </p>
     </header>
-    <body>
-        <ul><li> <img src='IMG_20200112_134611_2.jpg'> </li>
-		<li> <img src='IMG_20200112_140221_2.jpg'> </li>
-		<li> <img src='taylor_bigCactus.jpg'> </li>
-		<li> <img src='IMG_0152.jpg'> </li>
-		</ul> 
+    <body> 
+    <div id="mygallery" class="justified-gallery">
+		<a href='IMG_20200112_134611_2.jpg'> 
+			 <img src='IMG_20200112_134611_2.jpg'> 
+		</a>
+		<a href='IMG_20200112_140221_2.jpg'> 
+			 <img src='IMG_20200112_140221_2.jpg'> 
+		</a>
+		<a href='taylor_bigCactus.jpg'> 
+			 <img src='taylor_bigCactus.jpg'> 
+		</a>
+		<a href='IMG_0152.jpg'> 
+			 <img src='IMG_0152.jpg'> 
+		</a>
+		</div>
+        <script src = "../../main.js"></script>
     </body>
     </html>
