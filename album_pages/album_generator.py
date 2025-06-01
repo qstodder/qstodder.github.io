@@ -14,7 +14,7 @@ def mk_html(folder, pics, title, background, description):
             <script src="../../jquery.justifiedGallery.min.js"></script>
         </head>
     <div style="background:""" + background + """;padding:15px;">
-        <a href="../../index.html" class="return" style="text-align:left;">q u i n o t o p i a</a>
+        <a href="../../photos.html" class="return" style="text-align:left;">q u i n o t o p i a</a>
     </div>
     <header>
         <h1>""" + title + """</h1>
