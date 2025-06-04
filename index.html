@@ -33,7 +33,7 @@
     .clickable:hover {
       filter: brightness(1.1);
     }
-    
+
     html, body {
     margin: 0;
     padding: 0;
@@ -89,6 +89,23 @@
             container.style.overflowY = "scroll";
             container.style.overflowX = "hidden";
           }
+          
+          const click_list = {"photos": "photos.html", 
+            "book": "https://xkcd.com/548/", 
+            "rubix-cube": "https://semantle.com/",
+            "chess-board": "https://lichess.org/training/daily"
+            };
+            
+        Object.entries(click_list).forEach(([id, url]) => {
+            const el = document.getElementById(id);
+            if (el) {
+            el.classList.add("clickable");
+            el.addEventListener("click", () => {
+                window.location.href = url;
+            });
+            }
+        });
+
         });
     }
   
@@ -100,26 +117,6 @@
 <body>
     <div id="svg-container"></div>
 
-
-<script>
-
-    const click_list = {"photos": "photos.html", 
-    "book": "https://xkcd.com/548/", 
-    "rubix-cube": "https://semantle.com/",
-    "chess-board": "https://lichess.org/training/daily"
-    };
-    
-    Object.entries(click_list).forEach(([id, url]) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.classList.add("clickable");
-      el.addEventListener("click", () => {
-        window.location.href = url;
-      });
-    }
-  });
-
-</script>
 
 </body>
 </html>
