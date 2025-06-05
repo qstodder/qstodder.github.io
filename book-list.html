@@ -1,19 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About Quiana</title>
-</head>
-<header>
-  <a href="index.html" id="home-icon">
-      <img src="home_icon.svg" alt="Home Icon">
-  </a>
-  <h1>About Me</h1>
-</header>
-<body>
-    
-Book List
+  <meta charset="UTF-8">
+  <title>Book List</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #f8f8f2;
+      color: #444;
+      margin: 0;
+      padding: 2rem;
+    }
 
+    header {
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    #home-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 7em;
+      height: 7em;
+    }
+
+    #home-icon img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #home-icon img:hover {
+      transform: scale(1.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #2d6a4f;
+      margin-bottom: 0rem;
+    }
+    h2 {
+      font-size: 1rem;
+      color: #454746;
+      margin-bottom: 2rem;
+    }
+
+    .book-entry {
+      border-left: 4px solid #95d5b2;
+      padding-left: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .book-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1b4332;
+    }
+
+    .book-meta {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    .book-description {
+      font-size: 1rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" id="home-icon">
+      <img src="home_icon.svg" alt="Home">
+    </a>
+    <h1>Book List</h1>
+    <h2>essentially my goodreads page</h2>
+  </header>
+
+  <main>
+    <div class="book-entry">
+      <div class="book-title">Bobiverse 3: All These Worlds</div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci Fi &bull; Finished: May 2025</div>
+      <div class="book-description">
+        The Bobs face off with the Others.
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Bobiverse 2: For We Are Many</div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci Fi &bull; Finished: April 2025</div>
+      <div class="book-description">
+        The Others appear.
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Sunrise on the Reaping</div>
+      <div class="book-meta">by Suzanne Collins &bull; Sci Fi &bull; Finished: March 2025</div>
+      <div class="book-description">
+        Depressing as heck. Good god. 
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Randomize</div>
+      <div class="book-meta">by Andy Weir &bull; Short Story &bull; Finished: March 2025</div>
+      <div class="book-description">
+        Couldn't pass up a chance for a quick read from my fav. 
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">A Desolation Called Peace</div>
+      <div class="book-meta">by Arkady Martine &bull; Sci Fi &bull; Finished: Feb 2025</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">A Memory Called Empire</div>
+      <div class="book-meta">by Arkady Martine &bull; Sci Fi &bull; Finished: Nov 2024</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Dune</div>
+      <div class="book-meta">by Frank Herbert &bull; Sci Fi &bull; Finished: Oct 2024</div>
+      <div class="book-description">
+        Only took me 27 years to read Dune, can I officially be a nerd now?
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">The Name of the Wind</div>
+      <div class="book-meta">by Patrick Rothfuss &bull; Fantasy &bull; Finished: Sep 2024</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Lessons in Chemistry</div>
+      <div class="book-meta">by Bonnie Garmus &bull; Drama? &bull; Finished: April 2024</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">The Ballad of Songbirds and Snakes</div>
+      <div class="book-meta">by Suzanne Collins &bull; Sci Fi &bull; Finished: Jan 2024</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Armada</div>
+      <div class="book-meta">by Ernest Cline &bull; Sci Fi &bull; Finished: Dec 2023</div>
+      <div class="book-description">
+        The man who brought us Ready Player One (an ALL TIME fave) brought us a wholesome gamer themed revenge story. 
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Light Bringer</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci Fi &bull; Finished: Dec 2023</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Dark Age</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci Fi &bull; Finished: Nov 2023</div>
+      <div class="book-description">
+        
+      </div>
+    </div>
+
+    <div class="book-entry">
+      <div class="book-title">Bobiverse 1: We Are Legion, We Are Bob</div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci Fi &bull; Finished: Feb 2023</div>
+      <div class="book-description">
+        A standard 21st century software engeer nerd, Bob, dies young in a car accident. 100 years later
+    he awakes to find that his conciousness has become the AI pilot of a space-faring drone whose 
+    mission it is to explore the cosmos for habitable planets and shepard the human race off of a dying planet.
+      </div>
+    </div>
+
+
+
+
+    <!--
+    <div class="book-entry">
+      <div class="book-title">Title</div>
+      <div class="book-meta">by Author &bull; Genre &bull; Finished: date</div>
+      <div class="book-description">
+        Description. 
+      </div>
+    </div>
+    -->
+
+  
+
+  </main>
 </body>
 </html>
