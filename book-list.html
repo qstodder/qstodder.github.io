@@ -11,63 +11,77 @@
       margin: 0;
       padding: 2rem;
     }
-
     header {
       position: relative;
       padding-bottom: 1rem;
     }
-
     #home-icon {
       position: absolute;
       top: 0;
       right: 0;
-      width: 10em;
-      height: 10em;
+      width: 7em;
+      height: auto;
     }
-
     #home-icon img {
       width: 100%;
       height: 100%;
       cursor: pointer;
       transition: transform 0.2s ease;
     }
-
     #home-icon img:hover {
       transform: scale(1.1);
     }
-
     h1 {
       font-size: 2rem;
       color: #2d6a4f;
-      margin-bottom: 0rem;
+      margin-bottom: 0.5rem;
     }
     h2 {
-      font-size: 1rem;
-      color: #454746;
+      font-size: 1.2rem;
+      color: #4d4d4d;
       margin-bottom: 2rem;
     }
-
     .book-entry {
       border-left: 4px solid #95d5b2;
       padding-left: 1rem;
       margin-bottom: 2rem;
     }
-
     .book-title {
       font-size: 1.5rem;
       font-weight: bold;
       color: #1b4332;
     }
-
     .book-meta {
       font-size: 0.95rem;
       color: #555;
       margin-bottom: 0.5rem;
     }
-
     .book-description {
       font-size: 1rem;
       color: #333;
+    }
+    .year-divider {
+      text-align: center;
+      margin: 3rem 0 2rem;
+      position: relative;
+    }
+    .year-divider:before,
+    .year-divider:after {
+      content: "";
+      display: inline-block;
+      width: 40%;
+      height: 1px;
+      background: #ccc;
+      vertical-align: middle;
+      margin: 0 1rem;
+    }
+    .favorites-section {
+      margin-bottom: 4rem;
+    }
+    .favorites-section h3 {
+      font-size: 1.2rem;
+      color: #1b4332;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
@@ -79,137 +93,260 @@
     <h1>Book List</h1>
     <h2>essentially my goodreads page</h2>
   </header>
-
   <main>
+    <section class="favorites-section">
+      <h3>Favorites</h3>
+      <div class="book-entry">
+        <div class="book-title">Project Hail Mary</div>
+        <div class="book-meta">by Andy Weir • Sci-Fi • Finished: Feb 2023</div>
+        <div class="book-description">So good it ruined Sci-Fi for me. I'm still recovering.</div>
+      </div>
+      <div class="book-entry">
+        <div class="book-title">Minstry for the Future</div>
+        <div class="book-meta">by Kim Stanley Robinson • Sci-Fi • Finished: Feb 2023</div>
+        <div class="book-description">An exploration into many feasible solutions to global warning following stories from around the world. Reads like fiction, influences like a textbook.</div>
+      </div>
+      <div class="book-entry">
+        <div class="book-title">Ready Player One</div>
+        <div class="book-meta">by Ernest Cline • Sci-Fi</div>
+        <div class="book-description">The ultimate gamer easter egg hunt along with some comentary on the impacts of life in VR and over-industrialization.</div>
+      </div>
+    </section>
+    <h3>All Books</h3>
+<div class="year-divider">2025</div>
     <div class="book-entry">
       <div class="book-title">Bobiverse 3: All These Worlds</div>
-      <div class="book-meta">by Dennis E. Taylor &bull; Sci Fi &bull; Finished: May 2025</div>
-      <div class="book-description">
-        The Bobs face off with the Others.
-      </div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci-Fi &bull; Finished: May 2025</div>
+      <div class="book-description">The Bobs face off with the Others.</div>
     </div>
-
+    
     <div class="book-entry">
       <div class="book-title">Bobiverse 2: For We Are Many</div>
-      <div class="book-meta">by Dennis E. Taylor &bull; Sci Fi &bull; Finished: April 2025</div>
-      <div class="book-description">
-        The Others appear.
-      </div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci-Fi &bull; Finished: Apr 2025</div>
+      <div class="book-description">The Others appear.</div>
     </div>
-
+    
     <div class="book-entry">
-      <div class="book-title">Sunrise on the Reaping</div>
-      <div class="book-meta">by Suzanne Collins &bull; Sci Fi &bull; Finished: March 2025</div>
-      <div class="book-description">
-        Depressing as heck. Good god. 
-      </div>
+      <div class="book-title">Hunger Games 0.5: Sunrise on the Reaping</div>
+      <div class="book-meta">by Suzanne Collins &bull; Sci-Fi &bull; Finished: Mar 2025</div>
+      <div class="book-description">Depressing as heck. Good god. </div>
     </div>
-
+    
     <div class="book-entry">
       <div class="book-title">Randomize</div>
-      <div class="book-meta">by Andy Weir &bull; Short Story &bull; Finished: March 2025</div>
-      <div class="book-description">
-        Couldn't pass up a chance for a quick read from my fav. 
-      </div>
+      <div class="book-meta">by Andy Weir &bull; Short Story &bull; Finished: Mar 2025</div>
+      <div class="book-description">Couldn't pass up a chance for a quick read from my fav. </div>
     </div>
-
+    
     <div class="book-entry">
-      <div class="book-title">A Desolation Called Peace</div>
-      <div class="book-meta">by Arkady Martine &bull; Sci Fi &bull; Finished: Feb 2025</div>
-      <div class="book-description">
-        
-      </div>
+      <div class="book-title">Teixcalaan 2: A Desolation Called Peace</div>
+      <div class="book-meta">by Arkady Martine &bull; Sci-Fi &bull; Finished: Feb 2025</div>
+      <div class="book-description"></div>
     </div>
-
+    <div class="year-divider">2024</div>
     <div class="book-entry">
-      <div class="book-title">A Memory Called Empire</div>
-      <div class="book-meta">by Arkady Martine &bull; Sci Fi &bull; Finished: Nov 2024</div>
-      <div class="book-description">
-        
-      </div>
+      <div class="book-title">Teixcalaan 1: A Memory Called Empire</div>
+      <div class="book-meta">by Arkady Martine &bull; Sci-Fi &bull; Finished: Nov 2024</div>
+      <div class="book-description"></div>
     </div>
-
+    
+    <div class="book-entry">
+      <div class="book-title">Kingkiller Chronicle 1: The Name of the Wind</div>
+      <div class="book-meta">by Patrick Rothfuss &bull; Fantasy &bull; Finished: Sep 2024</div>
+      <div class="book-description"></div>
+    </div>
+    
     <div class="book-entry">
       <div class="book-title">Dune</div>
-      <div class="book-meta">by Frank Herbert &bull; Sci Fi &bull; Finished: Oct 2024</div>
-      <div class="book-description">
-        Only took me 27 years to read Dune, can I officially be a nerd now?
-      </div>
+      <div class="book-meta">by Frank Herbert &bull; Sci-Fi/Fantasy &bull; Finished: Jun 2024</div>
+      <div class="book-description">Only took me 27 years to read Dune, can I officially be a nerd now?</div>
     </div>
-
-    <div class="book-entry">
-      <div class="book-title">The Name of the Wind</div>
-      <div class="book-meta">by Patrick Rothfuss &bull; Fantasy &bull; Finished: Sep 2024</div>
-      <div class="book-description">
-        
-      </div>
-    </div>
-
+    
     <div class="book-entry">
       <div class="book-title">Lessons in Chemistry</div>
-      <div class="book-meta">by Bonnie Garmus &bull; Drama? &bull; Finished: April 2024</div>
-      <div class="book-description">
-        
-      </div>
+      <div class="book-meta">by Bonnie Garmus &bull; Tragicomedy &bull; Finished: Apr 2024</div>
+      <div class="book-description"></div>
     </div>
-
+    
     <div class="book-entry">
-      <div class="book-title">The Ballad of Songbirds and Snakes</div>
-      <div class="book-meta">by Suzanne Collins &bull; Sci Fi &bull; Finished: Jan 2024</div>
-      <div class="book-description">
-        
-      </div>
+      <div class="book-title">Hunger Games 0: The Ballad of Songbirds and Snakes</div>
+      <div class="book-meta">by Suzanne Collins &bull; Sci-Fi &bull; Finished: Jan 2024</div>
+      <div class="book-description"></div>
     </div>
-
+    <div class="year-divider">2023</div>
     <div class="book-entry">
       <div class="book-title">Armada</div>
-      <div class="book-meta">by Ernest Cline &bull; Sci Fi &bull; Finished: Dec 2023</div>
-      <div class="book-description">
-        The man who brought us Ready Player One (an ALL TIME fave) brought us a wholesome gamer themed revenge story. 
-      </div>
+      <div class="book-meta">by Ernest Cline &bull; Sci-Fi &bull; Finished: Dec 2023</div>
+      <div class="book-description">The man who brought us Ready Player One (an ALL TIME fave) brought us a wholesome gamer coming-of-age story but with alien invasions. </div>
     </div>
-
+    
     <div class="book-entry">
-      <div class="book-title">Light Bringer</div>
-      <div class="book-meta">by Pierce Brown &bull; Sci Fi &bull; Finished: Dec 2023</div>
-      <div class="book-description">
-        
-      </div>
+      <div class="book-title">Red Rising 6: Light Bringer</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci-Fi &bull; Finished: Dec 2023</div>
+      <div class="book-description"></div>
     </div>
-
+    
     <div class="book-entry">
-      <div class="book-title">Dark Age</div>
-      <div class="book-meta">by Pierce Brown &bull; Sci Fi &bull; Finished: Nov 2023</div>
-      <div class="book-description">
-        
-      </div>
+      <div class="book-title">Red Rising 5: Dark Age</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci-Fi &bull; Finished: Nov 2023</div>
+      <div class="book-description"></div>
     </div>
-
+    
     <div class="book-entry">
-      <div class="book-title">Bobiverse 1: We Are Legion, We Are Bob</div>
-      <div class="book-meta">by Dennis E. Taylor &bull; Sci Fi &bull; Finished: Feb 2023</div>
-      <div class="book-description">
-        A standard 21st century software engeer nerd, Bob, dies young in a car accident. 100 years later
-    he awakes to find that his conciousness has become the AI pilot of a space-faring drone whose 
-    mission it is to explore the cosmos for habitable planets and shepard the human race off of a dying planet.
-      </div>
+      <div class="book-title">Red Rising 4: Iron Gold</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci-Fi &bull; Finished: Aug 2023</div>
+      <div class="book-description"></div>
     </div>
-
-
-
-
-    <!--
+    
     <div class="book-entry">
-      <div class="book-title">Title</div>
-      <div class="book-meta">by Author &bull; Genre &bull; Finished: date</div>
-      <div class="book-description">
-        Description. 
-      </div>
+      <div class="book-title">Red Rising 3: Morning Star</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci-Fi &bull; Finished: Aug 2023</div>
+      <div class="book-description"></div>
     </div>
-    -->
-
-  
-
-  </main>
+    
+    <div class="book-entry">
+      <div class="book-title">Red Rising 2: Golden Son</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci-Fi &bull; Finished: Jul 2023</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Inheritance of Orquidea Divina</div>
+      <div class="book-meta">by Zoraida C√≥rdova &bull; Fantasy &bull; Finished: Jun 2023</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Red Rising</div>
+      <div class="book-meta">by Pierce Brown &bull; Sci-Fi &bull; Finished: Jun 2023</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Bobiverse 1: We Are Legion (We Are Bob)</div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci-Fi &bull; Finished: Feb 2023</div>
+      <div class="book-description">A standard 21st century software engineer nerd (Bob) dies young in a car accident. 100 years later he awakes to find that his conciousness has become the AI pilot of a space-faring drone whose mission it is to explore the cosmos for habitable planets and shepherd the human race off of a dying planet. Oh, and the fun part: he can clone himself.</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Ministry for the Future</div>
+      <div class="book-meta">by Kim Stanley Robinson &bull; Sci-Fi &bull; Finished: Feb 2023</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Lean In: Women, Work, and the Will to Lead</div>
+      <div class="book-meta">by Sheryl Sandberg &bull; Biography &bull; Finished: Feb 2023</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Project Hail Mary</div>
+      <div class="book-meta">by Andy Weir &bull; Sci-Fi &bull; Finished: Feb 2023</div>
+      <div class="book-description">So good that it ruined Sci Fi for me. Writing this in June 2025 I'm still recovering. </div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Harry Potter and the Sorcerer's Stone</div>
+      <div class="book-meta">by J.K. Rowling &bull; Fantasy &bull; Finished: Jan 2023</div>
+      <div class="book-description">Was feeling nostalgic and wanted a feel good book from my childhood. </div>
+    </div>
+    <div class="year-divider">2022</div>
+    <div class="book-entry">
+      <div class="book-title">For the Love of My Brother</div>
+      <div class="book-meta">by Sheilia Stodder &bull; Fiction &bull; Finished: Nov 2022</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Iberian Claim</div>
+      <div class="book-meta">by Vincent Casciani &bull; Historical Fiction &bull; Finished: Oct 2022</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Utopia Avenue</div>
+      <div class="book-meta">by David Mitchell &bull; Fantasy? &bull; Finished: Aug 2022</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Artemis</div>
+      <div class="book-meta">by Andy Weir &bull; Sci-Fi &bull; Finished: Jul 2022</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">What Are You Willing to Risk?</div>
+      <div class="book-meta">by P L Camery &bull; Sci-Fi &bull; Finished: Jun 2022</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Night Circus</div>
+      <div class="book-meta">by Erin Morgenstern &bull; Fantasy &bull; Finished: Apr 2022</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Starless Sea</div>
+      <div class="book-meta">by Erin Morgenstern &bull; Fantasy &bull; Finished: Feb 2022</div>
+      <div class="book-description">A magical underground library filled with forgotten legend and mystery ... need I say more?</div>
+    </div>
+    <div class="year-divider">2021</div>
+    <div class="book-entry">
+      <div class="book-title">The Expanse 9: Leviathan Falls</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Dec 2021</div>
+      <div class="book-description">Space Opera as it should be written. This series unfolds in ways you never saw coming. Only problem with this series is that it came to an end. </div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 8: Tiamat's Wrath</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Jul 2021</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 7: Persepolis Rising</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: May 2021</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 6: Babylon'ss Ashes</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Apr 2021</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 5: Nemesis Games</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Mar 2021</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 4: Cibola Burn</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Feb 2021</div>
+      <div class="book-description"></div>
+    </div>
+    <div class="year-divider">2020</div>
+    <div class="book-entry">
+      <div class="book-title">The Expanse 3: Abaddon's Gate</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Dec 2020</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 2: Caliban's War</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Oct 2020</div>
+      <div class="book-description"></div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Expanse 1: Leviathan Wakes</div>
+      <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Aug 2020</div>
+      <div class="book-description">Epic. No other words. </div>
+    </div>
+      </main>
 </body>
 </html>
