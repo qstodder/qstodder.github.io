@@ -44,6 +44,12 @@ TEMPLATE_HEADER = """<!DOCTYPE html>
       font-size: 1.2rem;
       color: #4d4d4d;
       margin-bottom: 2rem;
+      font-weight: normal;
+    }
+    h3 {
+      font-size: 1.2rem;
+      color: #1b4332;
+      margin-bottom: 1rem;
     }
     .book-entry {
       border-left: 4px solid #95d5b2;
@@ -82,11 +88,6 @@ TEMPLATE_HEADER = """<!DOCTYPE html>
     .favorites-section {
       margin-bottom: 4rem;
     }
-    .favorites-section h3 {
-      font-size: 1.2rem;
-      color: #1b4332;
-      margin-bottom: 1rem;
-    }
   </style>
 </head>
 <body>
@@ -106,13 +107,13 @@ TEMPLATE_HEADER = """<!DOCTYPE html>
         <div class="book-description">So good it ruined Sci-Fi for me. I'm still recovering.</div>
       </div>
       <div class="book-entry">
-        <div class="book-title">Minstry for the Future</div>
-        <div class="book-meta">by Kim Stanley Robinson • Sci-Fi • Finished: Feb 2023</div>
-        <div class="book-description">An exploration into many feasible solutions to global warning following stories from around the world. Reads like fiction, influences like a textbook.</div>
+        <div class="book-title">Ministry for the Future</div>
+        <div class="book-meta">by Kim Stanley Robinson • Sci-Fi • Finished: Apr 2023</div>
+        <div class="book-description">An exploration into many feasible solutions to global warning while following stories from around the world. Reads like fiction, hits like a textbook.</div>
       </div>
       <div class="book-entry">
         <div class="book-title">Ready Player One</div>
-        <div class="book-meta">by Ernest Cline • Sci-Fi</div>
+        <div class="book-meta">by Ernest Cline • Sci-Fi • Finished: circa 2015</div>
         <div class="book-description">The ultimate gamer easter egg hunt along with some comentary on the impacts of life in VR and over-industrialization.</div>
       </div>
     </section>
@@ -151,7 +152,9 @@ def generate_html(csv_filename, output_filename):
     last_year = None
     for row in rows:
         year, html = create_book_entry(row)
-        if year and year != last_year:
+        if last_year == None:
+            last_year = year
+        elif year and year != last_year:
             entries.append(f'<div class="year-divider">{year}</div>')
             last_year = year
         entries.append(html)
