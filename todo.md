@@ -1,5 +1,4 @@
 - photos thumbnails (especially header)
 - rubix cube perspective
-- finalize books on book list
 - chess pieces
 - shadows on desk objects
