@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Maui Recommendations</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #fdf9f4;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2e5d52;
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    #home-icon img {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 7em;
+      height: 7em;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #home-icon img:hover {
+      transform: scale(1.1);
+    }
+
+    #map {
+      height: 70vh;
+      width: 100%;
+      margin-bottom: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      font-size: 0.9em;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .legend-icon {
+      width: 24px;
+      height: 30px;
+    }
+
+    .section {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      background: #e2efe3;
+      padding: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section-content {
+      display: none;
+      padding: 1rem;
+      background: #ffffff;
+    }
+
+    .section-content.show {
+      display: block;
+    }
+  </style>
+</head>
+<header>
+  <a href="index.html" id="home-icon">
+    <img src="home_icon_about.svg" alt="Home" />
+  </a>
+</header>
+<body>
+  <h1>Maui Recommendations</h1>
+
+  <div id="map"></div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <img class="legend-icon" src="rec-icons/hike.png" alt="Hikes" />
+      Hikes
+    </div>
+    <div class="legend-item">
+      <img class="legend-icon" src="rec-icons/surf.png" alt="Surf" />
+      Surf
+    </div>
+    <div class="legend-item">
+      <img class="legend-icon" src="rec-icons/food.png" alt="Food" />
+      Food
+    </div>
+    <div class="legend-item">
+      <img class="legend-icon" src="rec-icons/other.png" alt="Other" />
+      Other
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Hikes</div>
+    <div class="section-content">
+      <h3>West Maui Mountains</h3>
+      <ul>
+        <li>Waihe'e Ridge Trail<ul>
+          <li>5 mi out n back</li>
+          <li>Beautiful ridge views, I just DO NOT recommend when rainy/muddy. </li>
+        </ul></li>
+        <li>Iao Valley State Park<ul>
+          <li>Varied lengths</li>
+          <li>Beautiful area to learn about ahupua'as, swim in the river, and/or hike around.</li>
+          <li>There's some established hikes, but it's also fun to just walk up the river till you find a place to hang/swim.</li>
+        </ul></li>
+        <li>Lahaina Pali Trail<ul>
+          <li>5 mi between east and west trail heads</li>
+          <li>Hike up to the wind turbines and get an amazing ocean view the entire way.</li>
+          <li>Do it as an out n back, or take two cars to end at the west trail head.</li>
+        </ul></li>
+      </ul>
+      <h3>Hana Side</h3>
+      <ul>
+        <li>Twin Falls<ul>
+          <li>Waterfall/river hike in Haiku, on the way to Hana</li>
+          <li>One main out n back trail, and many different waterfall side quests. Plan for many hours here, it's a great spot to hike, swim, and hang.</li>
+          <li>Parking's no longer free and is super strict unfortunately.</li>
+        </ul></li>
+        <li>Bamboo Forest<ul>
+          <li>Usually pretty rainy and wet, but it's a fun spot to romp around.</li>
+        </ul></li>
+        <li>Hana Highway Lavatube<ul>
+          <li>Fun stop along the Hana drive if you can find parking here.</li>
+          <li>There's lava tubes to explore and a river/waterfall to hike up as well.</li>
+        </ul></li>
+        <li>Wai'anapanapa Coastal Trail<ul>
+          <li>Beautiful coastal trail in one of my favorite state parks.</li>
+          <li>There's a couple blowholes too!</li>
+          <li>Warning - parking reservations are now requried.</li>
+        </ul></li>
+        <li>Waimoku Falls<ul>
+          <li>3.4 mile out n back</li>
+          <li>Incredible trail through bamboo forests and rainforest, up to a big 'ol waterfall.</li>
+          <li>It's technically in the Haleakala National Park, so there's an entrance fee. If you visit Haleakala Natn'l Park you can use the same pass here within 72 hours!</li>
+        </ul></li>
+      </ul>
+    <h3>Up Country</h3>
+    <ul>
+      <li>Waihou Spring Forest Reserve - 2-3 mi<ul>
+        <li>Lush forest loop with an optional side quest into a gulch with "lava" tubes (they're actually old irrigation tunnels, but calling them lava tubes is more fun).</li>
+        <li>My fourth grade class planted to koa tree at the top of the gulch trail!</li>
+      </ul></li>
+      <li>Haleakala Crater<ul>
+        <li>Hiking the crater is a must in my opinion.</li>
+        <li>One classic route is the out n back into the crater called Keonehe'ehe'e (Sliding Sands) which takes you from the very top into the center of the crater. You can take it as far as you'd like.</li>
+        <li>Another option is continuing along the crater trail out the west side and finishing up some switchbacks at the Halemau'u trail head. This one is a full 12 mi, and is one of the most incredible hikes I've ever done. I wish I could erase my memory and hike it for the first time again.</li>
+        <ul><li>Stop at the Holua Cabin part way through for a pee break and lunch.</li>
+          <li>NOTE: this is point-to-point so you'll need two cars, or you'll need to hitchhike back to the top at the end.</li>
+          <li>If you have a guide, you can also find the lava tube entrances near the Holua Cabin which are an exciting way to test your claustrophobia.</li>
+        </ul>
+        <li>The crater also has many other side quest hikes, but I haven't done them all.</li>
+      </ul></li>
+    </ul>
+    <h3>Wailea Side</h3>
+    <ul><li>La Perouse (King's Highway)<ul>
+      <li>Out n back over the last lava flow on Maui. </li>
+      <li>Lots of coves along the way to hang and swim.</li>
+      <li> Great snorkling!</li>
+    </ul></li></ul>
+  </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Surf</div>
+    <div class="section-content">
+      <h3>West Side</h3>
+      <ul>
+        <li>Thousand Peaks (Ukemehame)<ul>
+          <li>Longboard break with lots of little peaks. Also has a parking lot with porta potties.</li>
+        </ul>
+        <li>Lefts<ul>
+          <li>Longboard break with an obvious left (obviously).</li>
+        </ul>
+        <li>Olowalu<ul>
+          <li>Mostly a longboard spot, but do NOT pass the chance to bring a shortboard here on a good south swell.</li>
+        </ul>
+        <li>Launiupoko<ul>
+          <li>Love this spot so much I'll go even when it's trash.</li>
+          <li>Longboards recommended, and be ready to see some turtles!</li>
+          <li>Super cute grassy park too, with real bathrooms and a *shower*.</li>
+          <li>This is an awesome spot to hang for awhile, have a BBQ with your people, and pop in-n-out for surf sessions.</li>
+          <li>If you go out, just be weary of the shallow reef!</li>
+        </ul>
+        <li>Breakwall (Lahaina Harbor)<ul>
+          <li>Where I grew up surfing! Solid all-day longboard spot, just be ready to manuver around surf schools.</li>
+          <li>As of Spring 2025 the area is still closed from the fire.</li>
+          <li>Park in Kamehameha Iki parking lot (if spaces), otherwise check street parking or the large lot across the street.</li>
+        </ul>
+        <li>S-Turns (Pohaku)<ul>
+          <li>Great spot for your high volume shortboard on a south swell. Otherwise grab the trusty log.</li>
+          <li>It never seems crowded but that might be due to it's sharky reputation (I haven't seen any but don't say I didn't warn you).</li>
+          <li>Park in Pohaku lot.</li>
+        </ul>
+        <li>Honolua<ul>
+          <li>I've actually never been but it's a famous right on Maui and comes highly recommended.</li>
+          <li>I'm also unsure how one gets down the cliff to the beach break. This advice is a "get what you paid for" situation.</li>
+        </ul>
+      </li></ul>
+      <h3>North Side & Hana</h3>
+      <ul>
+        <li>Kahului Harbor<ul>
+          <li>Never had an epic day here, but I've heard it can happen.</li>
+          <li>You can choose the windy trash outside the harbor, or the more-sheltered trash inside the harbor.</li>
+        </ul>
+        <li>Kanaha<ul>
+          <li>Windy as heck (world-famous for wind sports), but outside the reef can really go off (gun or log recommended, and a really good leash).</li>
+          <li>The park has great parking, bathrooms, vball courts, and so many CATS!</li>
+        </ul>
+        <li>Ho'okipa<ul>
+          <li>Some are wary of the locals here, but just know your etiquette and they'll be the friendly bunch you've ever surfed with.</li>
+          <li>Careful of the reef, it bites back.</li>
+          <li>Oh, and DON'T TOUCH THE TURTLES.</li>
+        </ul>
+        <li>Jaws (Peahi)<ul>
+          <li>Worth a looksie if it's going off!</li>
+        </ul>
+        <li>Honomanu<ul>
+          <li>Only place I've surfed in Hana, and I spent more time fighting the current than surfing. But Shaun had fun!</li>
+          <li>Four wheel drive (or close-enough) recommended for the road down.</li>
+        </ul>
+      </li></ul>
+      <h3>Kihei & Wailea</h3>
+      <ul>
+        <li>Maalaea Harbor<ul>
+          <li>Never surfed it, but I know it's a great shortboard spot on a good south swell!</li>
+        </ul>
+        <li>The Cove<ul>
+          <li>Don't be fooled by it's lake-like appearance; with the right attitude you can catch anything!</li>
+        </ul>
+        <li>La Perouse<ul>
+          <li>My dad says you can surf here ¯\_(ツ)_/¯</li>
+        </ul>
+      </li></ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Food</div>
+    <div class="section-content">
+      <h3>Up Country</h3>
+      <ul>
+        <li>Haili'imaile General Store<ul>
+          <li>No longer a general store, it's now a top rated restaurant.</li>
+          <li>A bit pricey, but definitely worth it!</li>
+        </ul>
+        <li>Polly's Mexican<ul>
+          <li>As far from Mexican as you can get, but absolutely solid place for good eats, frozen margaritas, and epic vintage surf footage.</li>
+        </ul>
+        <li>Casanovas<ul>
+          <li>Excellent pasta, pizza, and tropical cocktails (try the lilikoi martini if they have it!).</li>
+          <li>There's also an attached cafe with great take out lunches.</li>
+        </ul>
+        <li>Komoda's Bakery<ul>
+          <li>Get there early, they run out fast! And they also have weird hours.</li>
+        </ul>
+        <li>Pukalani Suparette<ul>
+          <li>Best hot plate lunch up country, highly recommend if you need a quick bite.</li>
+        </ul>
+        <li>Serpico's<ul>
+          <li>Owned by the nicest family! Great pizzas/subs/pasta.</li>
+          <li>The philly cheesesteak was a go-to of my brother's.</li>
+        </ul>
+        <li>Foodland Pukalani<ul>
+          <li>The poke! The spam musubis! The hot plate lunch! Foodland is a staple.</li>
+          <li>Hot tip: go in the morning to get half-off yesterday's poke.</li>
+        </ul>
+        <li>Marlo's<ul>
+          <li>Exquisite, delicious, artisan pizzas.</li>
+          <li>Order take-out and bring it over to the Aleworks balcony next door!</li>
+        </ul>
+        <li>Mahalo Aleworks<ul>
+          <li>Order takeout from Marlo's next door, then grab some brewski's (or ciders) on the balcony here. You can't beat that view.</li>
+        </ul>
+        <li>La Provence<ul>
+          <li>Never got food here but the french pastries are simply superb.</li>
+        </ul>
+        <li>Ocean Vodka<ul>
+          <li>Outdoor restaurant at a Vodka distillary with a well stocked kitchen, and live music.</li>
+          <li>Drinks and food are great, but the view is the best part!</li>
+          <li>Since it's outdoors, it can get a bit windy. Jacket recommended.</li>
+          <li>Reservations also recommended</li>
+        </ul>
+      </li></ul>
+      <h3>Paia</h3>
+      <ul>
+        <li>Paia Fish Market<ul>
+          <li>Sooo good, but also soooo crowded.</li>
+        </ul>
+        <li>Cafe Des Amis<ul>
+          <li>Solid mediterranian, great tropical drinks, KILLER crepes.</li>
+        </ul>
+        <li>Flatbread Pizza<ul>
+          <li>Very popular; pizza is quite decent. Reservation recommended.</li>
+        </ul>
+      </li></ul>
+      <h3>Waikapu</h3>
+      <ul>
+        <li>Cafe O'Lei at the Plantation<ul>
+          <li>Incredible view and atmosphere, and food/drinks are spectacular.</li>
+        </ul>
+      </li></ul>
+      <h3>Kihei & West Side</h3>
+      <ul>
+        <li>Times Supermarket<ul>
+          <li>My go-to spot for fresh mochi. Although TBH it's good everywhere.</li>
+        </ul>
+        <li>Maui Pie<ul>
+          <li>The Chocolate Haupia (coconut) was my all time fav as a kid.</li>
+        </ul>
+        <li>South Maui Fish Co<ul>
+          <li>Food truck serving incredible fish tacos! It's quite busy, but soo worth the wait.</li>
+        </ul>
+        <li>Leoda's Pie Shop<ul>
+          <li>Super popular. Worth a stop if you're in the area.</li>
+        </ul>
+      </li></ul>
+      <h3>Hana</h3>
+      <ul>
+        <li>Hana Farms Roadside Stand<ul>
+          <li>This is a pizza restaurant, bakery, and roadside shop just at the entrace to Hana; probably one of the best restaurants in the area.</li>
+          <li>It's part of a 7 acre farm which also creates a beautiful scenery/ambiance around the restuarant.</li>
+          <li>The farm's fruits are sold at the shop, along with goods from local artisans!</li>
+          <li>Get the banana bread and thank me later !!</li>
+        </ul>
+      </li></ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">Other</div>
+    <div class="section-content">
+      <h3>Up Country</h3>
+      <ul>
+        <li>Surfing Goat Dairy"<ul>
+          <li>Behind the scenes tour of some adorable goats and some killer cheese.</li>
+          <li>There's also a cafe on sight for lunch!</li>
+        </ul>
+        <li>Kula Lavendar Farm<ul>
+          <li>Very peaceful and beautiful lavendar garden with a cafe and giftshop.</li>
+        </ul>
+        <li>Star Gazing<ul>
+          <li>Star gazing is excellent anywhere away from city lights, but Poli Poli is a great location for it.</li>
+        </ul>
+        <li>Poli Poli Disc Golf<ul>
+          <li>Beautifully-maintained course. A must if you're a disc-golfer.</li>
+          <li>Be careful to not lose your disc in the dense foliage.</li>
+        </ul>
+        <li>Haleakala Crater<ul>
+          <li>Definitely a must-see if you're on-island. I also highly recommend watching the sunrise and/or sunset here.</li>
+        </ul>
+      </li></ul>
+      <h3>Hana</h3>
+      <ul>
+        <li>Wai'anapanapa State Park<ul>
+          <li>My favorite state park on Maui! Beautiful coast line, and so many fun hidden spots.</li>
+          <li>If you can get a reservation, the cabins in this park are an insane deal.</li>
+        </ul>
+      </li></ul>
+      <h3>West Side (ish)</h3>
+      <ul>
+        <li>Maui Ocean Center<ul>
+          <li>To this day one of the best aquariums I've ever been to.</li>
+          <li>No better place to learn about humpback whales and their annual migration patterns!</li>
+          <li>There's also usually exhibits on ancient hawaiian life, and the restoration projects on Koho'olawe.</li>
+        </ul>
+        <li>Olowaly Petroglyphs<ul>
+          <li>Drive up a mostly dirt road, and park off to the side once you reach some rocky cliffs.</li>
+          <li>Walk down the road and you'll see the petroglyphs in the cliff rocks (look closely, they're pretty pale).</li>
+          <li>There aren't too many to see, but it's definitely worth a quick visit if you're driving by!</li>
+        </ul>
+      </li></ul>
+      <h3>The Ocean</h3>
+      <ul>
+        <li>Whale Watching<ul>
+          <li>If it's the season for whale watching, this is a 100000% must.</li>
+        </ul>
+        <li>Molokini Snorkling<ul>
+          <li>You'll need to join a snorkling tour to get here, but it's some of the best snorkling off maui.</li>
+        </ul>
+      </li></ul>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="map.js"></script>
+  <script>
+    document.querySelectorAll(".section-header").forEach((header) => {
+      header.addEventListener("click", () => {
+        const content = header.nextElementSibling;
+        content.classList.toggle("show");
+      });
+    });
+  </script>
+</body>
+</html>
