@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>qstodder.com</title>
 	<style type="text/css">
 		div {
             margin-top: 1em;
         }
         body {
-			font-size: 1.5em;
+			font-size: 1.4em;
 			background: #1d3ba0;
 			color: #ca9260;
 			padding: 30px 10px 30px 30px;
@@ -41,15 +42,15 @@
 		}
 
 		.about-container {
-			padding: 2rem;
+			padding: 1vw;
 		}
 
 		#about-image {
 			position: fixed;
 			bottom: 0px;
-			left: 30px;
+			left: 3vw;
             max-height: 90%;
-			max-width: 30vw;
+			max-width: 25vw;
 		}
 
 		#about-image img {
@@ -61,6 +62,13 @@
 
 		#about-text {
 			margin-left: 32vw;
+		}
+
+		/* make smaller on for mobile devices */
+		@media (max-width: 767px) {
+		#about-text {
+			margin-left: 23vw; 
+		}
 		}
 
 		.lighter {
