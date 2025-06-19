@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Book List</title>
   <style>
     body {
@@ -9,28 +10,30 @@
       background-color: #f8f8f2;
       color: #444;
       margin: 0;
-      padding: 2rem;
+			padding: 30px 10px 30px 30px;
     }
     header {
       position: relative;
-      padding-bottom: 1rem;
+			height: 50px;
     }
     #home-icon {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 7em;
-      height: auto;
-    }
-    #home-icon img {
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    #home-icon img:hover {
-      transform: scale(1.1);
-    }
+			position: absolute;
+			top: 0em;
+			right: 1em;
+			width: 4em;
+			height: 4em;
+		}
+
+		#home-icon img {
+			width: 100%;
+			height: 100%;
+			cursor: pointer;
+			transition: transform 0.2s ease;
+		}
+
+		#home-icon img:hover {
+			transform: scale(1.1);
+		}
     h1 {
       font-size: 2rem;
       color: #2d6a4f;
@@ -75,13 +78,14 @@
     .year-divider:after {
       content: "";
       display: inline-block;
-      width: 40%;
+      width: 30%;
       height: 1px;
       background: #ccc;
       vertical-align: middle;
       margin: 0 1rem;
     }
     .favorites-section {
+      margin-top: 3rem;
       margin-bottom: 4rem;
     }
   </style>
@@ -89,11 +93,12 @@
 <body>
   <header>
     <a href="index.html" id="home-icon">
-      <img src="home_icon_about.svg" alt="Home">
+      <img src="home_icon_green.svg" alt="Home">
     </a>
-    <h1>Book List</h1>
-    <h2>essentially my goodreads page</h2>
   </header>
+
+  <h1>Book List</h1>
+  <h2>essentially my goodreads page</h2>
   <main>
     <section class="favorites-section">
       <h3>Favorites</h3>

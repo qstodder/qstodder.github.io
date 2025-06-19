@@ -8,6 +8,7 @@ header{
     background-image: url("header_background.jpg");
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    padding-bottom: 1rem;
 }
 
 footer{

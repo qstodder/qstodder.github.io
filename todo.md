@@ -1,4 +1,5 @@
 - photos thumbnails (especially header)
+- shadows on desk objects
+- return home icon size/position
 - rubix cube perspective
 - chess pieces
-- shadows on desk objects
