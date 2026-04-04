@@ -93,7 +93,7 @@ TEMPLATE_HEADER = """<!DOCTYPE html>
 <body>
   <header>
     <a href="index.html" id="home-icon">
-      <img src="home_icon_about.svg" alt="Home">
+      <img src="home_icon_light-green.svg" alt="Home">
     </a>
     <h1>Book List</h1>
     <h2>essentially my goodreads page</h2>
