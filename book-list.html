@@ -2,7 +2,6 @@
 <html>
 <head>
   <meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Book List</title>
   <style>
     body {
@@ -10,30 +9,28 @@
       background-color: #f8f8f2;
       color: #444;
       margin: 0;
-			padding: 30px 10px 30px 30px;
+      padding: 2rem;
     }
     header {
       position: relative;
-			height: 50px;
+      padding-bottom: 1rem;
     }
     #home-icon {
-			position: absolute;
-			top: 0em;
-			right: 1em;
-			width: 4em;
-			height: 4em;
-		}
-
-		#home-icon img {
-			width: 100%;
-			height: 100%;
-			cursor: pointer;
-			transition: transform 0.2s ease;
-		}
-
-		#home-icon img:hover {
-			transform: scale(1.1);
-		}
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 7em;
+      height: auto;
+    }
+    #home-icon img {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    #home-icon img:hover {
+      transform: scale(1.1);
+    }
     h1 {
       font-size: 2rem;
       color: #2d6a4f;
@@ -78,14 +75,13 @@
     .year-divider:after {
       content: "";
       display: inline-block;
-      width: 30%;
+      width: 40%;
       height: 1px;
       background: #ccc;
       vertical-align: middle;
       margin: 0 1rem;
     }
     .favorites-section {
-      margin-top: 3rem;
       margin-bottom: 4rem;
     }
   </style>
@@ -93,12 +89,11 @@
 <body>
   <header>
     <a href="index.html" id="home-icon">
-      <img src="home_icon_green.svg" alt="Home">
+      <img src="home_icon_about.svg" alt="Home">
     </a>
+    <h1>Book List</h1>
+    <h2>essentially my goodreads page</h2>
   </header>
-
-  <h1>Book List</h1>
-  <h2>essentially my goodreads page</h2>
   <main>
     <section class="favorites-section">
       <h3>Favorites</h3>
@@ -121,6 +116,60 @@
     <h3>All Books</h3>
 
     <div class="book-entry">
+      <div class="book-title">Death's End (Remembrance of Earth‚Äôs Past, #3)</div>
+      <div class="book-meta">by Liu Cixin &bull; Sci-Fi &bull; Finished: Mar 2026</div>
+      <div class="book-description">Somehow the best book in the series?? So rare that a series gets better and better as it progresses. This series is so multi-faceted I think I could read it repeatedly and get new perspectives each time.</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Dark Forest (Remembrance of Earth‚Äôs Past, #2)</div>
+      <div class="book-meta">by Liu Cixin &bull; Sci-Fi &bull; Finished: Jan 2026</div>
+      <div class="book-description">Somehow better than the first ??</div>
+    </div>
+    <div class="year-divider">2025</div>
+    <div class="book-entry">
+      <div class="book-title">The Three-Body Problem (Remembrance of Earth‚Äôs Past, #1)</div>
+      <div class="book-meta">by Liu Cixin &bull; Sci-Fi &bull; Finished: Dec 2025</div>
+      <div class="book-description">Three years ago I read Project Hail Mary which was so good it ruined all Sci-Fi for me. Three years later, this book brought me hope of a new dawn. I can't recommend it enough.</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Make Believe: Poems for Hoping Again</div>
+      <div class="book-meta">by Victoria Hutchins &bull; Poetry &bull; Finished: Dec 2025</div>
+      <div class="book-description">I was so so excited to read this, and I will say I did like 50% of the poems quite a bit. The other's just weren't for me.</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Lost Bookshop</div>
+      <div class="book-meta">by Evie  Woods &bull; Fantasy &bull; Finished: Nov 2025</div>
+      <div class="book-description">Another magical book about books! And also about the perseverance of one really strong lady.</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Pride and Prejudice</div>
+      <div class="book-meta">by Jane Austen &bull; Romance &bull; Finished: Nov 2025</div>
+      <div class="book-description">Can we talk about how crazy it is that this writing is still so relevant over a hundred years later ??? There's a reason Jane Austen is still revered today, and it's this book. (That said, I will say the first 40% is really slow. Hold out for the good stuff!)</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Murder of Mr. Wickham (Mr. Darcy & Miss Tilney, #1)</div>
+      <div class="book-meta">by Claudia Gray &bull; Murder Mystery, Fan-fiction &bull; Finished: Oct 2025</div>
+      <div class="book-description">Recommended for P&P fans. You know who you are.</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">The Prophet</div>
+      <div class="book-meta">by Kahlil Gibran &bull; Poetry &bull; Finished: Jul 2025</div>
+      <div class="book-description">Thoughtgful poems from 1923 about family, love, purpose, and life in general. Highly recommend!</div>
+    </div>
+    
+    <div class="book-entry">
+      <div class="book-title">Bobiverse 4: Heaven's River</div>
+      <div class="book-meta">by Dennis E. Taylor &bull; Sci-Fi &bull; Finished: Jul 2025</div>
+      <div class="book-description">There are soooooo many Bobs now and shit hits the fan. Civil war is brewing… And a crew of Bobs at the edge of the universe infiltrate an Alien civilization to rescue a Bob held hostage.</div>
+    </div>
+    
+    <div class="book-entry">
       <div class="book-title">Bobiverse 3: All These Worlds</div>
       <div class="book-meta">by Dennis E. Taylor &bull; Sci-Fi &bull; Finished: May 2025</div>
       <div class="book-description">The Bobs face off with the Others.</div>
@@ -135,13 +184,13 @@
     <div class="book-entry">
       <div class="book-title">Hunger Games 0.5: Sunrise on the Reaping</div>
       <div class="book-meta">by Suzanne Collins &bull; Sci-Fi &bull; Finished: Mar 2025</div>
-      <div class="book-description">Depressing as heck. Good god. </div>
+      <div class="book-description">Depressing as heck. Good god.</div>
     </div>
     
     <div class="book-entry">
       <div class="book-title">Randomize</div>
       <div class="book-meta">by Andy Weir &bull; Short Story &bull; Finished: Mar 2025</div>
-      <div class="book-description">Couldn't pass up a chance for a quick read from my fav. </div>
+      <div class="book-description">Couldn't pass up a chance for a quick read from my fav.</div>
     </div>
     
     <div class="book-entry">
@@ -183,7 +232,7 @@
     <div class="book-entry">
       <div class="book-title">Armada</div>
       <div class="book-meta">by Ernest Cline &bull; Sci-Fi &bull; Finished: Dec 2023</div>
-      <div class="book-description">The man who brought us Ready Player One (an ALL TIME fave) brought us a wholesome gamer coming-of-age story but with alien invasions. </div>
+      <div class="book-description">The man who brought us Ready Player One (an ALL TIME fave) brought us a wholesome gamer coming-of-age story but with alien invasions.</div>
     </div>
     
     <div class="book-entry">
@@ -218,7 +267,7 @@
     
     <div class="book-entry">
       <div class="book-title">The Inheritance of Orquidea Divina</div>
-      <div class="book-meta">by Zoraida C√≥rdova &bull; Fantasy &bull; Finished: Jun 2023</div>
+      <div class="book-meta">by Zoraida C‚àö‚â•rdova &bull; Fantasy &bull; Finished: Jun 2023</div>
       <div class="book-description"></div>
     </div>
     
@@ -249,13 +298,13 @@
     <div class="book-entry">
       <div class="book-title">Project Hail Mary</div>
       <div class="book-meta">by Andy Weir &bull; Sci-Fi &bull; Finished: Feb 2023</div>
-      <div class="book-description">So good that it ruined Sci Fi for me. Writing this in June 2025 I'm still recovering. </div>
+      <div class="book-description">So good that it ruined Sci Fi for me. Writing this in June 2025 I'm still recovering.</div>
     </div>
     
     <div class="book-entry">
       <div class="book-title">Harry Potter and the Sorcerer's Stone</div>
       <div class="book-meta">by J.K. Rowling &bull; Fantasy &bull; Finished: Jan 2023</div>
-      <div class="book-description">Was feeling nostalgic and wanted a feel good book from my childhood. </div>
+      <div class="book-description">Was feeling nostalgic and wanted a feel good book from my childhood.</div>
     </div>
     <div class="year-divider">2022</div>
     <div class="book-entry">
@@ -272,7 +321,7 @@
     
     <div class="book-entry">
       <div class="book-title">Utopia Avenue</div>
-      <div class="book-meta">by David Mitchell &bull; Fantasy? &bull; Finished: Aug 2022</div>
+      <div class="book-meta">by David Mitchell &bull; Sci-Fi/Fantasy &bull; Finished: Aug 2022</div>
       <div class="book-description"></div>
     </div>
     
@@ -303,7 +352,7 @@
     <div class="book-entry">
       <div class="book-title">The Expanse 9: Leviathan Falls</div>
       <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Dec 2021</div>
-      <div class="book-description">Space Opera as it should be written. This series unfolds in ways you never saw coming. Only problem with this series is that it came to an end. </div>
+      <div class="book-description">Space Opera as it should be written. This series unfolds in ways you never saw coming. Only problem with this series is that it came to an end.</div>
     </div>
     
     <div class="book-entry">
@@ -351,7 +400,7 @@
     <div class="book-entry">
       <div class="book-title">The Expanse 1: Leviathan Wakes</div>
       <div class="book-meta">by James S.A. Corey &bull; Sci-Fi &bull; Finished: Aug 2020</div>
-      <div class="book-description">Epic. No other words. </div>
+      <div class="book-description">Epic. No other words.</div>
     </div>
       </main>
 </body>
