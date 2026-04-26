@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookshelf</title>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(#d9b782ff, #d9b782ff);
+            color: #fff;
+            font-family: Georgia, serif;
+        }
+
+        header {
+            top: 0;
+            z-index: 5;
+            padding: 16px;
+            text-align: center;
+            background: rgba(0, 0, 0, .35);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: auto;
+            padding-bottom: 80px;
+        }
+
+        .year {
+            height: 110px;
+            background: center/cover no-repeat url('./img/year-gap.svg');
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #fcd34d;
+            letter-spacing: .14em;
+            text-shadow: 0 2px 8px #000;
+        }
+
+        .shelf {
+            height: 260px;
+            background: center/cover no-repeat url('./img/bookshelf.svg');
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 18px;
+            padding: 0 20px 34px;
+        }
+
+        .book {
+            position: relative;
+            width: 110px;
+            text-align: center;
+        }
+
+        .book::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 8px;
+            bottom: 20px;
+            background: rgba(0, 0, 0, .35);
+            filter: blur(8px);
+            transform: translate(8px, 10px);
+            border-radius: 6px;
+        }
+
+        .book img {
+            position: relative;
+            width: 100px;
+            height: 150px;
+            object-fit: cover;
+            border: 1px solid rgba(0, 0, 0, .35);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, .45);
+            transition: .25s;
+        }
+
+        .book:hover img {
+            transform: translateY(-8px) rotate(1deg);
+        }
+
+        .title-on-book {
+            position: absolute;
+            top: 12px;
+            left: 10px;
+            right: 10px;
+            z-index: 2;
+            color: #f8f5e6;
+            font-size: .72rem;
+            line-height: 1.15;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .65);
+        }
+
+        @media(max-width:900px) {
+            .shelf {
+                gap: 12px;
+                height: 240px;
+            }
+
+            .book {
+                width: 90px;
+            }
+
+            .book img {
+                width: 82px;
+                height: 128px;
+            }
+        }
+
+        @media(max-width:640px) {
+            .shelf {
+                gap: 8px;
+                height: 220px;
+                flex-wrap: wrap;
+                align-content: flex-end;
+            }
+
+            .year {
+                font-size: 2rem;
+            }
+
+            .book {
+                width: 74px;
+            }
+
+            .book img {
+                width: 66px;
+                height: 104px;
+            }
+
+            .title-on-book {
+                font-size: .62rem;
+                left: 6px;
+                right: 6px;
+                top: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>My Book List</h1>
+        <div>Some old, some new — some fiction, some true</div>
+    </header>
+    <div class="wrap">
+        <div class="year">2026</div>
+        <div class="shelf">
+            <div class="book has-cover"><img src="./img/books/monas-eyes.jpg" alt="Mona’s Eyes"
+                    onerror="this.onerror=null;this.src='./img/default-book.svg'"></div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="Death&#x27;s End (Remembrance of Earth’s Past, #3)">
+                <div class="title-on-book">Death&#x27;s End (Remembrance of Earth’s Past, #3)</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="The Dark Forest (Remembrance of Earth’s Past, #2)">
+                <div class="title-on-book">The Dark Forest (Remembrance of Earth’s Past, #2)</div>
+            </div>
+        </div>
+        <div class="year">2025</div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Make Believe: Poems for Hoping Again">
+                <div class="title-on-book">Make Believe: Poems for Hoping Again</div>
+            </div>
+            <div class="book has-cover"><img src="./img/books/three-body-problem.jpg"
+                    alt="The Three-Body Problem (Remembrance of Earth’s Past, #1)"
+                    onerror="this.onerror=null;this.src='./img/default-book.svg'"></div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Lost Bookshop">
+                <div class="title-on-book">The Lost Bookshop</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Pride and Prejudice">
+                <div class="title-on-book">Pride and Prejudice</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="The Murder of Mr. Wickham (Mr. Darcy &amp; Miss Tilney, #1)">
+                <div class="title-on-book">The Murder of Mr. Wickham (Mr. Darcy &amp; Miss Tilney, #1)</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Bobiverse 4: Heaven&#x27;s River">
+                <div class="title-on-book">Bobiverse 4: Heaven&#x27;s River</div>
+            </div>
+        </div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Prophet">
+                <div class="title-on-book">The Prophet</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Bobiverse 3: All These Worlds">
+                <div class="title-on-book">Bobiverse 3: All These Worlds</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Bobiverse 2: For We Are Many">
+                <div class="title-on-book">Bobiverse 2: For We Are Many</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Hunger Games 0.5: Sunrise on the Reaping">
+                <div class="title-on-book">Hunger Games 0.5: Sunrise on the Reaping</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Randomize">
+                <div class="title-on-book">Randomize</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Teixcalaan 2: A Desolation Called Peace">
+                <div class="title-on-book">Teixcalaan 2: A Desolation Called Peace</div>
+            </div>
+        </div>
+        <div class="year">2024</div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Teixcalaan 1: A Memory Called Empire">
+                <div class="title-on-book">Teixcalaan 1: A Memory Called Empire</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="Kingkiller Chronicle 1: The Name of the Wind">
+                <div class="title-on-book">Kingkiller Chronicle 1: The Name of the Wind</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Dune">
+                <div class="title-on-book">Dune</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Lessons in Chemistry">
+                <div class="title-on-book">Lessons in Chemistry</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="Hunger Games 0: The Ballad of Songbirds and Snakes">
+                <div class="title-on-book">Hunger Games 0: The Ballad of Songbirds and Snakes</div>
+            </div>
+        </div>
+        <div class="year">2023</div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Armada">
+                <div class="title-on-book">Armada</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Red Rising 6: Light Bringer">
+                <div class="title-on-book">Red Rising 6: Light Bringer</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Red Rising 5: Dark Age">
+                <div class="title-on-book">Red Rising 5: Dark Age</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Red Rising 4: Iron Gold">
+                <div class="title-on-book">Red Rising 4: Iron Gold</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Red Rising 3: Morning Star">
+                <div class="title-on-book">Red Rising 3: Morning Star</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Red Rising 2: Golden Son">
+                <div class="title-on-book">Red Rising 2: Golden Son</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Inheritance of Orquidea Divina">
+                <div class="title-on-book">The Inheritance of Orquidea Divina</div>
+            </div>
+        </div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Red Rising">
+                <div class="title-on-book">Red Rising</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Bobiverse 1: We Are Legion (We Are Bob)">
+                <div class="title-on-book">Bobiverse 1: We Are Legion (We Are Bob)</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Ministry for the Future">
+                <div class="title-on-book">The Ministry for the Future</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="Lean In: Women, Work, and the Will to Lead">
+                <div class="title-on-book">Lean In: Women, Work, and the Will to Lead</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Project Hail Mary">
+                <div class="title-on-book">Project Hail Mary</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg"
+                    alt="Harry Potter and the Sorcerer&#x27;s Stone">
+                <div class="title-on-book">Harry Potter and the Sorcerer&#x27;s Stone</div>
+            </div>
+        </div>
+        <div class="year">2022</div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="For the Love of My Brother">
+                <div class="title-on-book">For the Love of My Brother</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Iberian Claim">
+                <div class="title-on-book">Iberian Claim</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Utopia Avenue">
+                <div class="title-on-book">Utopia Avenue</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="Artemis">
+                <div class="title-on-book">Artemis</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="What Are You Willing to Risk?">
+                <div class="title-on-book">What Are You Willing to Risk?</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Night Circus">
+                <div class="title-on-book">The Night Circus</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Starless Sea">
+                <div class="title-on-book">The Starless Sea</div>
+            </div>
+        </div>
+        <div class="year">2021</div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 9: Leviathan Falls">
+                <div class="title-on-book">The Expanse 9: Leviathan Falls</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 8: Tiamat&#x27;s Wrath">
+                <div class="title-on-book">The Expanse 8: Tiamat&#x27;s Wrath</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 7: Persepolis Rising">
+                <div class="title-on-book">The Expanse 7: Persepolis Rising</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 6: Babylon&#x27;ss Ashes">
+                <div class="title-on-book">The Expanse 6: Babylon&#x27;ss Ashes</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 5: Nemesis Games">
+                <div class="title-on-book">The Expanse 5: Nemesis Games</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 4: Cibola Burn">
+                <div class="title-on-book">The Expanse 4: Cibola Burn</div>
+            </div>
+        </div>
+        <div class="year">2020</div>
+        <div class="shelf">
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 3: Abaddon&#x27;s Gate">
+                <div class="title-on-book">The Expanse 3: Abaddon&#x27;s Gate</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 2: Caliban&#x27;s War">
+                <div class="title-on-book">The Expanse 2: Caliban&#x27;s War</div>
+            </div>
+            <div class="book no-cover"><img src="./img/default-book.svg" alt="The Expanse 1: Leviathan Wakes">
+                <div class="title-on-book">The Expanse 1: Leviathan Wakes</div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
