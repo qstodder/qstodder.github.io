@@ -297,7 +297,7 @@ header {{
 }}
 
 header h1 {{
-    margin:0;
+    margin:1rem;
     font-size:2rem;
 }}
 
