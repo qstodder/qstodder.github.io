@@ -313,7 +313,7 @@ header h1 {{
 
 .year-wrap {{
     height:135px;
-    background:center/cover no-repeat url('{IMG}/year-gap.svg');
+    background:#8aa9b3ff;
     display:flex;
     align-items:center;
     justify-content:center;
