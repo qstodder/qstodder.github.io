@@ -11,7 +11,8 @@ from html import escape
 BASE = Path(".") / "bookshelf"
 CSV_FILE = BASE / "books.csv"
 FAVORITES_FILE = BASE / "favorites.csv"
-OUTPUT = BASE / "book-list.html"
+OUTPUT_DESKTOP = BASE / "book-list.html"
+OUTPUT_MOBILE = BASE / "book-list-mobile.html"
 
 IMG = "./img"
 BOOKS = "./img/books"
@@ -130,7 +131,7 @@ def render_book(book, shelf_index, year, idx):
 # Build Body
 # =====================================================
 
-def build_body(books):
+def build_body(books, books_per_shelf):
     html = []
 
     # =========================
@@ -186,7 +187,7 @@ def build_body(books):
             reverse=True
         )
 
-        plan = distribute(len(books_for_year), 7)
+        plan = distribute(len(books_for_year), books_per_shelf)
         rows = chunk_by_plan(books_for_year, plan)
 
         counter = 0
@@ -212,6 +213,52 @@ def build_page(body):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+(function () {{
+    const DESKTOP_PAGE = "book-list.html";
+    const MOBILE_PAGE  = "book-list-mobile.html";
+    const BREAKPOINT   = 768;
+
+    function isPortrait() {{
+        return window.matchMedia("(orientation: portrait)").matches;
+    }}
+
+    function onMobileLayout() {{
+        return window.innerWidth <= BREAKPOINT && isPortrait();
+    }}
+
+    function isMobilePage()  {{
+        return window.location.pathname.includes("book-list-mobile");
+    }}
+
+    function routePage()  {{
+        const shouldUseMobile = onMobileLayout();
+        const currentlyMobile = isMobilePage();
+
+        if (shouldUseMobile && !currentlyMobile)  {{
+            window.location.replace(MOBILE_PAGE);
+            return;
+        }}
+
+        if (!shouldUseMobile && currentlyMobile)  {{
+            window.location.replace(DESKTOP_PAGE);
+            return;
+        }}
+    }}
+
+    routePage();
+
+    let resizeTimer;
+    window.addEventListener("resize", function ()  {{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(routePage, 150);
+    }});
+
+    window.addEventListener("orientationchange", routePage);
+}})();
+</script>
+
 <title>Bookshelf</title>
 
 <style>
@@ -453,12 +500,22 @@ header h1 {{
 # =====================================================
 
 def main():
+    # desktop display
+    books_per_shelf = 7
     books = load_books()
-    body = build_body(books)
+    body = build_body(books, books_per_shelf)
+    page = build_page(body)
+    OUTPUT_DESKTOP.write_text(page, encoding="utf-8")
+    print(f"Generated {OUTPUT_DESKTOP}")
+
+    # mobile display
+    books_per_shelf = 3
+    books = load_books()
+    body = build_body(books, books_per_shelf)
     page = build_page(body)
 
-    OUTPUT.write_text(page, encoding="utf-8")
-    print(f"Generated {OUTPUT}")
+    OUTPUT_MOBILE.write_text(page, encoding="utf-8")
+    print(f"Generated {OUTPUT_MOBILE}")
 
 
 if __name__ == "__main__":
