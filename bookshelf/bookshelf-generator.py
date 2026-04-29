@@ -264,7 +264,7 @@ def build_page(body):
 <style>
 body {{
     margin:0;
-    background:#d9b782;
+    background:#8aa9b3ff;
     color:#e6e3de;
     font-family:Georgia, serif;
 }}
