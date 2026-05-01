@@ -213,7 +213,7 @@ def build_body(books, books_per_shelf):
 # Full Page
 # =====================================================
 
-def build_page(body):
+def build_page(body, book_shift):
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -374,7 +374,7 @@ header h1 {{
 .book {{
     position:relative;
     width:130px;
-    bottom:67px;
+    bottom:{book_shift}px;
     text-align:center;
 }}
 
@@ -508,17 +508,19 @@ header h1 {{
 def main():
     # desktop display
     books_per_shelf = 7
+    book_shift = 71
     books = load_books()
     body = build_body(books, books_per_shelf)
-    page = build_page(body)
+    page = build_page(body, book_shift)
     OUTPUT_DESKTOP.write_text(page, encoding="utf-8")
     print(f"Generated {OUTPUT_DESKTOP}")
 
     # mobile display
     books_per_shelf = 3
+    book_shift = 73
     books = load_books()
     body = build_body(books, books_per_shelf)
-    page = build_page(body)
+    page = build_page(body, book_shift)
 
     OUTPUT_MOBILE.write_text(page, encoding="utf-8")
     print(f"Generated {OUTPUT_MOBILE}")
