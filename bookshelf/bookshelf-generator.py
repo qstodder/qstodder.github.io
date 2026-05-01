@@ -91,6 +91,7 @@ def book_style(seed_num):
 
     sx = round(random.uniform(0.97, 1.02), 3)
     sy = round(random.uniform(0.97, 1.04), 3)
+    sy = 1
 
     return sx, sy
 
@@ -168,9 +169,14 @@ def build_body(books, books_per_shelf):
         grouped.setdefault(dt.year, []).append(book)
 
     for year in sorted(grouped.keys(), reverse=True):
-        random.seed(year)
-        rot = random.randint(-3, 3)
-        yoff = random.randint(-2, 3)
+        random.seed(year-2020)
+        rot = random.randint(1, 6)
+        # yoff = random.randint(-2, 3)
+        yoff = 0
+        s = 1 - 2*(year % 2)
+        rot = rot*s
+
+        print(year, rot)
 
         html.append(f'''
 <div class="year-wrap">
