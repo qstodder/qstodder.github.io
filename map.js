@@ -252,11 +252,11 @@ const mapPins = {
       }
     ],
     other: [
-        {
-            name: "Surfing Goat Dairy",
-            coords: [20.806764772242857, -156.36517846208375],
-            description: "Behind the scenes tour of some adorable goats and some killer cheese. There's also a cafe on sight for lunch!"
-        },
+      {
+          name: "Surfing Goat Dairy",
+          coords: [20.806764772242857, -156.36517846208375],
+          description: "Behind the scenes tour of some adorable goats and some killer cheese. There's also a cafe on sight for lunch!"
+      },
       {
         name: "Kula Lavendar Farm",
         coords: [20.733358563821586, -156.31975853602586],
@@ -271,11 +271,6 @@ const mapPins = {
         name: "Poli Poli Disc Golf",
         coords: [20.72620148204212, -156.31157403912044],
         description: "Beautifully-maintained course. A must if you're a disc-golfer. Be careful to not lose your disc in the dense foliage."
-      },
-      {
-        name: "Haleakala Crater",
-        coords: [20.710137248959793, -156.25346449358085],
-        description: "Definitely a must-see if you're on-island. I also highly recommend watching the sunrise and/or sunset here."
       },
       {
         name: "Wai'anapanapa State Park",
@@ -293,15 +288,27 @@ const mapPins = {
         description: "I recommend this quick stop if you're in the area! It's just a ~10min detor for some pretty neat petroglyphs."
       },
       {
-        name: "Whale Watching",
-        coords: [20.787055935110594, -156.4990737227847],
-        description: "If it's the season for whale watching, this is a 100000% must."
-      },
-      {
         name: "Molokini Snorkling",
         coords: [20.633342257326817, -156.49616671394884],
         description: "You'll need to join a snorkling tour to get here, but it's some of the best snorkling off maui."
       }
+    ],
+    highlight: [
+      {
+        name: "Hana Highway",
+        coords: [20.906, -156.2336],
+        description: "Windy road out to Hana that's packed with waterfall hikes and beautiful views."
+      },
+      {
+        name: "Haleakala Crater",
+        coords: [20.710137248959793, -156.25346449358085],
+        description: "Definitely a must-see if you're on-island. I also highly recommend watching the sunrise and/or sunset here."
+      },
+      {
+        name: "Whale Watching",
+        coords: [20.787055935110594, -156.4990737227847],
+        description: "If it's the season for whale watching, this is a 100000% must."
+      },
     ]
   };
 
@@ -336,6 +343,11 @@ document.addEventListener("DOMContentLoaded", function () {
         iconSize: [24, 30],
         iconAnchor: [12, 30],
       }),
+      highlight: L.icon({
+        iconUrl: "rec-icons/highlight.png",
+        iconSize: [24, 30],
+        iconAnchor: [12, 30],
+      })
     };
   
     const layerGroups = {
@@ -343,6 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
       surf: L.layerGroup(),
       food: L.layerGroup(),
       other: L.layerGroup(),
+      highlight: L.layerGroup()
     };
   
     // Loop through all categories and add markers to respective layer group
@@ -362,6 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
       Surf: layerGroups.surf,
       Food: layerGroups.food,
       Other: layerGroups.other,
+      Highlights: layerGroups.highlight,
     }).addTo(map);
   });
   
