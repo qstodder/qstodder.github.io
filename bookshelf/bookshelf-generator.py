@@ -286,9 +286,9 @@ header {{
 #home-icon {{
     position: absolute;
     top: 0;
-    right: 0;
+    right: 1em;
     width: 3em;
-    height: auto;
+    height: 3em;
 }}
 
 #home-icon img {{
@@ -323,6 +323,7 @@ header h1 {{
     display:flex;
     align-items:center;
     justify-content:center;
+    padding-bottom: 15px;
 }}
 
 .year-sign {{
@@ -458,13 +459,14 @@ header h1 {{
 
     .shelf {{
         gap:8px;
-        height:220px;
+        height:125px;
         flex-wrap:wrap;
         align-content:flex-end;
     }}
 
     .book {{
         width:74px;
+        bottom:30px;
     }}
 
     .book img {{
@@ -517,7 +519,7 @@ def main():
 
     # mobile display
     books_per_shelf = 3
-    book_shift = 73
+    book_shift = 30
     books = load_books()
     body = build_body(books, books_per_shelf)
     page = build_page(body, book_shift)
