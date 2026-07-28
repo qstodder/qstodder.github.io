@@ -1,0 +1,110 @@
+/* ==========================================================
+   Hero
+   ========================================================== */
+
+.hero {
+
+    margin-top: var(--space-xl);
+
+}
+
+
+/* ==========================================================
+   Full-Width Photo Carousel
+   ========================================================== */
+
+.photo-carousel {
+
+    width: 100vw;
+
+    margin-left: calc(50% - 50vw);
+
+    overflow: hidden;
+
+}
+
+.photo-carousel:hover .carousel-track {
+    cursor: pointer;
+}
+
+
+/*
+   The track is the moving element.
+   Later, JavaScript will slide this left/right.
+*/
+
+.carousel-track-wrapper {
+
+    margin-top: 40px;
+
+    display: flex;
+
+    justify-content: center;
+
+}
+
+.carousel-track {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    transition: transform 650ms ease-in-out;
+
+    will-change: transform;
+
+}
+
+
+/* ==========================================================
+   Individual Photos
+   ========================================================== */
+
+.carousel-photo {
+
+    width: 260px;
+
+    height: 390px;
+
+    object-fit: cover;
+
+    flex-shrink: 0;
+
+}
+
+
+/* ==========================================================
+   Hero Text
+   ========================================================== */
+
+.hero-text {
+
+    margin-top: var(--space-xl);
+
+    text-align: center;
+
+}
+
+
+/* ==========================================================
+   Mobile
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    .carousel-track {
+
+        gap: 8px;
+
+    }
+
+
+    .carousel-photo {
+
+        height: 280px;
+
+    }
+
+}

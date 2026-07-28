@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RSVP</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/rsvp.css"
+    >
+</head>
+
+<body>
+
+    <main class="rsvp-page">
+
+        <!-- =============================================
+             Step 1: Find invitation
+             ============================================= -->
+
+        <section
+            id="search-screen"
+            class="rsvp-screen"
+        >
+            <h2>Find Your Invitation</h2>
+
+            <p>
+                Begin typing your first or last name.
+            </p>
+
+            <label
+                class="sr-only"
+                for="guest-search"
+            >
+                First or last name
+            </label>
+
+            <input
+                id="guest-search"
+                type="search"
+                placeholder="Your name"
+                autocomplete="off"
+            >
+
+            <div
+                id="search-status"
+                role="status"
+                aria-live="polite"
+            ></div>
+
+            <div id="search-results"></div>
+        </section>
+
+
+        <!-- =============================================
+             Step 2: Confirm household
+             ============================================= -->
+
+        <section
+            id="household-screen"
+            class="rsvp-screen hidden"
+        >
+            <p class="step-label">
+                Step 1 of 7
+            </p>
+
+            <h2 id="household-name"></h2>
+
+            <p>
+                Please confirm that this is your invitation.
+            </p>
+
+            <div id="household-guests"></div>
+
+            <div class="screen-actions">
+                <button
+                    id="back-to-search"
+                    type="button"
+                    class="secondary-button"
+                >
+                    Back
+                </button>
+
+                <button
+                    id="continue-to-contact"
+                    type="button"
+                >
+                    Continue
+                </button>
+            </div>
+        </section>
+
+
+        <!-- =============================================
+             Step 3: Contact information
+             ============================================= -->
+
+        <section
+            id="contact-screen"
+            class="rsvp-screen hidden"
+        >
+            <p class="step-label">
+                Step 2 of 7
+            </p>
+
+            <h2>Confirm Your Contact Information</h2>
+
+            <p>
+                Please review and update your household’s
+                email and mailing address.
+            </p>
+
+            <form id="contact-form">
+
+                <div class="form-field">
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="street">
+                        Street address
+                    </label>
+
+                    <input
+                        id="street"
+                        name="street"
+                        type="text"
+                        autocomplete="street-address"
+                        required
+                    >
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="city">
+                            City
+                        </label>
+
+                        <input
+                            id="city"
+                            name="city"
+                            type="text"
+                            autocomplete="address-level2"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field form-field-small">
+                        <label for="state">
+                            State
+                        </label>
+
+                        <input
+                            id="state"
+                            name="state"
+                            type="text"
+                            autocomplete="address-level1"
+                            maxlength="2"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field form-field-small">
+                        <label for="zip">
+                            ZIP
+                        </label>
+
+                        <input
+                            id="zip"
+                            name="zip"
+                            type="text"
+                            inputmode="numeric"
+                            autocomplete="postal-code"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div
+                    id="contact-error"
+                    class="form-error hidden"
+                    role="alert"
+                ></div>
+
+                <div class="screen-actions">
+                    <button
+                        id="back-to-household"
+                        type="button"
+                        class="secondary-button"
+                    >
+                        Back
+                    </button>
+
+                    <button
+                        id="continue-from-contact"
+                        type="submit"
+                    >
+                        Continue
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- =============================================
+            Step 4: Welcome Event attendance
+            ============================================= -->
+
+        <section
+            id="welcome-screen"
+            class="rsvp-screen hidden"
+        >
+            <p class="step-label">
+                Step 3 of 7
+            </p>
+
+            <h2>Welcome Event</h2>
+
+            <p>
+                Will you be joining us for the welcome event?
+            </p>
+
+            <form id="welcome-form">
+
+                <div id="welcome-guests"></div>
+
+                <div
+                    id="welcome-error"
+                    class="form-error hidden"
+                    role="alert"
+                ></div>
+
+                <div class="screen-actions">
+
+                    <button
+                        id="back-to-contact"
+                        type="button"
+                        class="secondary-button"
+                    >
+                        Back
+                    </button>
+
+                    <button
+                        type="submit"
+                    >
+                        Continue
+                    </button>
+
+                </div>
+
+            </form>
+        </section>
+
+    </main>
+
+    <script
+        type="module"
+        src="js/rsvp.js"
+    ></script>
+
+</body>
+
+</html>

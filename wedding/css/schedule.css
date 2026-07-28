@@ -1,0 +1,129 @@
+/* ==========================================================
+   Schedule Page
+   ========================================================== */
+
+
+.schedule-page {
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 0 24px 80px;
+
+}
+
+
+
+.page-intro {
+
+    text-align: center;
+
+    margin-bottom: 70px;
+
+}
+
+
+
+.page-intro h2 {
+
+    font-family: Copperplate, serif;
+
+    font-size: 3rem;
+
+    letter-spacing: 2px;
+
+}
+
+
+
+.page-intro p {
+
+    font-size: 1.4rem;
+
+    color: var(--steel-blue);
+
+}
+
+
+
+/* Timeline */
+
+.timeline {
+
+    position: relative;
+
+}
+
+
+
+.event {
+
+    display: grid;
+
+    grid-template-columns: 140px 1fr;
+
+    gap: 40px;
+
+    margin-bottom: 60px;
+
+}
+
+
+
+.time {
+
+    font-family: Copperplate, serif;
+
+    color: var(--steel-blue);
+
+    font-size: 1.2rem;
+
+    text-align: right;
+
+}
+
+
+
+.event-details h3 {
+
+    margin-top: 0;
+
+    font-size: 2rem;
+
+    color: var(--slate-grey);
+
+}
+
+
+
+.event-details p {
+
+    font-size: 1.3rem;
+
+}
+
+
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+
+    .event {
+
+        display: block;
+
+    }
+
+
+    .time {
+
+        text-align: left;
+
+        margin-bottom: 10px;
+
+    }
+
+
+}

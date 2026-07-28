@@ -1,0 +1,53 @@
+.page{
+
+    width:min(
+        calc(100% - 3rem),
+        var(--content-width)
+    );
+
+    margin:auto;
+}
+
+/* --------------------------------------- */
+
+section{
+
+    margin-block:var(--space-2xl);
+}
+
+/* --------------------------------------- */
+
+h1{
+
+    font-family:var(--font-heading);
+
+    letter-spacing:.15em;
+
+    font-size:var(--fs-2xl);
+
+    text-align:center;
+
+    margin-bottom:.5rem;
+}
+
+h2{
+
+    font-family:var(--font-heading);
+
+    letter-spacing:.12em;
+
+    text-transform:uppercase;
+
+    font-size:var(--fs-lg);
+}
+
+/* --------------------------------------- */
+
+.subtitle{
+
+    text-align:center;
+
+    color:var(--color-text-light);
+
+    font-size:var(--fs-lg);
+}

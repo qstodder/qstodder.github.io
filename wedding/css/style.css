@@ -1,0 +1,164 @@
+/* ==========================================================
+   Color Palette
+   ========================================================== */
+
+:root {
+
+    --grey-olive: #839189;
+    --slate-grey: #647A7E;
+    --olive-wood: #786B4F;
+    --cool-steel: #9BADBC;
+    --steel-blue: #7A9DB0;
+
+    --text-dark: #3d4d52;
+}
+
+
+/* ==========================================================
+   Global
+   ========================================================== */
+
+body {
+
+    margin: 0;
+
+    font-family: "Cormorant Garamond", serif;
+
+    color: var(--text-dark);
+
+    background: white;
+
+    line-height: 1.6;
+
+}
+
+
+/* ==========================================================
+   Hero Text
+   ========================================================== */
+
+.hero-text {
+
+    margin-top: 48px;
+
+    text-align: center;
+
+}
+
+.hero-text h1 {
+
+    margin: 0;
+
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+
+    font-size: 3.5rem;
+
+    font-weight: normal;
+
+    letter-spacing: 2px;
+
+    color: var(--slate-grey);
+
+}
+
+.subtitle {
+
+    margin-top: 12px;
+
+    font-size: 1.6rem;
+
+    color: var(--steel-blue);
+
+}
+
+
+/* ==========================================================
+   Navigation
+   ========================================================== */
+
+.main-nav {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    margin-top: 32px;
+
+    margin-bottom: 50px;
+
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+
+    letter-spacing: 1.5px;
+
+    font-size: 1.3rem;
+
+    text-transform: uppercase;
+
+}
+
+.main-nav a {
+
+    color: var(--slate-grey);
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+
+}
+
+.main-nav a:hover {
+
+    color: var(--steel-blue);
+
+}
+
+.main-nav a.active {
+
+    color: var(--olive-wood);
+
+    border-bottom: 1px solid var(--olive-wood);
+
+    padding-bottom: 3px;
+
+}
+
+.divider {
+
+    color: var(--cool-steel);
+
+}
+
+
+/* ==========================================================
+   Mobile
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    .hero-text h1 {
+
+        font-size: 2.5rem;
+
+    }
+
+    .subtitle {
+
+        font-size: 1.3rem;
+
+    }
+
+    .main-nav {
+
+        gap: 10px;
+
+        font-size: 0.8rem;
+
+    }
+
+}
