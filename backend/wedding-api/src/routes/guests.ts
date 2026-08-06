@@ -37,5 +37,10 @@ export async function searchGuests(
             )
             .all();
 
-    return ok(result.results);
+    return ok(
+        result.results.map((guest: any) => ({
+            householdId: guest.household_id,
+            displayName: guest.display_name
+        }))
+    );
 }

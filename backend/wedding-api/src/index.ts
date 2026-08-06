@@ -8,6 +8,12 @@ import { saveGuestRsvpsRoute } from "./routes/guestRsvps";
 import { saveGuestDietaryRoute } from "./routes/guestDietary";
 import { saveAcknowledgementsRoute } from "./routes/acknowledgements";
 import { getRsvpRoute, saveRsvpRoute } from "./routes/rsvp"
+import {
+    refreshGmailAccessToken
+} from "./services/gmail";
+import { getAdminData } from "./routes/admin";
+import { updateAdminAddress } from "./routes/adminAddress";
+import { adminPreflight } from "./lib/adminCors";
 
 export default {
 
@@ -17,6 +23,13 @@ export default {
     ): Promise<Response> {
 
         const url = new URL(request.url);
+
+        if (
+            request.method === "OPTIONS" &&
+            url.pathname.startsWith("/api/admin")
+        ) {
+            return adminPreflight(request);
+        }
 
 		if (request.method === "OPTIONS") {
 			return ok(null)
@@ -28,6 +41,34 @@ export default {
 
         if (url.pathname === "/") {
             return ok("Wedding RSVP API is running!");
+        }
+
+        //-----------------------------------------
+        // Protected admin dashboard data
+        //-----------------------------------------
+
+        if (
+            request.method === "GET" &&
+            url.pathname === "/api/admin"
+        ) {
+            return getAdminData(request, env);
+        }
+
+        if (
+            request.method === "PATCH" &&
+            /^\/api\/admin\/households\/\d+\/address$/.test(
+                url.pathname
+            )
+        ) {
+            const householdId = Number(
+                url.pathname.split("/")[4]
+            );
+
+            return updateAdminAddress(
+                request,
+                env,
+                householdId
+            );
         }
 
         //-----------------------------------------
@@ -181,6 +222,43 @@ export default {
         //-----------------------------------------
 
         return badRequest( "Not Found" );
+    },
+
+    async scheduled(
+        controller: ScheduledController,
+        env: Env
+    ): Promise<void> {
+
+        try {
+
+            await refreshGmailAccessToken(env);
+
+            console.log(
+                "Gmail OAuth keepalive succeeded.",
+                {
+                    cron: controller.cron,
+                    scheduledTime:
+                        controller.scheduledTime
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Gmail OAuth keepalive failed.",
+                {
+                    cron: controller.cron,
+                    scheduledTime:
+                        controller.scheduledTime,
+                    error:
+                        error instanceof Error
+                            ? error.message
+                            : "Unknown OAuth error"
+                }
+            );
+
+            throw error;
+        }
     }
 
 }

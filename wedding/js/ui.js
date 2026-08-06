@@ -25,10 +25,10 @@ export function renderSearchResults(guests) {
             "search-result";
 
         button.textContent =
-            guest.display_name;
+            guest.displayName;
 
         button.dataset.householdId =
-            guest.household_id;
+            guest.householdId;
 
         resultsDiv.appendChild(button);
 
@@ -52,7 +52,7 @@ export function renderHousehold(household, guests) {
 
     document.getElementById("household-name")
         .textContent =
-        household.household_name;
+        household.householdName;
 
 
     const guestsDiv =

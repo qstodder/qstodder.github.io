@@ -2,7 +2,9 @@ import { state } from "./state.js";
 
 import {
     searchGuests,
-    getRsvp
+    getRsvp,
+    getDietaryRestrictions,
+    submitRSVP
 } from "./api.js";
 
 import {
@@ -56,6 +58,16 @@ const contactError =
 let searchTimer = null;
 let latestSearchRequest = 0;
 
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 
 /* =========================================================
    Screen navigation
@@ -67,7 +79,12 @@ function showScreen(screen) {
         searchScreen,
         householdScreen,
         contactScreen,
-        welcomeScreen
+        welcomeScreen,
+        weddingScreen,
+        dietaryScreen,
+        acknowledgementsScreen,
+        brunchScreen,
+        reviewScreen
     ];
 
     for (const currentScreen of screens) {
@@ -92,14 +109,6 @@ function showScreen(screen) {
 function populateContactForm() {
 
     const household = state.household;
-
-    console.log(
-            JSON.stringify(
-                state.rsvp,
-                null,
-                2
-            )
-        );
 
     document.getElementById("email").value =
         household.email ?? "";
@@ -245,20 +254,6 @@ resultsDiv.addEventListener(
             const rsvp =
                 await getRsvp(householdId);
 
-
-            console.log(
-                "Complete RSVP response:",
-                rsvp
-            );
-
-            console.table(state.rsvp.guests);
-
-            console.log(
-                "Guests:",
-                rsvp.guests
-            );
-
-            console.table(rsvp.guests);
 
             /*
              * The complete RSVP endpoint returns:
@@ -407,6 +402,103 @@ const welcomeError =
 const backToContactButton =
     document.getElementById("back-to-contact");
 
+const weddingScreen =
+    document.getElementById("wedding-screen");
+
+const weddingForm =
+    document.getElementById("wedding-form");
+
+const weddingGuests =
+    document.getElementById("wedding-guests");
+
+const weddingError =
+    document.getElementById("wedding-error");
+
+const backToWelcomeButton =
+    document.getElementById("back-to-welcome");
+
+const dietaryScreen =
+    document.getElementById("dietary-screen");
+
+const dietaryForm =
+    document.getElementById("dietary-form");
+
+const dietaryGuests =
+    document.getElementById("dietary-guests");
+
+const dietaryError =
+    document.getElementById("dietary-error");
+
+const backToWeddingButton =
+    document.getElementById("back-to-wedding");
+
+const acknowledgementsScreen =
+    document.getElementById(
+        "acknowledgements-screen"
+    );
+
+const acknowledgementsForm =
+    document.getElementById(
+        "acknowledgements-form"
+    );
+
+const acknowledgementsError =
+    document.getElementById(
+        "acknowledgements-error"
+    );
+
+const noChildrenCheckbox =
+    document.getElementById(
+        "acknowledge-no-children"
+    );
+
+const noPlusOnesCheckbox =
+    document.getElementById(
+        "acknowledge-no-plus-ones"
+    );
+
+const backToDietaryButton =
+    document.getElementById(
+        "back-to-dietary"
+    );
+
+const brunchScreen =
+    document.getElementById("brunch-screen");
+
+const brunchForm =
+    document.getElementById("brunch-form");
+
+const brunchGuests =
+    document.getElementById("brunch-guests");
+
+const brunchError =
+    document.getElementById("brunch-error");
+
+const backToAcknowledgementsButton =
+    document.getElementById(
+        "back-to-acknowledgements"
+    );
+
+const reviewScreen =
+    document.getElementById("review-screen");
+
+const rsvpReview =
+    document.getElementById("rsvp-review");
+
+const submitError =
+    document.getElementById("submit-error");
+
+const submitSuccess =
+    document.getElementById("submit-success");
+
+const backToBrunchButton =
+    document.getElementById("back-to-brunch");
+
+const submitRsvpButton =
+    document.getElementById("submit-rsvp");
+
+let dietaryOptions = [];
+
 
 function renderWelcomeGuests() {
 
@@ -443,8 +535,8 @@ function renderWelcomeGuests() {
 
         guestCard.innerHTML = `
             <legend>
-                ${guest.firstName}
-                ${guest.lastName}
+                ${escapeHtml(guest.firstName)}
+                ${escapeHtml(guest.lastName)}
             </legend>
 
             <label class="attendance-option">
@@ -508,15 +600,6 @@ function saveWelcomeResponses() {
             };
         }
 
-        if (!guest.attendance) {
-
-            guest.attendance = {
-                welcome: false,
-                wedding: false,
-                brunch: false
-            };
-        }
-
         guest.attendance.welcome =
             selected.value === "yes";
     }
@@ -560,14 +643,955 @@ welcomeForm.addEventListener(
             return;
         }
 
-        console.log(
-            "Welcome responses:",
-            state.rsvp.guests
+        renderWeddingGuests();
+
+        showScreen(weddingScreen);
+    }
+);
+
+
+/* =========================================================
+   Wedding attendance
+   ========================================================= */
+
+function renderWeddingGuests() {
+
+    weddingGuests.innerHTML = "";
+
+    const invitedGuests =
+        state.rsvp.guests.filter(
+            (guest) =>
+                guest.isInvitedToWedding
         );
 
-        alert(
-            "Welcome Event responses saved. " +
-            "The Wedding attendance step is next."
+    if (invitedGuests.length === 0) {
+
+        weddingGuests.innerHTML = `
+            <p>
+                No members of this household are invited
+                to the wedding.
+            </p>
+        `;
+
+        return;
+    }
+
+    for (const guest of invitedGuests) {
+
+        const guestCard =
+            document.createElement("fieldset");
+
+        guestCard.className =
+            "guest-response-card";
+
+        const currentAnswer =
+            guest.attendance?.wedding;
+
+        guestCard.innerHTML = `
+            <legend>
+                ${escapeHtml(guest.firstName)}
+                ${escapeHtml(guest.lastName)}
+            </legend>
+
+            <label class="attendance-option">
+                <input
+                    type="radio"
+                    name="wedding-${guest.id}"
+                    value="yes"
+                    ${
+                        currentAnswer === true
+                            ? "checked"
+                            : ""
+                    }
+                >
+
+                Yes, I'll be there
+            </label>
+
+            <label class="attendance-option">
+                <input
+                    type="radio"
+                    name="wedding-${guest.id}"
+                    value="no"
+                    ${
+                        currentAnswer === false
+                            ? "checked"
+                            : ""
+                    }
+                >
+
+                No, I can't attend
+            </label>
+        `;
+
+        weddingGuests.appendChild(
+            guestCard
         );
+    }
+}
+
+
+function saveWeddingResponses() {
+
+    const invitedGuests =
+        state.rsvp.guests.filter(
+            (guest) =>
+                guest.isInvitedToWedding
+        );
+
+    for (const guest of invitedGuests) {
+
+        const selected =
+            document.querySelector(
+                `input[name="wedding-${guest.id}"]:checked`
+            );
+
+        if (!selected) {
+
+            return {
+                success: false,
+                guest
+            };
+        }
+
+        guest.attendance.wedding =
+            selected.value === "yes";
+    }
+
+    return {
+        success: true
+    };
+}
+
+
+backToWelcomeButton.addEventListener(
+    "click",
+    () => {
+
+        weddingError.textContent = "";
+        weddingError.classList.add("hidden");
+
+        renderWelcomeGuests();
+        showScreen(welcomeScreen);
+    }
+);
+
+
+weddingForm.addEventListener(
+    "submit",
+    async (event) => {
+
+        event.preventDefault();
+
+        weddingError.textContent = "";
+        weddingError.classList.add("hidden");
+
+        const result =
+            saveWeddingResponses();
+
+        if (!result.success) {
+
+            weddingError.textContent =
+                `Please select an answer for ` +
+                `${result.guest.firstName}.`;
+
+            weddingError.classList.remove(
+                "hidden"
+            );
+
+            return;
+        }
+
+        try {
+
+            if (dietaryOptions.length === 0) {
+                dietaryOptions =
+                    await getDietaryRestrictions();
+            }
+
+            renderDietaryGuests();
+            showScreen(dietaryScreen);
+
+        } catch (error) {
+
+            console.error(
+                "Dietary restrictions load failed:",
+                error
+            );
+
+            weddingError.textContent =
+                "We couldn't load the dietary options. " +
+                "Please try again.";
+
+            weddingError.classList.remove(
+                "hidden"
+            );
+        }
+    }
+);
+
+
+/* =========================================================
+   Dietary restrictions
+   ========================================================= */
+
+function renderDietaryGuests() {
+
+    dietaryGuests.innerHTML = "";
+
+    const attendingGuests =
+        state.rsvp.guests.filter(
+            (guest) =>
+                guest.isInvitedToWedding &&
+                guest.attendance?.wedding === true
+        );
+
+    if (attendingGuests.length === 0) {
+
+        dietaryGuests.innerHTML = `
+            <p>
+                No dietary information is needed because
+                no guests in this household are attending
+                the wedding.
+            </p>
+        `;
+
+        return;
+    }
+
+    for (const guest of attendingGuests) {
+
+        const guestCard =
+            document.createElement("fieldset");
+
+        guestCard.className =
+            "guest-response-card";
+
+        const selectedIds =
+            new Set(
+                (guest.dietaryRestrictions ?? [])
+                    .map((restriction) =>
+                        Number(restriction.id)
+                    )
+            );
+
+        const optionsMarkup =
+            dietaryOptions.map((option) => `
+                <label class="dietary-option">
+                    <input
+                        type="checkbox"
+                        name="dietary-${guest.id}"
+                        value="${option.id}"
+                        data-option-name="${escapeHtml(option.name)}"
+                        ${
+                            selectedIds.has(Number(option.id))
+                                ? "checked"
+                                : ""
+                        }
+                    >
+
+                    ${escapeHtml(option.name)}
+                </label>
+            `).join("");
+
+        const otherOption =
+            dietaryOptions.find(
+                (option) =>
+                    option.name.toLowerCase() === "other"
+            );
+
+        const otherSelected =
+            otherOption &&
+            selectedIds.has(Number(otherOption.id));
+
+        guestCard.innerHTML = `
+            <legend>
+                ${escapeHtml(guest.firstName)}
+                ${escapeHtml(guest.lastName)}
+            </legend>
+
+            <div class="dietary-options">
+                ${optionsMarkup}
+            </div>
+
+            ${
+                otherOption
+                    ? `
+                        <div
+                            class="dietary-other ${
+                                otherSelected
+                                    ? ""
+                                    : "hidden"
+                            }"
+                            data-other-details="${guest.id}"
+                        >
+                            <label for="dietary-other-${guest.id}">
+                                Please provide details
+                            </label>
+
+                            <input
+                                id="dietary-other-${guest.id}"
+                                type="text"
+                                value="${
+                                    escapeHtml(
+                                        guest.otherDietaryDetails
+                                    )
+                                }"
+                                autocomplete="off"
+                            >
+                        </div>
+                    `
+                    : ""
+            }
+        `;
+
+        dietaryGuests.appendChild(
+            guestCard
+        );
+    }
+}
+
+
+dietaryGuests.addEventListener(
+    "change",
+    (event) => {
+
+        const checkbox =
+            event.target.closest(
+                'input[type="checkbox"][data-option-name]'
+            );
+
+        if (
+            !checkbox ||
+            checkbox.dataset.optionName
+                .toLowerCase() !== "other"
+        ) {
+            return;
+        }
+
+        const guestId =
+            checkbox.name.replace(
+                "dietary-",
+                ""
+            );
+
+        const details =
+            dietaryGuests.querySelector(
+                `[data-other-details="${guestId}"]`
+            );
+
+        details.classList.toggle(
+            "hidden",
+            !checkbox.checked
+        );
+
+        const input =
+            details.querySelector("input");
+
+        input.required =
+            checkbox.checked;
+
+        if (checkbox.checked) {
+            input.focus();
+        }
+    }
+);
+
+
+function saveDietaryResponses() {
+
+    const attendingGuests =
+        state.rsvp.guests.filter(
+            (guest) =>
+                guest.isInvitedToWedding &&
+                guest.attendance?.wedding === true
+        );
+
+    for (const guest of attendingGuests) {
+
+        const selected =
+            Array.from(
+                dietaryGuests.querySelectorAll(
+                    `input[name="dietary-${guest.id}"]:checked`
+                )
+            );
+
+        const other =
+            selected.find(
+                (input) =>
+                    input.dataset.optionName
+                        .toLowerCase() === "other"
+            );
+
+        const otherInput =
+            document.getElementById(
+                `dietary-other-${guest.id}`
+            );
+
+        const otherDetails =
+            otherInput?.value.trim() ?? "";
+
+        if (other && !otherDetails) {
+
+            return {
+                success: false,
+                guest,
+                message:
+                    `Please provide dietary details for ` +
+                    `${guest.firstName}.`,
+                input: otherInput
+            };
+        }
+
+        guest.dietaryRestrictions =
+            selected.map((input) => ({
+                id: Number(input.value),
+                name: input.dataset.optionName
+            }));
+
+        guest.otherDietaryDetails =
+            other
+                ? otherDetails
+                : "";
+    }
+
+    return {
+        success: true
+    };
+}
+
+
+backToWeddingButton.addEventListener(
+    "click",
+    () => {
+
+        dietaryError.textContent = "";
+        dietaryError.classList.add("hidden");
+
+        renderWeddingGuests();
+        showScreen(weddingScreen);
+    }
+);
+
+
+dietaryForm.addEventListener(
+    "submit",
+    (event) => {
+
+        event.preventDefault();
+
+        dietaryError.textContent = "";
+        dietaryError.classList.add("hidden");
+
+        const result =
+            saveDietaryResponses();
+
+        if (!result.success) {
+
+            dietaryError.textContent =
+                result.message;
+
+            dietaryError.classList.remove(
+                "hidden"
+            );
+
+            result.input?.focus();
+
+            return;
+        }
+
+        /*
+         * Save before leaving the screen so the review and
+         * final API payload use the current selections.
+         */
+        populateAcknowledgements();
+        showScreen(acknowledgementsScreen);
+    }
+);
+
+
+/* =========================================================
+   Acknowledgements
+   ========================================================= */
+
+function populateAcknowledgements() {
+
+    const acknowledgements =
+        state.rsvp.acknowledgements ?? {};
+
+    noChildrenCheckbox.checked =
+        acknowledgements.noChildren === true;
+
+    noPlusOnesCheckbox.checked =
+        acknowledgements.noPlusOnes === true;
+
+    acknowledgementsError.textContent = "";
+    acknowledgementsError.classList.add("hidden");
+}
+
+
+function saveAcknowledgements() {
+
+    state.rsvp.acknowledgements = {
+        noChildren:
+            noChildrenCheckbox.checked,
+        noPlusOnes:
+            noPlusOnesCheckbox.checked
+    };
+}
+
+
+backToDietaryButton.addEventListener(
+    "click",
+    () => {
+
+        saveAcknowledgements();
+        renderDietaryGuests();
+        showScreen(dietaryScreen);
+    }
+);
+
+
+acknowledgementsForm.addEventListener(
+    "submit",
+    (event) => {
+
+        event.preventDefault();
+
+        acknowledgementsError.textContent = "";
+        acknowledgementsError.classList.add("hidden");
+
+        if (!acknowledgementsForm.reportValidity()) {
+
+            acknowledgementsError.textContent =
+                "Please confirm both acknowledgements " +
+                "before continuing.";
+
+            acknowledgementsError.classList.remove(
+                "hidden"
+            );
+
+            return;
+        }
+
+        saveAcknowledgements();
+        renderBrunchGuests();
+        showScreen(brunchScreen);
+    }
+);
+
+
+/* =========================================================
+   Morning-after brunch
+   ========================================================= */
+
+function renderBrunchGuests() {
+
+    brunchGuests.innerHTML = "";
+
+    const invitedGuests =
+        state.rsvp.guests.filter(
+            (guest) =>
+                guest.isInvitedToBrunch
+        );
+
+    if (invitedGuests.length === 0) {
+
+        brunchGuests.innerHTML = `
+            <p>
+                No members of this household are invited
+                to the morning-after brunch.
+            </p>
+        `;
+
+        return;
+    }
+
+    for (const guest of invitedGuests) {
+
+        const guestCard =
+            document.createElement("fieldset");
+
+        guestCard.className =
+            "guest-response-card";
+
+        const currentAnswer =
+            guest.attendance?.brunch;
+
+        guestCard.innerHTML = `
+            <legend>
+                ${escapeHtml(guest.firstName)}
+                ${escapeHtml(guest.lastName)}
+            </legend>
+
+            <label class="attendance-option">
+                <input
+                    type="radio"
+                    name="brunch-${guest.id}"
+                    value="yes"
+                    ${
+                        currentAnswer === true
+                            ? "checked"
+                            : ""
+                    }
+                >
+
+                Yes, I'll be there
+            </label>
+
+            <label class="attendance-option">
+                <input
+                    type="radio"
+                    name="brunch-${guest.id}"
+                    value="no"
+                    ${
+                        currentAnswer === false
+                            ? "checked"
+                            : ""
+                    }
+                >
+
+                No, I can't attend
+            </label>
+        `;
+
+        brunchGuests.appendChild(
+            guestCard
+        );
+    }
+}
+
+
+function saveBrunchResponses() {
+
+    const invitedGuests =
+        state.rsvp.guests.filter(
+            (guest) =>
+                guest.isInvitedToBrunch
+        );
+
+    for (const guest of invitedGuests) {
+
+        const selected =
+            document.querySelector(
+                `input[name="brunch-${guest.id}"]:checked`
+            );
+
+        if (!selected) {
+
+            return {
+                success: false,
+                guest
+            };
+        }
+
+        guest.attendance.brunch =
+            selected.value === "yes";
+    }
+
+    return {
+        success: true
+    };
+}
+
+
+backToAcknowledgementsButton.addEventListener(
+    "click",
+    () => {
+
+        brunchError.textContent = "";
+        brunchError.classList.add("hidden");
+
+        populateAcknowledgements();
+        showScreen(acknowledgementsScreen);
+    }
+);
+
+
+brunchForm.addEventListener(
+    "submit",
+    (event) => {
+
+        event.preventDefault();
+
+        brunchError.textContent = "";
+        brunchError.classList.add("hidden");
+
+        const result =
+            saveBrunchResponses();
+
+        if (!result.success) {
+
+            brunchError.textContent =
+                `Please select an answer for ` +
+                `${result.guest.firstName}.`;
+
+            brunchError.classList.remove(
+                "hidden"
+            );
+
+            return;
+        }
+
+        renderRsvpReview();
+        showScreen(reviewScreen);
+    }
+);
+
+
+/* =========================================================
+   Review and submit
+   ========================================================= */
+
+function attendanceLabel(
+    guest,
+    invitationField,
+    attendanceField
+) {
+
+    if (!guest[invitationField]) {
+        return "Not invited";
+    }
+
+    return guest.attendance?.[attendanceField]
+        ? "Attending"
+        : "Not attending";
+}
+
+
+function renderRsvpReview() {
+
+    const household =
+        state.rsvp.household;
+
+    const guestMarkup =
+        state.rsvp.guests.map((guest) => {
+
+            const restrictions =
+                (guest.dietaryRestrictions ?? [])
+                    .map((restriction) =>
+                        restriction.name === "Other" &&
+                        guest.otherDietaryDetails
+                            ? `Other: ${
+                                guest.otherDietaryDetails
+                            }`
+                            : restriction.name
+                    );
+
+            const dietarySummary =
+                guest.attendance?.wedding
+                    ? (
+                        restrictions.length > 0
+                            ? restrictions.join(", ")
+                            : "None"
+                    )
+                    : "Not applicable";
+
+            return `
+                <div class="review-guest">
+                    <h4>
+                        ${escapeHtml(guest.firstName)}
+                        ${escapeHtml(guest.lastName)}
+                    </h4>
+
+                    <p>
+                        Welcome Event:
+                        ${attendanceLabel(
+                            guest,
+                            "isInvitedToWelcome",
+                            "welcome"
+                        )}
+                    </p>
+
+                    <p>
+                        Wedding:
+                        ${attendanceLabel(
+                            guest,
+                            "isInvitedToWedding",
+                            "wedding"
+                        )}
+                    </p>
+
+                    <p>
+                        Morning-After Brunch:
+                        ${attendanceLabel(
+                            guest,
+                            "isInvitedToBrunch",
+                            "brunch"
+                        )}
+                    </p>
+
+                    <p>
+                        Dietary restrictions:
+                        ${escapeHtml(dietarySummary)}
+                    </p>
+                </div>
+            `;
+        }).join("");
+
+    rsvpReview.innerHTML = `
+        <section class="review-section">
+            <h3>Contact Information</h3>
+
+            <p>${escapeHtml(household.email)}</p>
+
+            <p>
+                ${escapeHtml(household.street)}<br>
+                ${escapeHtml(household.city)},
+                ${escapeHtml(household.state)}
+                ${escapeHtml(household.zip)}
+            </p>
+        </section>
+
+        <section class="review-section">
+            <h3>Guest Responses</h3>
+            ${guestMarkup}
+        </section>
+
+        <section class="review-section">
+            <h3>Acknowledgements</h3>
+
+            <p>
+                ✓ Adults-only celebration acknowledged
+            </p>
+
+            <p>
+                ✓ Named guests only acknowledged
+            </p>
+        </section>
+    `;
+
+    submitError.textContent = "";
+    submitError.classList.add("hidden");
+    submitSuccess.textContent = "";
+    submitSuccess.classList.add("hidden");
+    submitRsvpButton.disabled = false;
+}
+
+
+function buildRsvpPayload() {
+
+    const household =
+        state.rsvp.household;
+
+    return {
+        contact: {
+            householdId: household.id,
+            email: household.email,
+            street: household.street,
+            city: household.city,
+            state: household.state,
+            zip: household.zip
+        },
+
+        guestRsvps:
+            state.rsvp.guests.map((guest) => ({
+                guestId: guest.id,
+                attendingWelcome:
+                    guest.isInvitedToWelcome &&
+                    guest.attendance?.welcome === true,
+                attendingWedding:
+                    guest.isInvitedToWedding &&
+                    guest.attendance?.wedding === true,
+                attendingBrunch:
+                    guest.isInvitedToBrunch &&
+                    guest.attendance?.brunch === true
+            })),
+
+        guestDietary:
+            state.rsvp.guests.map((guest) => ({
+                guestId: guest.id,
+                restrictionIds:
+                    guest.attendance?.wedding === true
+                        ? (
+                            guest.dietaryRestrictions ?? []
+                        ).map((restriction) =>
+                            Number(restriction.id)
+                        )
+                        : [],
+                otherDietaryDetails:
+                    guest.attendance?.wedding === true
+                        ? guest.otherDietaryDetails ?? ""
+                        : ""
+            })),
+
+        acknowledgements: {
+            householdId: household.id,
+            acknowledgeNoChildren:
+                state.rsvp.acknowledgements
+                    .noChildren,
+            acknowledgeNoPlusOnes:
+                state.rsvp.acknowledgements
+                    .noPlusOnes
+        }
+    };
+}
+
+
+backToBrunchButton.addEventListener(
+    "click",
+    () => {
+
+        renderBrunchGuests();
+        showScreen(brunchScreen);
+    }
+);
+
+
+submitRsvpButton.addEventListener(
+    "click",
+    async () => {
+
+        submitError.textContent = "";
+        submitError.classList.add("hidden");
+        submitSuccess.textContent = "";
+        submitSuccess.classList.add("hidden");
+
+        submitRsvpButton.disabled = true;
+        submitRsvpButton.textContent =
+            "Submitting…";
+
+        try {
+
+            const result = await submitRSVP(
+                buildRsvpPayload()
+            );
+
+            submitSuccess.textContent =
+                result.emailSent
+                    ? "Your RSVP has been submitted, and a " +
+                        "confirmation email was sent. Thank you!"
+                    : "Your RSVP has been submitted. We couldn't " +
+                        "send the confirmation email, but your " +
+                        "responses were saved successfully.";
+
+            submitSuccess.classList.remove(
+                "hidden"
+            );
+
+            backToBrunchButton.disabled = true;
+            submitRsvpButton.textContent =
+                "RSVP Submitted";
+
+        } catch (error) {
+
+            console.error(
+                "RSVP submission failed:",
+                error
+            );
+
+            submitError.textContent =
+                "We couldn't submit your RSVP. " +
+                "Your responses are still here, so please " +
+                "try again.";
+
+            submitError.classList.remove(
+                "hidden"
+            );
+
+            submitRsvpButton.disabled = false;
+            submitRsvpButton.textContent =
+                "Submit RSVP";
+        }
     }
 );

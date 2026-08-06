@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "wild-meadow-13e2",
+	"name": "wedding-rsvp-api",
 	"main": "src/index.ts",
 	"compatibility_date": "2026-07-22",
 	"observability": {
@@ -14,14 +14,30 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
+	"secrets": {
+		"required": [
+			"GMAIL_CLIENT_ID",
+			"GMAIL_CLIENT_SECRET",
+			"GMAIL_REFRESH_TOKEN",
+			"GMAIL_SENDER_EMAIL",
+			"ACCESS_TEAM_DOMAIN",
+			"ACCESS_AUD",
+			"ADMIN_EMAILS"
+		]
+	},
 	"d1_databases": [
 		{
 			"binding": "wedding_rsvp_db",
 			"database_name": "wedding-rsvp-db",
 			"database_id": "38192548-df52-4e3c-b7bf-1301fc694e62",
-    		"remote": true
+			"remote": true
 		}
-	]
+	],
+	"triggers": {
+		"crons": [
+			"0 16 1 * *"
+		]
+	}
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

@@ -10,6 +10,9 @@ import {
     CompleteRsvp,
     saveCompleteRsvp
 } from "../services/rsvp";
+import {
+    sendRsvpConfirmation
+} from "../services/confirmation";
 
 
 export async function getRsvpRoute(
@@ -28,13 +31,15 @@ export async function getRsvpRoute(
             .prepare(`
                 SELECT
                     id,
+                    household_key,
                     household_name,
                     email,
                     street,
                     city,
                     state,
                     zip,
-                    notes
+                    notes,
+                    address_needed
 
                 FROM households
 
@@ -65,6 +70,9 @@ export async function getRsvpRoute(
                     g.id,
                     g.first_name,
                     g.last_name,
+                    g.is_invited_to_welcome,
+                    g.is_invited_to_wedding,
+                    g.is_invited_to_brunch,
 
                     gr.attending_welcome,
                     gr.attending_wedding,
@@ -95,7 +103,8 @@ export async function getRsvpRoute(
 
                     gdr.guest_id,
                     dr.id,
-                    dr.name
+                    dr.name,
+                    gdr.notes
 
                 FROM guest_dietary_restrictions gdr
 
@@ -139,9 +148,33 @@ export async function getRsvpRoute(
     // Assemble response
     //-------------------------------------------------
 
+    const attendanceValue = (
+        value: unknown
+    ): boolean | null => {
+
+        if (value === null || value === undefined) {
+            return null;
+        }
+
+        return Boolean(value);
+    };
+
     const response = {
 
-        household,
+        household: {
+            id: household.id,
+            householdKey: household.household_key,
+            householdName:
+                household.household_name,
+            email: household.email,
+            street: household.street,
+            city: household.city,
+            state: household.state,
+            zip: household.zip,
+            notes: household.notes,
+            addressNeeded:
+                Boolean(household.address_needed)
+        },
 
         guests:
             guests.results.map(
@@ -155,20 +188,35 @@ export async function getRsvpRoute(
                     lastName:
                         guest.last_name,
 
+                    isInvitedToWelcome:
+                        Boolean(
+                            guest.is_invited_to_welcome
+                        ),
+
+                    isInvitedToWedding:
+                        Boolean(
+                            guest.is_invited_to_wedding
+                        ),
+
+                    isInvitedToBrunch:
+                        Boolean(
+                            guest.is_invited_to_brunch
+                        ),
+
                     attendance: {
 
                         welcome:
-                            Boolean(
+                            attendanceValue(
                                 guest.attending_welcome
                             ),
 
                         wedding:
-                            Boolean(
+                            attendanceValue(
                                 guest.attending_wedding
                             ),
 
                         brunch:
-                            Boolean(
+                            attendanceValue(
                                 guest.attending_brunch
                             )
                     },
@@ -184,7 +232,16 @@ export async function getRsvpRoute(
                                     id: d.id,
                                     name: d.name
                                 })
+                            ),
+
+                    otherDietaryDetails:
+                        dietary.results
+                            .find(
+                                (d: any) =>
+                                    d.guest_id === guest.id &&
+                                    d.name === "Other"
                             )
+                            ?.notes ?? ""
                 })
             ),
 
@@ -254,7 +311,34 @@ export async function saveRsvpRoute(
         body
     );
 
+    let emailSent = false;
+
+    try {
+
+        await sendRsvpConfirmation(
+            env,
+            body.contact.householdId
+        );
+
+        emailSent = true;
+
+    } catch (error) {
+
+        console.error(
+            "RSVP confirmation email failed.",
+            {
+                householdId:
+                    body.contact.householdId,
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown email error"
+            }
+        );
+    }
+
     return ok({
-        success: true
+        success: true,
+        emailSent
     });
 }

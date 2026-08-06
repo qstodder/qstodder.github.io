@@ -1,0 +1,226 @@
+import {
+    afterEach,
+    describe,
+    expect,
+    it,
+    vi
+} from "vitest";
+import {
+    buildConfirmationEmail,
+    ConfirmationDetails
+} from "../src/services/confirmation";
+import {
+    refreshGmailAccessToken,
+    sendGmailMessage
+} from "../src/services/gmail";
+import { Env } from "../src/types";
+
+const confirmation: ConfirmationDetails = {
+    householdName: "Stodder Family",
+    email: "guest@example.com",
+    guests: [
+        {
+            id: 1,
+            firstName: "Quiana",
+            lastName: "Stodder",
+            invitedToWelcome: true,
+            invitedToWedding: true,
+            invitedToBrunch: true,
+            attendingWelcome: true,
+            attendingWedding: true,
+            attendingBrunch: false,
+            dietaryRestrictions: [
+                "Vegetarian",
+                "Other: nut allergy"
+            ]
+        }
+    ]
+};
+
+afterEach(() => {
+    vi.unstubAllGlobals();
+});
+
+describe("RSVP confirmation email", () => {
+
+    it("refreshes Gmail OAuth without sending an email", async () => {
+
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(
+                Response.json({
+                    access_token: "temporary-access-token"
+                })
+            );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const env = {
+            GMAIL_CLIENT_ID: "client-id",
+            GMAIL_CLIENT_SECRET: "client-secret",
+            GMAIL_REFRESH_TOKEN: "refresh-token",
+            GMAIL_SENDER_EMAIL: "sender@gmail.com"
+        } as Env;
+
+        const accessToken =
+            await refreshGmailAccessToken(env);
+
+        expect(accessToken).toBe(
+            "temporary-access-token"
+        );
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(fetchMock.mock.calls[0][0]).toBe(
+            "https://oauth2.googleapis.com/token"
+        );
+    });
+
+    it("includes attendance and dietary responses", () => {
+
+        const email =
+            buildConfirmationEmail(confirmation);
+
+        expect(email.to).toBe("guest@example.com");
+        expect(email.text).toContain(
+            "Welcome Event: Attending"
+        );
+        expect(email.text).toContain(
+            "Morning-After Brunch: Not attending"
+        );
+        expect(email.text).toContain(
+            "Vegetarian, Other: nut allergy"
+        );
+        expect(email.html).toContain(
+            "RSVP Confirmation"
+        );
+    });
+
+    it("escapes database content in HTML", () => {
+
+        const email = buildConfirmationEmail({
+            ...confirmation,
+            householdName: "<script>alert(1)</script>"
+        });
+
+        expect(email.html).not.toContain("<script>");
+        expect(email.html).toContain(
+            "&lt;script&gt;alert(1)&lt;/script&gt;"
+        );
+    });
+
+    it("refreshes OAuth and sends a Gmail API message", async () => {
+
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(
+                Response.json({
+                    access_token: "temporary-access-token"
+                })
+            )
+            .mockResolvedValueOnce(
+                Response.json({ id: "gmail-message-id" })
+            );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const env = {
+            GMAIL_CLIENT_ID: "client-id",
+            GMAIL_CLIENT_SECRET: "client-secret",
+            GMAIL_REFRESH_TOKEN: "refresh-token",
+            GMAIL_SENDER_EMAIL: "sender@gmail.com"
+        } as Env;
+
+        await sendGmailMessage(
+            env,
+            buildConfirmationEmail(confirmation)
+        );
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(fetchMock.mock.calls[0][0]).toBe(
+            "https://oauth2.googleapis.com/token"
+        );
+        expect(fetchMock.mock.calls[1][0]).toBe(
+            "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+        );
+
+        const gmailRequest =
+            fetchMock.mock.calls[1][1] as RequestInit;
+
+        expect(gmailRequest.headers).toEqual({
+            Authorization:
+                "Bearer temporary-access-token",
+            "Content-Type": "application/json"
+        });
+
+        const body = JSON.parse(
+            gmailRequest.body as string
+        );
+
+        expect(body.raw).toMatch(
+            /^[A-Za-z0-9_-]+$/
+        );
+    });
+
+    it("reports token failures without attempting a send", async () => {
+
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(
+                Response.json(
+                    {
+                        error: "invalid_grant",
+                        error_description:
+                            "Token has been expired or revoked."
+                    },
+                    { status: 400 }
+                )
+            );
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const env = {
+            GMAIL_CLIENT_ID: "client-id",
+            GMAIL_CLIENT_SECRET: "client-secret",
+            GMAIL_REFRESH_TOKEN: "refresh-token",
+            GMAIL_SENDER_EMAIL: "sender@gmail.com"
+        } as Env;
+
+        await expect(
+            sendGmailMessage(
+                env,
+                buildConfirmationEmail(confirmation)
+            )
+        ).rejects.toThrow(
+            "Gmail token request failed (400): " +
+            "invalid_grant: Token has been expired or revoked."
+        );
+
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("rejects recipient header injection before OAuth", async () => {
+
+        const fetchMock = vi.fn();
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const env = {
+            GMAIL_CLIENT_ID: "client-id",
+            GMAIL_CLIENT_SECRET: "client-secret",
+            GMAIL_REFRESH_TOKEN: "refresh-token",
+            GMAIL_SENDER_EMAIL: "sender@gmail.com"
+        } as Env;
+
+        await expect(
+            sendGmailMessage(
+                env,
+                {
+                    ...buildConfirmationEmail(
+                        confirmation
+                    ),
+                    to: "guest@example.com,other@example.com"
+                }
+            )
+        ).rejects.toThrow(
+            "invalid sender or recipient address"
+        );
+
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+});

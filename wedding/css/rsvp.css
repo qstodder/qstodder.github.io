@@ -90,3 +90,68 @@
 .attendance-option input {
     margin-right: 0.5rem;
 }
+
+.dietary-options {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.dietary-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dietary-other {
+    margin-top: 1rem;
+}
+
+.dietary-other label,
+.dietary-other input {
+    display: block;
+}
+
+.dietary-other input {
+    width: 100%;
+    max-width: 32rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+}
+
+.acknowledgement-option {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    margin: 1.5rem 0;
+}
+
+.acknowledgement-option input {
+    margin-top: 0.4rem;
+    flex-shrink: 0;
+}
+
+.review-section {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    border: 1px solid rgba(100, 122, 126, 0.35);
+    border-radius: 0.5rem;
+}
+
+.review-section h3 {
+    margin-top: 0;
+}
+
+.review-guest + .review-guest {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(100, 122, 126, 0.2);
+}
+
+.form-success {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: #edf7ef;
+    color: #285c32;
+}
