@@ -10,7 +10,12 @@
     <meta name="robots" content="noindex, nofollow">
 
     <script>
-        if (window.location.hostname === "qstodder.github.io") {
+        const localAdminHosts = new Set([
+            "localhost",
+            "127.0.0.1"
+        ]);
+
+        if (!localAdminHosts.has(window.location.hostname)) {
             window.location.replace(
                 "https://wedding-rsvp-api.qstodder.workers.dev/admin/"
             );
