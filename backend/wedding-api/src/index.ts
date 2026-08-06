@@ -13,6 +13,10 @@ import {
 } from "./services/gmail";
 import { getAdminData } from "./routes/admin";
 import { updateAdminAddress } from "./routes/adminAddress";
+import {
+    getAdminAsset,
+    getAdminPage
+} from "./routes/adminPage";
 import { adminPreflight } from "./lib/adminCors";
 
 export default {
@@ -41,6 +45,37 @@ export default {
 
         if (url.pathname === "/") {
             return ok("Wedding RSVP API is running!");
+        }
+
+        if (
+            request.method === "GET" &&
+            url.pathname === "/admin"
+        ) {
+            return Response.redirect(
+                `${url.origin}/admin/`,
+                308
+            );
+        }
+
+        if (
+            request.method === "GET" &&
+            url.pathname === "/admin/"
+        ) {
+            return getAdminPage(request, env);
+        }
+
+        const adminAssetMatch = url.pathname.match(
+            /^\/admin\/assets\/([^/]+)$/
+        );
+        if (
+            request.method === "GET" &&
+            adminAssetMatch
+        ) {
+            return getAdminAsset(
+                request,
+                env,
+                adminAssetMatch[1]
+            );
         }
 
         //-----------------------------------------

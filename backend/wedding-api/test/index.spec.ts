@@ -10,6 +10,10 @@ import {
     authenticateAdmin
 } from "../src/lib/adminAuth";
 import { updateAdminAddress } from "../src/routes/adminAddress";
+import {
+    getAdminAsset,
+    getAdminPage
+} from "../src/routes/adminPage";
 import { Env } from "../src/types";
 
 const IncomingRequest =
@@ -250,5 +254,91 @@ describe("Admin household addresses", () => {
 
         expect(response.status).toBe(503);
         expect(database.prepare).not.toHaveBeenCalled();
+    });
+});
+
+describe("Worker-hosted admin dashboard", () => {
+
+    it("serves the dashboard on the authenticated Worker origin", async () => {
+
+        const response = await getAdminPage(
+            new Request(
+                "http://localhost:8787/admin/"
+            ),
+            env
+        );
+        const html = await response.text();
+
+        expect(response.status).toBe(200);
+        expect(response.headers.get("Content-Type"))
+            .toContain("text/html");
+        expect(response.headers.get("Cache-Control"))
+            .toBe("no-store");
+        expect(response.headers.get("Content-Security-Policy"))
+            .toContain("connect-src 'self'");
+        expect(html).toContain(
+            "Wedding Administration"
+        );
+        expect(html).toContain(
+            "/admin/assets/admin.js"
+        );
+        expect(response.headers.get("Content-Security-Policy"))
+            .toContain("script-src 'self'");
+    });
+
+    it("proxies allowlisted dashboard assets through the Worker origin", async () => {
+
+        const fetchMock = vi.spyOn(globalThis, "fetch")
+            .mockResolvedValueOnce(new Response(
+                "console.log('dashboard');",
+                { status: 200 }
+            ));
+
+        const response = await getAdminAsset(
+            new Request(
+                "http://localhost:8787/admin/assets/admin.js"
+            ),
+            env,
+            "admin.js"
+        );
+
+        expect(fetchMock).toHaveBeenCalledWith(
+            "https://qstodder.github.io/wedding/js/admin.js"
+        );
+        expect(response.status).toBe(200);
+        expect(response.headers.get("Content-Type"))
+            .toContain("text/javascript");
+        expect(await response.text())
+            .toBe("console.log('dashboard');");
+
+        fetchMock.mockRestore();
+    });
+
+    it("rejects dashboard assets outside the allowlist", async () => {
+
+        const response = await getAdminAsset(
+            new Request(
+                "http://localhost:8787/admin/assets/private.txt"
+            ),
+            env,
+            "private.txt"
+        );
+
+        expect(response.status).toBe(404);
+    });
+
+    it("fails closed when the hosted page is not authenticated", async () => {
+
+        const response = await getAdminPage(
+            new Request(
+                "https://example.com/admin/"
+            ),
+            env
+        );
+
+        expect(response.status).toBe(503);
+        expect(await response.json()).toEqual({
+            error: "Admin access has not been configured."
+        });
     });
 });
