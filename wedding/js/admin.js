@@ -177,9 +177,6 @@ function renderAddressCell(household) {
 
     return `
         <div class="address-display">${content}</div>
-        <a class="address-edit-button" href="/admin/households/${household.id}">
-            ${household.address?.street ? "Edit household" : "Add address"}
-        </a>
     `;
 }
 
@@ -226,6 +223,14 @@ function renderHouseholds() {
     elements.rows.innerHTML = households
         .map((household) => `
             <tr class="${household.missingAddress ? "address-alert-row" : ""}">
+                <td data-label="Actions" class="household-actions-cell">
+                    <a
+                        class="address-edit-button household-edit-button"
+                        href="/admin/households/${household.id}"
+                    >
+                        Edit household
+                    </a>
+                </td>
                 <th scope="row" data-label="Household">
                     <a class="household-name household-detail-link" href="/admin/households/${household.id}">
                         ${escapeHtml(household.householdName)}

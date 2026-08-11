@@ -98,6 +98,7 @@ const adminPage = `<!DOCTYPE html>
                     <table>
                         <thead>
                             <tr>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
                                 <th scope="col">Household</th>
                                 <th scope="col">Guests</th>
                                 <th scope="col">Invitation</th>
