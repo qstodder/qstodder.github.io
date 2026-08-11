@@ -16,17 +16,22 @@ const adminPage = `<!DOCTYPE html>
     <link rel="stylesheet" href="/admin/assets/admin.css">
 </head>
 <body>
-    <header class="admin-header">
-        <div>
-            <p class="admin-eyebrow">Quiana &amp; Scott</p>
-            <h1>Wedding Administration</h1>
-            <p class="admin-subtitle">Invitations, addresses, and RSVP progress</p>
+    <header class="admin-header admin-header-with-tabs">
+        <div class="admin-header-content">
+            <div>
+                <p class="admin-eyebrow">Quiana &amp; Scott</p>
+                <h1>Wedding Administration</h1>
+                <p class="admin-subtitle">Invitations, addresses, and RSVP progress</p>
+            </div>
+            <div class="admin-identity">
+                <span id="admin-email">Secure access required</span>
+                <button id="refresh-dashboard" class="secondary-button" type="button">Refresh</button>
+            </div>
         </div>
-        <div class="admin-identity">
-            <span id="admin-email">Secure access required</span>
-            <a class="secondary-button admin-nav-link" href="/admin/guests/">Guests</a>
-            <button id="refresh-dashboard" class="secondary-button" type="button">Refresh</button>
-        </div>
+        <nav class="admin-tabs" aria-label="Administration sections">
+            <a class="admin-tab is-active" href="/admin/" aria-current="page">Households</a>
+            <a class="admin-tab" href="/admin/guests/">Guests</a>
+        </nav>
     </header>
     <main class="admin-main">
         <section id="admin-loading" class="admin-message" aria-live="polite">
@@ -359,17 +364,22 @@ const adminGuestsPage = `<!DOCTYPE html>
     <link rel="stylesheet" href="/admin/assets/admin.css">
 </head>
 <body>
-    <header class="admin-header">
-        <div>
-            <a class="admin-back-link" href="/admin/">← Households</a>
-            <p class="admin-eyebrow">Quiana &amp; Scott</p>
-            <h1>Guests</h1>
-            <p class="admin-subtitle">Invitations, responses, and dietary preferences</p>
+    <header class="admin-header admin-header-with-tabs">
+        <div class="admin-header-content">
+            <div>
+                <p class="admin-eyebrow">Quiana &amp; Scott</p>
+                <h1>Guests</h1>
+                <p class="admin-subtitle">Invitations, responses, and dietary preferences</p>
+            </div>
+            <div class="admin-identity">
+                <span id="admin-email">Secure access required</span>
+                <button id="refresh-guests" class="secondary-button" type="button">Refresh</button>
+            </div>
         </div>
-        <div class="admin-identity">
-            <span id="admin-email">Secure access required</span>
-            <button id="refresh-guests" class="secondary-button" type="button">Refresh</button>
-        </div>
+        <nav class="admin-tabs" aria-label="Administration sections">
+            <a class="admin-tab" href="/admin/">Households</a>
+            <a class="admin-tab is-active" href="/admin/guests/" aria-current="page">Guests</a>
+        </nav>
     </header>
     <main class="admin-main">
         <section id="admin-loading" class="admin-message" aria-live="polite">
