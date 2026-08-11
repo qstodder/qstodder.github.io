@@ -435,6 +435,171 @@ tbody th {
     font-weight: 650;
 }
 
+.household-detail-link {
+    color: inherit;
+    text-decoration-color: var(--color-gold, #9b7b42);
+    text-underline-offset: 0.22em;
+}
+
+.admin-detail-header {
+    align-items: flex-start;
+}
+
+.admin-back-link {
+    color: inherit;
+    display: inline-block;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+    text-underline-offset: 0.2em;
+}
+
+.admin-detail-main,
+.admin-detail-layout {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.detail-section {
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+}
+
+.detail-form-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detail-field-wide {
+    grid-column: 1 / -1;
+}
+
+.address-field textarea,
+.address-field select {
+    background: white;
+    border: 1px solid rgba(48, 55, 45, 0.3);
+    border-radius: 0.35rem;
+    color: inherit;
+    font: inherit;
+    padding: 0.7rem 0.75rem;
+    width: 100%;
+}
+
+.admin-checkbox {
+    align-items: center;
+    display: flex;
+    gap: 0.55rem;
+}
+
+.admin-checkbox input {
+    height: 1rem;
+    width: 1rem;
+}
+
+.detail-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.danger-button {
+    background: transparent;
+    border: 1px solid #a33d38;
+    border-radius: 999px;
+    color: #842e2a;
+    cursor: pointer;
+    font: inherit;
+    padding: 0.58rem 1rem;
+}
+
+.danger-button:hover,
+.danger-button:focus-visible {
+    background: #fff1ef;
+}
+
+.form-status {
+    color: #6b3f29;
+    min-height: 1.4em;
+}
+
+.add-guest-form {
+    align-items: end;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr auto;
+    margin-bottom: 1.5rem;
+}
+
+.add-guest-form .form-status {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+.guest-editor-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.guest-editor-card {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(48, 55, 45, 0.16);
+    border-radius: 0.75rem;
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.guest-editor-heading {
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.guest-editor-heading h3 {
+    margin: 0;
+}
+
+.guest-editor-heading span,
+.field-help {
+    color: rgba(48, 55, 45, 0.7);
+    font-size: 0.83rem;
+}
+
+.guest-fieldset {
+    border: 0;
+    border-top: 1px solid rgba(48, 55, 45, 0.14);
+    margin: 1.25rem 0 0;
+    padding: 1.1rem 0 0;
+}
+
+.guest-fieldset legend {
+    font-weight: 600;
+    padding-right: 0.75rem;
+}
+
+.guest-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.4rem;
+}
+
+.guest-rsvp-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 700px) {
+    .detail-form-grid,
+    .guest-rsvp-grid,
+    .add-guest-form {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-field-wide,
+    .add-guest-form .form-status {
+        grid-column: auto;
+    }
+}
+
 .address-form-actions {
     display: flex;
     gap: .5rem;

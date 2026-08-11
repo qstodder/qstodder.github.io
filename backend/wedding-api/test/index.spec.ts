@@ -1,10 +1,11 @@
 import {
     env,
+    applyD1Migrations,
     createExecutionContext,
     waitOnExecutionContext,
     SELF
 } from "cloudflare:test";
-import { describe, it, expect, vi } from "vitest";
+import { beforeAll, describe, it, expect, vi } from "vitest";
 import worker from "../src/index";
 import {
     authenticateAdmin
@@ -15,9 +16,24 @@ import {
     getAdminPage
 } from "../src/routes/adminPage";
 import { Env } from "../src/types";
+import {
+    archiveAdminGuest,
+    createAdminGuest,
+    createAdminHousehold,
+    getAdminHousehold,
+    updateAdminGuest,
+    updateAdminHousehold
+} from "../src/routes/adminHouseholds";
 
 const IncomingRequest =
     Request<unknown, IncomingRequestCfProperties>;
+
+beforeAll(async () => {
+    await applyD1Migrations(
+        env.wedding_rsvp_db,
+        env.TEST_MIGRATIONS
+    );
+});
 
 describe("Wedding RSVP Worker", () => {
 
@@ -166,28 +182,31 @@ describe("Admin household addresses", () => {
         });
     });
 
-    it("rejects invalid state formats", async () => {
+    it("accepts full international region names", async () => {
 
         const database = databaseEnv(1);
         const response = await updateAdminAddress(
             addressRequest({
                 street: "123 Main Street",
                 city: "San Diego",
-                state: "California",
-                zip: "9210"
+                state: "Noord-Holland",
+                zip: "1016 GV"
             }),
             database.env,
             12
         );
 
-        expect(response.status).toBe(400);
-        expect(database.prepare).not.toHaveBeenCalled();
-        expect(await response.json()).toEqual({
-            error: "State must be 2 characters or fewer."
-        });
+        expect(response.status).toBe(200);
+        expect(database.bind).toHaveBeenCalledWith(
+            "123 Main Street",
+            "San Diego",
+            "Noord-Holland",
+            "1016 GV",
+            12
+        );
     });
 
-    it("rejects invalid ZIP formats", async () => {
+    it("accepts non-US postal code formats", async () => {
 
         const database = databaseEnv(1);
         const response = await updateAdminAddress(
@@ -195,17 +214,13 @@ describe("Admin household addresses", () => {
                 street: "123 Main Street",
                 city: "San Diego",
                 state: "CA",
-                zip: "9210"
+                zip: "SW1A 1AA"
             }),
             database.env,
             12
         );
 
-        expect(response.status).toBe(400);
-        expect(database.prepare).not.toHaveBeenCalled();
-        expect(await response.json()).toEqual({
-            error: "ZIP code must use 12345 or 12345-6789 format."
-        });
+        expect(response.status).toBe(200);
     });
 
     it("returns not found when no household is updated", async () => {
@@ -340,5 +355,132 @@ describe("Worker-hosted admin dashboard", () => {
         expect(await response.json()).toEqual({
             error: "Admin access has not been configured."
         });
+    });
+});
+
+describe("Admin household detail editing", () => {
+
+    function adminRequest(
+        path: string,
+        method = "GET",
+        data?: Record<string, unknown>
+    ): Request {
+        return new Request(`http://localhost:8787${path}`, {
+            method,
+            headers: data ? { "Content-Type": "application/json" } : undefined,
+            body: data ? JSON.stringify(data) : undefined
+        });
+    }
+
+    it("creates a household with a unique generated key", async () => {
+
+        const response = await createAdminHousehold(
+            adminRequest("/api/admin/households", "POST", {
+                householdName: "Van den Berg Family"
+            }),
+            env
+        );
+        const result = await response.json<{
+            householdId: number;
+            householdKey: string;
+        }>();
+
+        expect(response.status, JSON.stringify(result)).toBe(201);
+        expect(result.householdId).toBeGreaterThan(0);
+        expect(result.householdKey).toBe("van-den-berg-family");
+    });
+
+    it("stores an international household address", async () => {
+
+        const created = await createAdminHousehold(
+            adminRequest("/api/admin/households", "POST", {
+                householdName: "Amsterdam Household"
+            }),
+            env
+        );
+        const { householdId } = await created.json<{ householdId: number }>();
+        const response = await updateAdminHousehold(
+            adminRequest(`/api/admin/households/${householdId}`, "PATCH", {
+                householdName: "Amsterdam Household",
+                householdKey: "amsterdam-household",
+                email: "guest@example.nl",
+                addressNeeded: true,
+                address: {
+                    line1: "Prinsengracht 263",
+                    line2: "2 hoog",
+                    city: "Amsterdam",
+                    region: "Noord-Holland",
+                    postalCode: "1016 GV",
+                    countryCode: "NL"
+                },
+                notes: "International postage"
+            }),
+            env,
+            householdId
+        );
+
+        expect(response.status, await response.clone().text()).toBe(200);
+
+        const detailResponse = await getAdminHousehold(
+            adminRequest(`/api/admin/households/${householdId}`),
+            env,
+            householdId
+        );
+        const detail = await detailResponse.json<any>();
+        expect(detail.household.address).toEqual({
+            line1: "Prinsengracht 263",
+            line2: "2 hoog",
+            city: "Amsterdam",
+            region: "Noord-Holland",
+            postalCode: "1016 GV",
+            countryCode: "NL"
+        });
+    });
+
+    it("adds, edits, and archives a guest without deleting history", async () => {
+
+        const createdHousehold = await createAdminHousehold(
+            adminRequest("/api/admin/households", "POST", {
+                householdName: "Guest Editor Household"
+            }),
+            env
+        );
+        const { householdId } = await createdHousehold.json<{ householdId: number }>();
+        const createdGuest = await createAdminGuest(
+            adminRequest(`/api/admin/households/${householdId}/guests`, "POST", {
+                firstName: "Sanne",
+                lastName: "Jansen"
+            }),
+            env,
+            householdId
+        );
+        const { guestId } = await createdGuest.json<{ guestId: number }>();
+
+        const updateResponse = await updateAdminGuest(
+            adminRequest(`/api/admin/guests/${guestId}`, "PATCH", {
+                firstName: "Sanne",
+                lastName: "de Jansen",
+                householdId,
+                invitations: { welcome: true, wedding: true, brunch: false },
+                rsvp: { welcome: true, wedding: true, brunch: false },
+                dietaryRestrictionIds: [1],
+                dietaryNotes: null
+            }),
+            env,
+            guestId
+        );
+        expect(updateResponse.status, await updateResponse.clone().text()).toBe(200);
+
+        const archiveResponse = await archiveAdminGuest(
+            adminRequest(`/api/admin/guests/${guestId}`, "DELETE"),
+            env,
+            guestId
+        );
+        expect(archiveResponse.status).toBe(200);
+
+        const storedRsvp = await env.wedding_rsvp_db.prepare(
+            "SELECT guest_id FROM guest_rsvps WHERE guest_id = ?1"
+        ).bind(guestId).first();
+        expect(storedRsvp).not.toBeNull();
     });
 });

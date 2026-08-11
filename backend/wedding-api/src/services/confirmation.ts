@@ -53,7 +53,7 @@ async function getConfirmationDetails(
             .prepare(`
                 SELECT household_name, email
                 FROM households
-                WHERE id = ?
+                WHERE id = ? AND archived_at IS NULL
             `)
             .bind(householdId)
             .first<{
@@ -84,6 +84,7 @@ async function getConfirmationDetails(
                 LEFT JOIN guest_rsvps gr
                     ON gr.guest_id = g.id
                 WHERE g.household_id = ?
+                    AND g.archived_at IS NULL
                 ORDER BY g.id
             `)
             .bind(householdId)
@@ -102,6 +103,7 @@ async function getConfirmationDetails(
                 JOIN guests g
                     ON g.id = gdr.guest_id
                 WHERE g.household_id = ?
+                    AND g.archived_at IS NULL
                 ORDER BY dr.display_order
             `)
             .bind(householdId)

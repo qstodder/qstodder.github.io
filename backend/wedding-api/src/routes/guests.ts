@@ -19,11 +19,14 @@ export async function searchGuests(
         SELECT
             household_id,
             first_name || ' ' || last_name AS display_name
-        FROM guests
-        WHERE
-            lower(first_name) LIKE lower(?)
-            OR
-            lower(last_name) LIKE lower(?)
+        FROM guests g
+        JOIN households h ON h.id = g.household_id
+        WHERE g.archived_at IS NULL
+            AND h.archived_at IS NULL
+            AND (
+                lower(g.first_name) LIKE lower(?)
+                OR lower(g.last_name) LIKE lower(?)
+            )
         ORDER BY last_name, first_name
         LIMIT 10
     `;

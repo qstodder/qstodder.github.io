@@ -43,7 +43,7 @@ export async function getRsvpRoute(
 
                 FROM households
 
-                WHERE id = ?
+                WHERE id = ? AND archived_at IS NULL
             `)
             .bind(householdId)
             .first();
@@ -84,6 +84,7 @@ export async function getRsvpRoute(
                     ON g.id = gr.guest_id
 
                 WHERE g.household_id = ?
+                    AND g.archived_at IS NULL
 
                 ORDER BY g.id
             `)
@@ -115,6 +116,7 @@ export async function getRsvpRoute(
                     ON g.id = gdr.guest_id
 
                 WHERE g.household_id = ?
+                    AND g.archived_at IS NULL
 
             `)
             .bind(householdId)

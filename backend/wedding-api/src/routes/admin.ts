@@ -11,9 +11,11 @@ interface AdminHouseholdRow {
     household_name: string;
     email: string | null;
     street: string | null;
+    address_line_2: string | null;
     city: string | null;
     state: string | null;
     zip: string | null;
+    country_code: string;
     address_needed: number;
     guest_count: number;
     responded_guest_count: number;
@@ -44,9 +46,11 @@ export async function getAdminData(
                         h.household_name,
                         h.email,
                         h.street,
+                        h.address_line_2,
                         h.city,
                         h.state,
                         h.zip,
+                        h.country_code,
                         h.address_needed,
                         COUNT(g.id) AS guest_count,
                         SUM(
@@ -71,12 +75,14 @@ export async function getAdminData(
                             '||'
                         ) AS guest_names
                     FROM households h
-                    JOIN guests g
+                    LEFT JOIN guests g
                         ON g.household_id = h.id
+                        AND g.archived_at IS NULL
                     LEFT JOIN guest_rsvps gr
                         ON gr.guest_id = g.id
                     LEFT JOIN household_acknowledgements ha
                         ON ha.household_id = h.id
+                    WHERE h.archived_at IS NULL
                     GROUP BY h.id
                     ORDER BY
                         CASE
@@ -108,9 +114,11 @@ export async function getAdminData(
                 email: row.email,
                 address: {
                     street: row.street,
+                    line2: row.address_line_2,
                     city: row.city,
                     state: row.state,
-                    zip: row.zip
+                    zip: row.zip,
+                    countryCode: row.country_code
                 },
                 addressNeeded: Boolean(row.address_needed),
                 missingAddress,

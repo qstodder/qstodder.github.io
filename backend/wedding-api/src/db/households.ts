@@ -20,7 +20,7 @@ export async function getHousehold(
                     notes,
                     address_needed
                 FROM households
-                WHERE id = ?
+                WHERE id = ? AND archived_at IS NULL
             `)
             .bind(householdId)
             .first();
@@ -40,7 +40,7 @@ export async function getHousehold(
                     is_invited_to_wedding,
                     is_invited_to_brunch
                 FROM guests
-                WHERE household_id = ?
+                WHERE household_id = ? AND archived_at IS NULL
                 ORDER BY id
             `)
             .bind(householdId)

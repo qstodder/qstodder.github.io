@@ -39,7 +39,7 @@ export function adminPreflight(
     const response = new Response(null, {
         status: 204,
         headers: {
-            "Access-Control-Allow-Methods": "GET, PATCH, OPTIONS",
+            "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
             "Access-Control-Allow-Headers": "Content-Type",
             "Access-Control-Max-Age": "86400"
         }

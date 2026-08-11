@@ -15,9 +15,19 @@ import { getAdminData } from "./routes/admin";
 import { updateAdminAddress } from "./routes/adminAddress";
 import {
     getAdminAsset,
+    getAdminHouseholdPage,
     getAdminPage
 } from "./routes/adminPage";
 import { adminPreflight } from "./lib/adminCors";
+import {
+    archiveAdminGuest,
+    archiveAdminHousehold,
+    createAdminGuest,
+    createAdminHousehold,
+    getAdminHousehold,
+    updateAdminGuest,
+    updateAdminHousehold
+} from "./routes/adminHouseholds";
 
 export default {
 
@@ -64,6 +74,13 @@ export default {
             return getAdminPage(request, env);
         }
 
+        if (
+            request.method === "GET" &&
+            /^\/admin\/households\/\d+\/?$/.test(url.pathname)
+        ) {
+            return getAdminHouseholdPage(request, env);
+        }
+
         const adminAssetMatch = url.pathname.match(
             /^\/admin\/assets\/([^/]+)$/
         );
@@ -87,6 +104,56 @@ export default {
             url.pathname === "/api/admin"
         ) {
             return getAdminData(request, env);
+        }
+
+        if (
+            request.method === "POST" &&
+            url.pathname === "/api/admin/households"
+        ) {
+            return createAdminHousehold(request, env);
+        }
+
+        const adminHouseholdMatch = url.pathname.match(
+            /^\/api\/admin\/households\/(\d+)$/
+        );
+        if (adminHouseholdMatch) {
+            const householdId = Number(adminHouseholdMatch[1]);
+            if (request.method === "GET") {
+                return getAdminHousehold(request, env, householdId);
+            }
+            if (request.method === "PATCH") {
+                return updateAdminHousehold(request, env, householdId);
+            }
+            if (request.method === "DELETE") {
+                return archiveAdminHousehold(request, env, householdId);
+            }
+        }
+
+        const adminHouseholdGuestsMatch = url.pathname.match(
+            /^\/api\/admin\/households\/(\d+)\/guests$/
+        );
+        if (
+            request.method === "POST" &&
+            adminHouseholdGuestsMatch
+        ) {
+            return createAdminGuest(
+                request,
+                env,
+                Number(adminHouseholdGuestsMatch[1])
+            );
+        }
+
+        const adminGuestMatch = url.pathname.match(
+            /^\/api\/admin\/guests\/(\d+)$/
+        );
+        if (adminGuestMatch) {
+            const guestId = Number(adminGuestMatch[1]);
+            if (request.method === "PATCH") {
+                return updateAdminGuest(request, env, guestId);
+            }
+            if (request.method === "DELETE") {
+                return archiveAdminGuest(request, env, guestId);
+            }
         }
 
         if (

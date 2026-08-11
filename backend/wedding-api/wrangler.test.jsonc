@@ -1,0 +1,14 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "wedding-rsvp-api-test",
+    "main": "src/index.ts",
+    "compatibility_date": "2026-07-22",
+    "compatibility_flags": ["nodejs_compat"],
+    "d1_databases": [
+        {
+            "binding": "wedding_rsvp_db",
+            "database_name": "wedding-rsvp-db-test",
+            "database_id": "00000000-0000-0000-0000-000000000000"
+        }
+    ]
+}

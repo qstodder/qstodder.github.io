@@ -22,6 +22,7 @@ const elements = {
     content: document.querySelector("#admin-content"),
     adminEmail: document.querySelector("#admin-email"),
     refresh: document.querySelector("#refresh-dashboard"),
+    addHousehold: document.querySelector("#add-household"),
     householdSearch: document.querySelector("#household-search"),
     deliveryFilter: document.querySelector("#delivery-filter"),
     rsvpFilter: document.querySelector("#rsvp-filter"),
@@ -69,7 +70,16 @@ function formatAddress(address) {
         address.zip
     ].filter(Boolean).map(escapeHtml).join(" ");
 
-    return [escapeHtml(address.street), locality]
+    const country = address.countryCode && address.countryCode !== "US"
+        ? escapeHtml(address.countryCode)
+        : "";
+
+    return [
+        escapeHtml(address.street),
+        address.line2 ? escapeHtml(address.line2) : "",
+        locality,
+        country
+    ]
         .filter(Boolean)
         .join("<br>");
 }
@@ -161,24 +171,15 @@ function renderAddressEditor(household) {
 }
 
 function renderAddressCell(household) {
-    if (editingHouseholdId === household.id) {
-        return renderAddressEditor(household);
-    }
-
     const content = household.missingAddress
         ? `<strong class="missing-address">Missing required address</strong>`
         : formatAddress(household.address);
 
     return `
         <div class="address-display">${content}</div>
-        <button
-            class="address-edit-button"
-            type="button"
-            data-action="edit-address"
-            data-household-id="${household.id}"
-        >
-            ${household.address?.street ? "Edit address" : "Add address"}
-        </button>
+        <a class="address-edit-button" href="/admin/households/${household.id}">
+            ${household.address?.street ? "Edit household" : "Add address"}
+        </a>
     `;
 }
 
@@ -226,9 +227,9 @@ function renderHouseholds() {
         .map((household) => `
             <tr class="${household.missingAddress ? "address-alert-row" : ""}">
                 <th scope="row" data-label="Household">
-                    <span class="household-name">
+                    <a class="household-name household-detail-link" href="/admin/households/${household.id}">
                         ${escapeHtml(household.householdName)}
-                    </span>
+                    </a>
                     <span class="household-key">
                         ${escapeHtml(household.householdKey)}
                     </span>
@@ -442,6 +443,44 @@ async function loadDashboard() {
 }
 
 elements.refresh.addEventListener("click", loadDashboard);
+elements.addHousehold.addEventListener("click", async () => {
+    const householdName = window.prompt("New household name");
+    if (!householdName?.trim()) {
+        return;
+    }
+
+    elements.addHousehold.disabled = true;
+    try {
+        const response = await fetch(
+            `${API_BASE}/api/admin/households`,
+            {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    householdName: householdName.trim()
+                })
+            }
+        );
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || "Unable to add the household.");
+        }
+        window.location.assign(
+            `/admin/households/${result.householdId}`
+        );
+    } catch (error) {
+        window.alert(
+            error instanceof Error
+                ? error.message
+                : "Unable to add the household."
+        );
+        elements.addHousehold.disabled = false;
+    }
+});
 elements.householdSearch.addEventListener("input", renderHouseholds);
 elements.deliveryFilter.addEventListener("change", renderHouseholds);
 elements.rsvpFilter.addEventListener("change", renderHouseholds);

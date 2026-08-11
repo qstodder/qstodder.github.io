@@ -97,12 +97,15 @@ export async function updateAdminAddress(
             state = requiredText(
                 body.state,
                 "State",
-                2
-            ).toUpperCase();
+                100
+            );
+            if (/^[a-z]{2}$/i.test(state)) {
+                state = state.toUpperCase();
+            }
             zip = requiredText(
                 body.zip,
-                "ZIP code",
-                10
+                "Postal code",
+                32
             );
         } catch (error) {
             return adminJson(
@@ -113,22 +116,6 @@ export async function updateAdminAddress(
                             ? error.message
                             : "Invalid address."
                 },
-                400
-            );
-        }
-
-        if (!/^[A-Z]{2}$/.test(state)) {
-            return adminJson(
-                request,
-                { error: "State must be a two-letter abbreviation." },
-                400
-            );
-        }
-
-        if (!/^\d{5}(?:-\d{4})?$/.test(zip)) {
-            return adminJson(
-                request,
-                { error: "ZIP code must use 12345 or 12345-6789 format." },
                 400
             );
         }
