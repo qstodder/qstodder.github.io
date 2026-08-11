@@ -11,10 +11,14 @@ import { getRsvpRoute, saveRsvpRoute } from "./routes/rsvp"
 import {
     refreshGmailAccessToken
 } from "./services/gmail";
-import { getAdminData } from "./routes/admin";
+import {
+    getAdminData,
+    getAdminGuests
+} from "./routes/admin";
 import { updateAdminAddress } from "./routes/adminAddress";
 import {
     getAdminAsset,
+    getAdminGuestsPage,
     getAdminHouseholdPage,
     getAdminPage
 } from "./routes/adminPage";
@@ -81,6 +85,13 @@ export default {
             return getAdminHouseholdPage(request, env);
         }
 
+        if (
+            request.method === "GET" &&
+            /^\/admin\/guests\/?$/.test(url.pathname)
+        ) {
+            return getAdminGuestsPage(request, env);
+        }
+
         const adminAssetMatch = url.pathname.match(
             /^\/admin\/assets\/([^/]+)$/
         );
@@ -104,6 +115,13 @@ export default {
             url.pathname === "/api/admin"
         ) {
             return getAdminData(request, env);
+        }
+
+        if (
+            request.method === "GET" &&
+            url.pathname === "/api/admin/guests"
+        ) {
+            return getAdminGuests(request, env);
         }
 
         if (

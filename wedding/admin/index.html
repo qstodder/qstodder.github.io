@@ -41,6 +41,12 @@
 
         <div class="admin-identity">
             <span id="admin-email">Secure access required</span>
+            <a
+                class="secondary-button admin-nav-link"
+                href="https://wedding-rsvp-api.qstodder.workers.dev/admin/guests/"
+            >
+                Guests
+            </a>
             <button
                 id="refresh-dashboard"
                 class="secondary-button"
@@ -115,6 +121,18 @@
                     </div>
 
                     <p id="results-count" aria-live="polite"></p>
+                    <div class="panel-actions">
+                        <button
+                            id="export-households"
+                            class="secondary-button"
+                            type="button"
+                        >Export view</button>
+                        <button
+                            id="add-household"
+                            class="address-save-button"
+                            type="button"
+                        >Add household</button>
+                    </div>
                 </div>
 
                 <div class="admin-filters">

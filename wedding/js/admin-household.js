@@ -93,7 +93,7 @@ function renderGuest(guest) {
         `<option value="${household.id}" ${household.id === guest.householdId ? "selected" : ""}>${escapeHtml(household.householdName)}</option>`
     ).join("");
 
-    return `<article class="guest-editor-card">
+    return `<article class="guest-editor-card" id="guest-${guest.id}">
         <form class="guest-form" data-guest-id="${guest.id}">
             <div class="guest-editor-heading"><h3>${escapeHtml(`${guest.firstName} ${guest.lastName}`.trim())}</h3><span>Guest #${guest.id}</span></div>
             <div class="detail-form-grid">
@@ -123,6 +123,12 @@ function renderGuest(guest) {
 function renderGuests() {
     elements.guestList.innerHTML = detail.guests.map(renderGuest).join("");
     elements.noGuests.classList.toggle("hidden", detail.guests.length > 0);
+    const target = window.location.hash
+        ? document.getElementById(
+            decodeURIComponent(window.location.hash.slice(1))
+        )
+        : null;
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function guestPayload(form) {

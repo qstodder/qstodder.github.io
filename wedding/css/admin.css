@@ -190,11 +190,33 @@ body {
     margin: .2rem 0 0;
 }
 
-#results-count {
+#results-count,
+#guest-results-count {
     margin: 0;
     font-family: var(--font-ui);
     font-size: .82rem;
     color: var(--color-text-light);
+}
+
+.admin-nav-link {
+    text-decoration: none;
+}
+
+.panel-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.admin-panel .secondary-button {
+    color: var(--color-deep-ocean);
+    border-color: rgba(36, 55, 70, .3);
+}
+
+.admin-panel .secondary-button:hover,
+.admin-panel .secondary-button:focus-visible {
+    background: rgba(122, 157, 176, .12);
 }
 
 .admin-filters {
@@ -314,6 +336,24 @@ tbody th {
     white-space: nowrap;
     font-size: .72rem;
     font-weight: 750;
+}
+
+.guest-event-tag {
+    display: inline-block;
+    margin: 0.1rem 0.15rem 0.1rem 0;
+    padding: 0.25rem 0.45rem;
+    border-radius: 999px;
+    color: #40584d;
+    background: #dfe9e2;
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.guest-table td:nth-child(5),
+.guest-table td:nth-child(6) {
+    min-width: 210px;
+    line-height: 1.5;
 }
 
 .status-addressNeeded {

@@ -24,6 +24,7 @@ import {
     updateAdminGuest,
     updateAdminHousehold
 } from "../src/routes/adminHouseholds";
+import { getAdminGuests } from "../src/routes/admin";
 
 const IncomingRequest =
     Request<unknown, IncomingRequestCfProperties>;
@@ -482,5 +483,48 @@ describe("Admin household detail editing", () => {
             "SELECT guest_id FROM guest_rsvps WHERE guest_id = ?1"
         ).bind(guestId).first();
         expect(storedRsvp).not.toBeNull();
+    });
+});
+
+describe("Admin guest directory", () => {
+
+    it("returns active guests with household, RSVP, and dietary data", async () => {
+
+        const response = await getAdminGuests(
+            new Request("http://localhost:8787/api/admin/guests"),
+            env
+        );
+        const result = await response.json<any>();
+
+        expect(response.status).toBe(200);
+        expect(result.admin.email).toBe("Local development");
+        expect(result.guests.length).toBeGreaterThan(0);
+        expect(result.guests[0]).toMatchObject({
+            id: expect.any(Number),
+            firstName: expect.any(String),
+            lastName: expect.any(String),
+            household: {
+                id: expect.any(Number),
+                householdName: expect.any(String)
+            },
+            invitations: {
+                welcome: expect.any(Boolean),
+                wedding: expect.any(Boolean),
+                brunch: expect.any(Boolean)
+            },
+            dietaryRestrictions: expect.any(Array)
+        });
+        expect(result.dietaryRestrictions.map((item: any) => item.name))
+            .toContain("Other");
+    });
+
+    it("fails closed when the guest directory is not authenticated", async () => {
+
+        const response = await getAdminGuests(
+            new Request("https://example.com/api/admin/guests"),
+            env
+        );
+
+        expect(response.status).toBe(503);
     });
 });

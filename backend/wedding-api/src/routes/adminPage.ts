@@ -24,6 +24,7 @@ const adminPage = `<!DOCTYPE html>
         </div>
         <div class="admin-identity">
             <span id="admin-email">Secure access required</span>
+            <a class="secondary-button admin-nav-link" href="/admin/guests/">Guests</a>
             <button id="refresh-dashboard" class="secondary-button" type="button">Refresh</button>
         </div>
     </header>
@@ -68,7 +69,10 @@ const adminPage = `<!DOCTYPE html>
                         <h2>Households</h2>
                     </div>
                     <p id="results-count" aria-live="polite"></p>
-                    <button id="add-household" class="address-save-button" type="button">Add household</button>
+                    <div class="panel-actions">
+                        <button id="export-households" class="secondary-button" type="button">Export view</button>
+                        <button id="add-household" class="address-save-button" type="button">Add household</button>
+                    </div>
                 </div>
                 <div class="admin-filters">
                     <div class="filter-field filter-search">
@@ -183,6 +187,10 @@ const adminAssets: Record<
     },
     "admin-household.js": {
         url: "https://qstodder.github.io/wedding/js/admin-household.js",
+        contentType: "text/javascript; charset=UTF-8"
+    },
+    "admin-guests.js": {
+        url: "https://qstodder.github.io/wedding/js/admin-guests.js",
         contentType: "text/javascript; charset=UTF-8"
     }
 };
@@ -334,6 +342,97 @@ export async function getAdminHouseholdPage(
     } catch (error) {
         return Response.json(
             { error: error instanceof AdminAuthError ? error.message : "Unable to load the household editor." },
+            { status: error instanceof AdminAuthError ? error.status : 500 }
+        );
+    }
+}
+
+const adminGuestsPage = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Guests · Wedding Administration</title>
+    <link rel="stylesheet" href="/admin/assets/variables.css">
+    <link rel="stylesheet" href="/admin/assets/base.css">
+    <link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div>
+            <a class="admin-back-link" href="/admin/">← Households</a>
+            <p class="admin-eyebrow">Quiana &amp; Scott</p>
+            <h1>Guests</h1>
+            <p class="admin-subtitle">Invitations, responses, and dietary preferences</p>
+        </div>
+        <div class="admin-identity">
+            <span id="admin-email">Secure access required</span>
+            <button id="refresh-guests" class="secondary-button" type="button">Refresh</button>
+        </div>
+    </header>
+    <main class="admin-main">
+        <section id="admin-loading" class="admin-message" aria-live="polite">
+            <div class="loading-mark" aria-hidden="true"></div><h2>Loading guests</h2>
+        </section>
+        <section id="admin-error" class="admin-message admin-error hidden" role="alert">
+            <h2>Guest list unavailable</h2><p id="admin-error-message"></p>
+        </section>
+        <div id="guest-content" class="hidden">
+            <section class="admin-panel">
+                <div class="panel-heading">
+                    <div><p class="admin-eyebrow">Guest directory</p><h2>All active guests</h2></div>
+                    <p id="guest-results-count" aria-live="polite"></p>
+                    <button id="export-guests" class="secondary-button" type="button">Export view</button>
+                </div>
+                <div class="admin-filters guest-filters">
+                    <div class="filter-field filter-search"><label for="guest-search">Search</label><input id="guest-search" type="search" placeholder="Guest or household" autocomplete="off"></div>
+                    <div class="filter-field"><label for="guest-household-filter">Household</label><select id="guest-household-filter"><option value="all">All households</option></select></div>
+                    <div class="filter-field"><label for="guest-dietary-filter">Dietary</label><select id="guest-dietary-filter"><option value="all">All dietary responses</option><option value="none">No restrictions</option></select></div>
+                    <div class="filter-field"><label for="guest-invitation-filter">Invited to</label><select id="guest-invitation-filter"><option value="all">Any event</option><option value="welcome">Welcome gathering</option><option value="wedding">Wedding</option><option value="brunch">Brunch</option></select></div>
+                    <div class="filter-field"><label for="guest-rsvp-filter">RSVP</label><select id="guest-rsvp-filter"><option value="all">All responses</option><option value="pending">Not recorded</option><option value="responded">Response recorded</option><option value="weddingYes">Wedding: attending</option><option value="weddingNo">Wedding: not attending</option></select></div>
+                    <div class="filter-field"><label for="guest-sort">Sort</label><select id="guest-sort"><option value="lastNameAsc">Last name A–Z</option><option value="firstNameAsc">First name A–Z</option><option value="householdAsc">Household A–Z</option><option value="dietaryAsc">Dietary A–Z</option><option value="weddingYesFirst">Wedding attending first</option></select></div>
+                </div>
+                <div class="table-scroll">
+                    <table class="guest-table"><thead><tr>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                        <th scope="col">Guest</th><th scope="col">Household</th>
+                        <th scope="col">Invited to</th><th scope="col">RSVP</th>
+                        <th scope="col">Dietary preferences</th>
+                    </tr></thead><tbody id="guest-rows"></tbody></table>
+                </div>
+                <div id="guest-empty-results" class="empty-results hidden">No guests match these filters.</div>
+            </section>
+            <p id="guest-generated-at" class="generated-at"></p>
+        </div>
+    </main>
+    <script defer src="/admin/assets/admin-guests.js"></script>
+</body>
+</html>`;
+
+export async function getAdminGuestsPage(
+    request: Request,
+    env: Env
+): Promise<Response> {
+    try {
+        await authenticateAdmin(request, env);
+        return new Response(adminGuestsPage, {
+            headers: {
+                "Content-Type": "text/html; charset=UTF-8",
+                "Cache-Control": "no-store",
+                "Content-Security-Policy": [
+                    "default-src 'none'", "script-src 'self'",
+                    "style-src 'self' https://fonts.googleapis.com",
+                    "font-src https://fonts.gstatic.com", "connect-src 'self'",
+                    "base-uri 'none'", "frame-ancestors 'none'", "form-action 'self'"
+                ].join("; "),
+                "Referrer-Policy": "no-referrer",
+                "X-Content-Type-Options": "nosniff"
+            }
+        });
+    } catch (error) {
+        return Response.json(
+            { error: error instanceof AdminAuthError ? error.message : "Unable to load the guest list." },
             { status: error instanceof AdminAuthError ? error.status : 500 }
         );
     }

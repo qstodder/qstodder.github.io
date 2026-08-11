@@ -23,6 +23,7 @@ const elements = {
     adminEmail: document.querySelector("#admin-email"),
     refresh: document.querySelector("#refresh-dashboard"),
     addHousehold: document.querySelector("#add-household"),
+    exportHouseholds: document.querySelector("#export-households"),
     householdSearch: document.querySelector("#household-search"),
     deliveryFilter: document.querySelector("#delivery-filter"),
     rsvpFilter: document.querySelector("#rsvp-filter"),
@@ -282,6 +283,65 @@ function findHousehold(householdId) {
     );
 }
 
+function csvCell(value) {
+    const raw = String(value ?? "");
+    const text = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
+    return /[",\r\n]/.test(text)
+        ? `"${text.replaceAll('"', '""')}"`
+        : text;
+}
+
+function downloadCsv(filename, headings, rows) {
+    const csv = [headings, ...rows]
+        .map((row) => row.map(csvCell).join(","))
+        .join("\r\n");
+    const url = URL.createObjectURL(new Blob(
+        ["\uFEFF", csv],
+        { type: "text/csv;charset=utf-8" }
+    ));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+function exportHouseholds() {
+    const headings = [
+        "Household", "Household Key", "Email", "Guests",
+        "Guest Count", "Delivery Status", "Address Line 1",
+        "Address Line 2", "City", "State/Province/Region",
+        "Postal Code", "Country", "RSVP Status", "Responded Guests",
+        "Welcome Attending", "Wedding Attending", "Brunch Attending"
+    ];
+    const rows = filteredHouseholds().map((household) => [
+        household.householdName,
+        household.householdKey,
+        household.email,
+        household.guests.join("; "),
+        household.guestCount,
+        deliveryLabels[household.deliveryStatus],
+        household.address.street,
+        household.address.line2,
+        household.address.city,
+        household.address.state,
+        household.address.zip,
+        household.address.countryCode,
+        rsvpLabels[household.rsvpStatus],
+        household.respondedGuestCount,
+        household.attendance.welcome,
+        household.attendance.wedding,
+        household.attendance.brunch
+    ]);
+    downloadCsv(
+        `wedding-households-${new Date().toISOString().slice(0, 10)}.csv`,
+        headings,
+        rows
+    );
+}
+
 function beginAddressEdit(householdId) {
     editingHouseholdId = householdId;
     renderHouseholds();
@@ -448,6 +508,7 @@ async function loadDashboard() {
 }
 
 elements.refresh.addEventListener("click", loadDashboard);
+elements.exportHouseholds.addEventListener("click", exportHouseholds);
 elements.addHousehold.addEventListener("click", async () => {
     const householdName = window.prompt("New household name");
     if (!householdName?.trim()) {

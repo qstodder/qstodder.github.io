@@ -26,6 +26,30 @@ interface AdminHouseholdRow {
     guest_names: string | null;
 }
 
+interface AdminGuestRow {
+    id: number;
+    household_id: number;
+    household_key: string;
+    household_name: string;
+    household_email: string | null;
+    first_name: string;
+    last_name: string;
+    is_invited_to_welcome: number;
+    is_invited_to_wedding: number;
+    is_invited_to_brunch: number;
+    attending_welcome: number | null;
+    attending_wedding: number | null;
+    attending_brunch: number | null;
+    rsvp_updated_at: string | null;
+}
+
+interface AdminGuestDietaryRow {
+    guest_id: number;
+    restriction_id: number;
+    restriction_name: string;
+    notes: string | null;
+}
+
 export async function getAdminData(
     request: Request,
     env: Env
@@ -208,6 +232,128 @@ export async function getAdminData(
             Response.json(
                 { error: message },
                 { status }
+            )
+        );
+    }
+}
+
+export async function getAdminGuests(
+    request: Request,
+    env: Env
+): Promise<Response> {
+    try {
+        const admin = await authenticateAdmin(request, env);
+        const [guestResult, dietaryResult, restrictionResult] =
+            await Promise.all([
+                env.wedding_rsvp_db.prepare(`
+                    SELECT
+                        g.id,
+                        g.household_id,
+                        h.household_key,
+                        h.household_name,
+                        h.email AS household_email,
+                        g.first_name,
+                        g.last_name,
+                        g.is_invited_to_welcome,
+                        g.is_invited_to_wedding,
+                        g.is_invited_to_brunch,
+                        gr.attending_welcome,
+                        gr.attending_wedding,
+                        gr.attending_brunch,
+                        gr.updated_at AS rsvp_updated_at
+                    FROM guests g
+                    JOIN households h ON h.id = g.household_id
+                    LEFT JOIN guest_rsvps gr ON gr.guest_id = g.id
+                    WHERE g.archived_at IS NULL
+                        AND h.archived_at IS NULL
+                    ORDER BY LOWER(g.last_name), LOWER(g.first_name)
+                `).all<AdminGuestRow>(),
+                env.wedding_rsvp_db.prepare(`
+                    SELECT
+                        gdr.guest_id,
+                        dr.id AS restriction_id,
+                        dr.name AS restriction_name,
+                        gdr.notes
+                    FROM guest_dietary_restrictions gdr
+                    JOIN dietary_restrictions dr
+                        ON dr.id = gdr.restriction_id
+                    JOIN guests g ON g.id = gdr.guest_id
+                    JOIN households h ON h.id = g.household_id
+                    WHERE g.archived_at IS NULL
+                        AND h.archived_at IS NULL
+                    ORDER BY dr.display_order
+                `).all<AdminGuestDietaryRow>(),
+                env.wedding_rsvp_db.prepare(`
+                    SELECT id, name, display_order
+                    FROM dietary_restrictions
+                    ORDER BY display_order
+                `).all()
+            ]);
+
+        const dietaryByGuest = new Map<
+            number,
+            AdminGuestDietaryRow[]
+        >();
+        for (const item of dietaryResult.results) {
+            const dietary = dietaryByGuest.get(item.guest_id) ?? [];
+            dietary.push(item);
+            dietaryByGuest.set(item.guest_id, dietary);
+        }
+
+        const guests = guestResult.results.map((guest) => {
+            const dietary = dietaryByGuest.get(guest.id) ?? [];
+            return {
+                id: guest.id,
+                firstName: guest.first_name,
+                lastName: guest.last_name,
+                household: {
+                    id: guest.household_id,
+                    householdKey: guest.household_key,
+                    householdName: guest.household_name,
+                    email: guest.household_email
+                },
+                invitations: {
+                    welcome: Boolean(guest.is_invited_to_welcome),
+                    wedding: Boolean(guest.is_invited_to_wedding),
+                    brunch: Boolean(guest.is_invited_to_brunch)
+                },
+                rsvp: guest.rsvp_updated_at ? {
+                    welcome: Boolean(guest.attending_welcome),
+                    wedding: Boolean(guest.attending_wedding),
+                    brunch: Boolean(guest.attending_brunch),
+                    updatedAt: guest.rsvp_updated_at
+                } : null,
+                dietaryRestrictions: dietary.map((item) => ({
+                    id: item.restriction_id,
+                    name: item.restriction_name,
+                    notes: item.notes
+                }))
+            };
+        });
+
+        return withAdminCors(
+            request,
+            Response.json({
+                admin: { email: admin.email },
+                guests,
+                dietaryRestrictions: restrictionResult.results,
+                generatedAt: new Date().toISOString()
+            })
+        );
+    } catch (error) {
+        return withAdminCors(
+            request,
+            Response.json(
+                {
+                    error: error instanceof AdminAuthError
+                        ? error.message
+                        : "Unable to load the guest list."
+                },
+                {
+                    status: error instanceof AdminAuthError
+                        ? error.status
+                        : 500
+                }
             )
         );
     }
