@@ -128,6 +128,8 @@ export async function getAdminData(
             const missingAddress =
                 Boolean(row.address_needed) &&
                 !hasAddress;
+            const missingEmail =
+                !Boolean(row.email?.trim());
             const isSubmitted =
                 Boolean(row.submitted_at);
             const isInProgress =
@@ -139,6 +141,7 @@ export async function getAdminData(
                 householdKey: row.household_key,
                 householdName: row.household_name,
                 email: row.email,
+                missingEmail,
                 address: {
                     street: row.street,
                     line2: row.address_line_2,
@@ -186,6 +189,9 @@ export async function getAdminData(
                 missingAddresses:
                     totals.missingAddresses +
                     (household.missingAddress ? 1 : 0),
+                missingEmails:
+                    totals.missingEmails +
+                    (household.missingEmail ? 1 : 0),
                 attendingWelcome:
                     totals.attendingWelcome +
                     household.attendance.welcome,
@@ -201,6 +207,7 @@ export async function getAdminData(
                 guests: 0,
                 submittedHouseholds: 0,
                 missingAddresses: 0,
+                missingEmails: 0,
                 attendingWelcome: 0,
                 attendingWedding: 0,
                 attendingBrunch: 0

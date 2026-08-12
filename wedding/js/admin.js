@@ -32,6 +32,7 @@ const elements = {
     resultsCount: document.querySelector("#results-count"),
     generatedAt: document.querySelector("#generated-at"),
     missingAddresses: document.querySelector("#missing-addresses"),
+    missingEmails: document.querySelector("#missing-emails"),
     totalHouseholds: document.querySelector("#total-households"),
     submittedHouseholds: document.querySelector("#submitted-households"),
     totalGuests: document.querySelector("#total-guests"),
@@ -181,9 +182,17 @@ function renderAddressCell(household) {
     `;
 }
 
+function renderEmailCell(household) {
+    return household.missingEmail
+        ? `<strong class="missing-email">Missing email</strong>`
+        : `<a href="mailto:${escapeAttribute(household.email)}">${escapeHtml(household.email)}</a>`;
+}
+
 function renderSummary(summary) {
     elements.missingAddresses.textContent =
         summary.missingAddresses;
+    elements.missingEmails.textContent =
+        summary.missingEmails;
     elements.totalHouseholds.textContent =
         summary.households;
     elements.submittedHouseholds.textContent =
@@ -223,7 +232,7 @@ function renderHouseholds() {
 
     elements.rows.innerHTML = households
         .map((household) => `
-            <tr class="${household.missingAddress ? "address-alert-row" : ""}">
+            <tr class="${household.missingAddress || household.missingEmail ? "address-alert-row" : ""}">
                 <td data-label="Actions" class="household-actions-cell">
                     <a
                         class="address-edit-button household-edit-button"
@@ -247,6 +256,9 @@ function renderHouseholds() {
                     <span class="guest-names">
                         ${household.guests.map(escapeHtml).join(", ")}
                     </span>
+                </td>
+                <td data-label="Email" class="email-cell">
+                    ${renderEmailCell(household)}
                 </td>
                 <td data-label="Invitation">
                     <span class="status-pill status-${household.deliveryStatus}">

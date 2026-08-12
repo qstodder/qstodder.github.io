@@ -184,7 +184,7 @@ body {
 
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: var(--space-md);
     margin: 0 0 var(--space-lg);
 }
@@ -486,8 +486,14 @@ tbody th {
     line-height: 1.45;
 }
 
-.missing-address {
+.missing-address,
+.missing-email {
     color: #8a452d;
+}
+
+.email-cell {
+    min-width: 180px;
+    overflow-wrap: anywhere;
 }
 
 .address-display {

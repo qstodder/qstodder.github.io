@@ -51,6 +51,11 @@ const adminPage = `<!DOCTYPE html>
                     <strong id="missing-addresses">0</strong>
                     <span>Require mailing address</span>
                 </article>
+                <article class="summary-card summary-card-alert">
+                    <span class="summary-label">Email needed</span>
+                    <strong id="missing-emails">0</strong>
+                    <span>Missing household email</span>
+                </article>
                 <article class="summary-card">
                     <span class="summary-label">Households</span>
                     <strong id="total-households">0</strong>
@@ -110,6 +115,7 @@ const adminPage = `<!DOCTYPE html>
                                 <th scope="col"><span class="visually-hidden">Actions</span></th>
                                 <th scope="col">Household</th>
                                 <th scope="col">Guests</th>
+                                <th scope="col">Email</th>
                                 <th scope="col">Invitation</th>
                                 <th scope="col">Address</th>
                                 <th scope="col">RSVP</th>
