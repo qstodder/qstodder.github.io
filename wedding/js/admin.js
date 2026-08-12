@@ -26,6 +26,7 @@ const elements = {
     exportHouseholds: document.querySelector("#export-households"),
     householdSearch: document.querySelector("#household-search"),
     deliveryFilter: document.querySelector("#delivery-filter"),
+    emailFilter: document.querySelector("#email-filter"),
     rsvpFilter: document.querySelector("#rsvp-filter"),
     rows: document.querySelector("#household-rows"),
     emptyResults: document.querySelector("#empty-results"),
@@ -209,6 +210,7 @@ function filteredHouseholds() {
             .trim()
             .toLowerCase();
     const delivery = elements.deliveryFilter.value;
+    const email = elements.emailFilter.value;
     const rsvp = elements.rsvpFilter.value;
 
     return dashboardData.households.filter((household) => {
@@ -221,6 +223,9 @@ function filteredHouseholds() {
             (!search || searchable.includes(search)) &&
             (delivery === "all" ||
                 household.deliveryStatus === delivery) &&
+            (email === "all" ||
+                (email === "missing" && household.missingEmail) ||
+                (email === "present" && !household.missingEmail)) &&
             (rsvp === "all" ||
                 household.rsvpStatus === rsvp)
         );
@@ -561,6 +566,7 @@ elements.addHousehold.addEventListener("click", async () => {
 });
 elements.householdSearch.addEventListener("input", renderHouseholds);
 elements.deliveryFilter.addEventListener("change", renderHouseholds);
+elements.emailFilter.addEventListener("change", renderHouseholds);
 elements.rsvpFilter.addEventListener("change", renderHouseholds);
 elements.rows.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");

@@ -99,6 +99,14 @@ const adminPage = `<!DOCTYPE html>
                         </select>
                     </div>
                     <div class="filter-field">
+                        <label for="email-filter">Email</label>
+                        <select id="email-filter">
+                            <option value="all">All emails</option>
+                            <option value="missing">Missing email</option>
+                            <option value="present">Has email</option>
+                        </select>
+                    </div>
+                    <div class="filter-field">
                         <label for="rsvp-filter">RSVP</label>
                         <select id="rsvp-filter">
                             <option value="all">All responses</option>
