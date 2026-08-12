@@ -406,6 +406,11 @@ describe("Admin household detail editing", () => {
                 householdKey: "amsterdam-household",
                 email: "guest@example.nl",
                 addressNeeded: true,
+                classifications: {
+                    coupleSide: "quiana",
+                    relationshipType: "family",
+                    familySide: "moms-side"
+                },
                 address: {
                     line1: "Prinsengracht 263",
                     line2: "2 hoog",
@@ -436,6 +441,11 @@ describe("Admin household detail editing", () => {
             postalCode: "1016 GV",
             countryCode: "NL"
         });
+        expect(detail.household.classifications).toEqual({
+            coupleSide: "quiana",
+            relationshipType: "family",
+            familySide: "moms-side"
+        });
     });
 
     it("adds, edits, and archives a guest without deleting history", async () => {
@@ -463,11 +473,6 @@ describe("Admin household detail editing", () => {
                 lastName: "de Jansen",
                 householdId,
                 invitations: { welcome: true, wedding: true, brunch: false },
-                classifications: {
-                    coupleSide: "quiana",
-                    relationshipType: "family",
-                    familySide: "moms-side"
-                },
                 rsvp: { welcome: true, wedding: true, brunch: false },
                 dietaryRestrictionIds: [1],
                 dietaryNotes: null
@@ -476,16 +481,6 @@ describe("Admin household detail editing", () => {
             guestId
         );
         expect(updateResponse.status, await updateResponse.clone().text()).toBe(200);
-
-        const classification = await env.wedding_rsvp_db.prepare(`
-            SELECT couple_side, relationship_type, family_side
-            FROM guests WHERE id = ?1
-        `).bind(guestId).first();
-        expect(classification).toEqual({
-            couple_side: "quiana",
-            relationship_type: "family",
-            family_side: "moms-side"
-        });
 
         const archiveResponse = await archiveAdminGuest(
             adminRequest(`/api/admin/guests/${guestId}`, "DELETE"),

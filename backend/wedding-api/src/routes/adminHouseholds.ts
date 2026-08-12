@@ -18,6 +18,9 @@ interface HouseholdRow {
     country_code: string;
     notes: string | null;
     address_needed: number;
+    couple_side: string | null;
+    relationship_type: string | null;
+    family_side: string | null;
 }
 
 interface GuestRow {
@@ -25,9 +28,6 @@ interface GuestRow {
     household_id: number;
     first_name: string;
     last_name: string;
-    couple_side: string | null;
-    relationship_type: string | null;
-    family_side: string | null;
     is_invited_to_welcome: number;
     is_invited_to_wedding: number;
     is_invited_to_brunch: number;
@@ -109,6 +109,49 @@ function boolean(value: unknown, label: string): boolean {
     return value;
 }
 
+function classificationChoice(
+    value: unknown,
+    label: string,
+    allowed: string[]
+): string | null {
+    if (value === null || value === undefined || value === "") {
+        return null;
+    }
+    if (typeof value !== "string" || !allowed.includes(value)) {
+        throw new Error(`${label} is invalid.`);
+    }
+    return value;
+}
+
+function classifications(input: unknown) {
+    const values = input as Record<string, unknown> | undefined;
+    const relationshipType = classificationChoice(
+        values?.relationshipType,
+        "Relationship",
+        ["friend", "family"]
+    );
+    const familySide = classificationChoice(
+        values?.familySide,
+        "Family side",
+        ["moms-side", "dads-side"]
+    );
+    if (relationshipType !== "family" && familySide) {
+        throw new Error("Family side can only be set for Family households.");
+    }
+    if (relationshipType === "family" && !familySide) {
+        throw new Error("Choose Mom's side or Dad's side for Family households.");
+    }
+    return {
+        coupleSide: classificationChoice(
+            values?.coupleSide,
+            "Scott/Quiana classification",
+            ["scott", "quiana"]
+        ),
+        relationshipType,
+        familySide
+    };
+}
+
 async function body(request: Request): Promise<Record<string, unknown>> {
     try {
         const result = await request.json();
@@ -138,6 +181,11 @@ function householdJson(row: HouseholdRow) {
         email: row.email,
         addressNeeded: Boolean(row.address_needed),
         notes: row.notes,
+        classifications: {
+            coupleSide: row.couple_side,
+            relationshipType: row.relationship_type,
+            familySide: row.family_side
+        },
         address: {
             line1: row.street,
             line2: row.address_line_2,
@@ -161,7 +209,8 @@ export async function getAdminHousehold(
             .prepare(`
                 SELECT id, household_key, household_name, email,
                     street, address_line_2, city, state, zip,
-                    country_code, notes, address_needed
+                    country_code, notes, address_needed,
+                    couple_side, relationship_type, family_side
                 FROM households
                 WHERE id = ?1 AND archived_at IS NULL
             `)
@@ -179,9 +228,6 @@ export async function getAdminHousehold(
                         g.is_invited_to_welcome,
                         g.is_invited_to_wedding,
                         g.is_invited_to_brunch,
-                        g.couple_side,
-                        g.relationship_type,
-                        g.family_side,
                         gr.attending_welcome,
                         gr.attending_wedding,
                         gr.attending_brunch,
@@ -234,11 +280,6 @@ export async function getAdminHousehold(
                         wedding: Boolean(guest.is_invited_to_wedding),
                         brunch: Boolean(guest.is_invited_to_brunch)
                     },
-                    classifications: {
-                        coupleSide: guest.couple_side,
-                        relationshipType: guest.relationship_type,
-                        familySide: guest.family_side
-                    },
                     rsvp: guest.rsvp_updated_at ? {
                         welcome: Boolean(guest.attending_welcome),
                         wedding: Boolean(guest.attending_wedding),
@@ -288,6 +329,7 @@ export async function updateAdminHousehold(
         let countryCode: string;
         let notes: string | null;
         let addressNeeded: boolean;
+        let householdClassifications: ReturnType<typeof classifications>;
 
         try {
             householdName = text(input.householdName, "Household name", 150, true)!;
@@ -311,6 +353,7 @@ export async function updateAdminHousehold(
             }
             notes = text(input.notes, "Notes", 2000);
             addressNeeded = boolean(input.addressNeeded, "Address needed");
+            householdClassifications = classifications(input.classifications);
         } catch (error) {
             return json(request, {
                 error: error instanceof Error ? error.message : "Invalid household."
@@ -329,12 +372,19 @@ export async function updateAdminHousehold(
                 zip = ?8,
                 country_code = ?9,
                 notes = ?10,
-                address_needed = ?11
-            WHERE id = ?12 AND archived_at IS NULL
+                address_needed = ?11,
+                couple_side = ?12,
+                relationship_type = ?13,
+                family_side = ?14
+            WHERE id = ?15 AND archived_at IS NULL
         `).bind(
             householdName, householdKey, email, line1, line2,
             city, region, postalCode, countryCode, notes,
-            addressNeeded ? 1 : 0, householdId
+            addressNeeded ? 1 : 0,
+            householdClassifications.coupleSide,
+            householdClassifications.relationshipType,
+            householdClassifications.familySide,
+            householdId
         ).run();
 
         if (result.meta.changes === 0) {
@@ -420,50 +470,13 @@ export async function archiveAdminHousehold(
 
 function guestFields(input: Record<string, unknown>) {
     const invitations = input.invitations as Record<string, unknown> | undefined;
-    const classifications = input.classifications as Record<string, unknown> | undefined;
-    const choice = (
-        value: unknown,
-        label: string,
-        allowed: string[]
-    ): string | null => {
-        if (value === null || value === undefined || value === "") {
-            return null;
-        }
-        if (typeof value !== "string" || !allowed.includes(value)) {
-            throw new Error(`${label} is invalid.`);
-        }
-        return value;
-    };
-    const relationshipType = choice(
-        classifications?.relationshipType,
-        "Relationship",
-        ["friend", "family"]
-    );
-    const familySide = choice(
-        classifications?.familySide,
-        "Family side",
-        ["moms-side", "dads-side"]
-    );
-    if (relationshipType !== "family" && familySide) {
-        throw new Error("Family side can only be set for Family guests.");
-    }
-    if (relationshipType === "family" && !familySide) {
-        throw new Error("Choose Mom's side or Dad's side for Family guests.");
-    }
     return {
         firstName: text(input.firstName, "First name", 100, true)!,
         lastName: text(input.lastName, "Last name", 100) ?? "",
         householdId: Number(input.householdId),
         welcome: boolean(invitations?.welcome, "Welcome invitation"),
         wedding: boolean(invitations?.wedding, "Wedding invitation"),
-        brunch: boolean(invitations?.brunch, "Brunch invitation"),
-        coupleSide: choice(
-            classifications?.coupleSide,
-            "Scott/Quiana classification",
-            ["scott", "quiana"]
-        ),
-        relationshipType,
-        familySide
+        brunch: boolean(invitations?.brunch, "Brunch invitation")
     };
 }
 
@@ -484,11 +497,6 @@ export async function createAdminGuest(
                     welcome: true,
                     wedding: true,
                     brunch: true
-                },
-                classifications: input.classifications ?? {
-                    coupleSide: null,
-                    relationshipType: null,
-                    familySide: null
                 }
             });
         } catch (error) {
@@ -506,17 +514,13 @@ export async function createAdminGuest(
             INSERT INTO guests (
                 household_id, first_name, last_name,
                 is_invited_to_welcome, is_invited_to_wedding,
-                is_invited_to_brunch, couple_side,
-                relationship_type, family_side
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+                is_invited_to_brunch
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
         `).bind(
             householdId, guest.firstName, guest.lastName,
             guest.welcome ? 1 : 0,
             guest.wedding ? 1 : 0,
-            guest.brunch ? 1 : 0,
-            guest.coupleSide,
-            guest.relationshipType,
-            guest.familySide
+            guest.brunch ? 1 : 0
         ).run();
         return json(request, {
             success: true,
@@ -574,15 +578,12 @@ export async function updateAdminGuest(
             env.wedding_rsvp_db.prepare(`
                 UPDATE guests SET household_id = ?1, first_name = ?2,
                     last_name = ?3, is_invited_to_welcome = ?4,
-                    is_invited_to_wedding = ?5, is_invited_to_brunch = ?6,
-                    couple_side = ?7, relationship_type = ?8,
-                    family_side = ?9
-                WHERE id = ?10 AND archived_at IS NULL
+                    is_invited_to_wedding = ?5, is_invited_to_brunch = ?6
+                WHERE id = ?7 AND archived_at IS NULL
             `).bind(
                 guest.householdId, guest.firstName, guest.lastName,
                 guest.welcome ? 1 : 0, guest.wedding ? 1 : 0,
-                guest.brunch ? 1 : 0, guest.coupleSide,
-                guest.relationshipType, guest.familySide, guestId
+                guest.brunch ? 1 : 0, guestId
             ),
             rsvp
                 ? env.wedding_rsvp_db.prepare(`

@@ -289,6 +289,9 @@ const adminHouseholdPage = `<!DOCTYPE html>
                         <label class="address-field"><span>Household name</span><input name="householdName" maxlength="150" required></label>
                         <label class="address-field"><span>Household key</span><input name="householdKey" maxlength="150" pattern="[a-z0-9]+(-[a-z0-9]+)*" required></label>
                         <label class="address-field detail-field-wide"><span>Email</span><input name="email" type="email" maxlength="254" autocomplete="email"></label>
+                        <label class="address-field"><span>Scott / Quiana</span><select name="coupleSide" required><option value="">Select…</option><option value="scott">Scott</option><option value="quiana">Quiana</option></select></label>
+                        <label class="address-field"><span>Friend / Family</span><select name="relationshipType" required><option value="">Select…</option><option value="friend">Friend</option><option value="family">Family</option></select></label>
+                        <label class="address-field"><span>Family side</span><select name="familySide"><option value="">Not applicable</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option></select></label>
                         <label class="admin-checkbox detail-field-wide"><input name="addressNeeded" type="checkbox"><span>This household needs a mailed invitation</span></label>
                         <label class="address-field detail-field-wide"><span>Address line 1</span><input name="line1" maxlength="200" autocomplete="address-line1"></label>
                         <label class="address-field detail-field-wide"><span>Address line 2</span><input name="line2" maxlength="200" autocomplete="address-line2"></label>
@@ -312,9 +315,6 @@ const adminHouseholdPage = `<!DOCTYPE html>
                 <form id="add-guest-form" class="add-guest-form">
                     <label class="address-field"><span>First name</span><input name="firstName" maxlength="100" required></label>
                     <label class="address-field"><span>Last name</span><input name="lastName" maxlength="100"></label>
-                    <label class="address-field"><span>Scott / Quiana</span><select name="coupleSide" required><option value="">Select…</option><option value="scott">Scott</option><option value="quiana">Quiana</option></select></label>
-                    <label class="address-field"><span>Friend / Family</span><select name="relationshipType" required><option value="">Select…</option><option value="friend">Friend</option><option value="family">Family</option></select></label>
-                    <label class="address-field"><span>Family side</span><select name="familySide"><option value="">Not applicable</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option></select></label>
                     <button class="address-save-button" type="submit">Add guest</button>
                     <p class="form-status" aria-live="polite"></p>
                 </form>
