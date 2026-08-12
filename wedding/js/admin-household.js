@@ -85,6 +85,21 @@ function rsvpSelect(name, label, value, hasRsvp) {
     return `<label class="address-field"><span>${label}</span><select name="${name}"><option value="none" ${!hasRsvp ? "selected" : ""}>Not recorded</option><option value="yes" ${hasRsvp && value ? "selected" : ""}>Attending</option><option value="no" ${hasRsvp && !value ? "selected" : ""}>Not attending</option></select></label>`;
 }
 
+function classificationSelect(name, label, value, options) {
+    return `<label class="address-field"><span>${label}</span><select name="${name}" required><option value="" ${!value ? "selected" : ""}>Select…</option>${options.map(([optionValue, optionLabel]) => `<option value="${optionValue}" ${value === optionValue ? "selected" : ""}>${optionLabel}</option>`).join("")}</select></label>`;
+}
+
+function syncFamilySide(form) {
+    const relationship = form.elements.relationshipType;
+    const familySide = form.elements.familySide;
+    if (!relationship || !familySide) return;
+
+    const isFamily = relationship.value === "family";
+    familySide.disabled = !isFamily;
+    familySide.required = isFamily;
+    if (!isFamily) familySide.value = "";
+}
+
 function renderGuest(guest) {
     const restrictionOptions = detail.dietaryRestrictions.map((restriction) =>
         `<label class="admin-checkbox"><input type="checkbox" name="dietaryRestrictionIds" value="${restriction.id}" ${guest.dietaryRestrictionIds.includes(restriction.id) ? "checked" : ""}><span>${escapeHtml(restriction.name)}</span></label>`
@@ -106,6 +121,11 @@ function renderGuest(guest) {
                 ${invitationCheckbox("inviteWedding", "Wedding", guest.invitations.wedding)}
                 ${invitationCheckbox("inviteBrunch", "Morning-after brunch", guest.invitations.brunch)}
             </div></fieldset>
+            <fieldset class="guest-fieldset"><legend>Guest tags</legend><div class="detail-form-grid guest-tag-grid">
+                ${classificationSelect("coupleSide", "Scott / Quiana", guest.classifications?.coupleSide, [["scott", "Scott"], ["quiana", "Quiana"]])}
+                ${classificationSelect("relationshipType", "Friend / Family", guest.classifications?.relationshipType, [["friend", "Friend"], ["family", "Family"]])}
+                <label class="address-field"><span>Family side</span><select name="familySide"><option value="" ${!guest.classifications?.familySide ? "selected" : ""}>Not applicable</option><option value="moms-side" ${guest.classifications?.familySide === "moms-side" ? "selected" : ""}>Mom's side</option><option value="dads-side" ${guest.classifications?.familySide === "dads-side" ? "selected" : ""}>Dad's side</option></select></label>
+            </div></fieldset>
             <fieldset class="guest-fieldset"><legend>RSVP response</legend><div class="detail-form-grid guest-rsvp-grid">
                 ${rsvpSelect("rsvpWelcome", "Welcome", guest.rsvp?.welcome, Boolean(guest.rsvp))}
                 ${rsvpSelect("rsvpWedding", "Wedding", guest.rsvp?.wedding, Boolean(guest.rsvp))}
@@ -122,6 +142,8 @@ function renderGuest(guest) {
 
 function renderGuests() {
     elements.guestList.innerHTML = detail.guests.map(renderGuest).join("");
+    elements.guestList.querySelectorAll(".guest-form")
+        .forEach(syncFamilySide);
     elements.noGuests.classList.toggle("hidden", detail.guests.length > 0);
     const target = window.location.hash
         ? document.getElementById(
@@ -162,6 +184,13 @@ function guestPayload(form) {
             welcome: formData.has("inviteWelcome"),
             wedding: formData.has("inviteWedding"),
             brunch: formData.has("inviteBrunch")
+        },
+        classifications: {
+            coupleSide: formData.get("coupleSide"),
+            relationshipType: formData.get("relationshipType"),
+            familySide: formData.get("relationshipType") === "family"
+                ? formData.get("familySide") || null
+                : null
         },
         rsvp: hasRsvp ? {
             welcome: formData.get("rsvpWelcome") === "yes",
@@ -264,6 +293,12 @@ elements.guestList.addEventListener("submit", async (event) => {
     }
 });
 
+elements.guestList.addEventListener("change", (event) => {
+    if (event.target.name === "relationshipType") {
+        syncFamilySide(event.target.closest(".guest-form"));
+    }
+});
+
 elements.guestList.addEventListener("click", async (event) => {
     const button = event.target.closest('[data-action="archive-guest"]');
     if (!button) return;
@@ -292,7 +327,14 @@ elements.addGuestForm.addEventListener("submit", async (event) => {
             method: "POST",
             body: JSON.stringify({
                 firstName: value(form, "firstName"),
-                lastName: value(form, "lastName")
+                lastName: value(form, "lastName"),
+                classifications: {
+                    coupleSide: value(form, "coupleSide"),
+                    relationshipType: value(form, "relationshipType"),
+                    familySide: value(form, "relationshipType") === "family"
+                        ? value(form, "familySide") || null
+                        : null
+                }
             })
         });
         form.reset();
@@ -303,6 +345,14 @@ elements.addGuestForm.addEventListener("submit", async (event) => {
         submit.disabled = false;
     }
 });
+
+elements.addGuestForm.addEventListener("change", (event) => {
+    if (event.target.name === "relationshipType") {
+        syncFamilySide(elements.addGuestForm);
+    }
+});
+
+syncFamilySide(elements.addGuestForm);
 
 elements.archiveHousehold.addEventListener("click", async () => {
     const name = detail.household.householdName;

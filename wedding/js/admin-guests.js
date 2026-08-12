@@ -7,6 +7,9 @@ const elements = {
     refresh: document.querySelector("#refresh-guests"),
     search: document.querySelector("#guest-search"),
     householdFilter: document.querySelector("#guest-household-filter"),
+    coupleFilter: document.querySelector("#guest-couple-filter"),
+    relationshipFilter: document.querySelector("#guest-relationship-filter"),
+    familySideFilter: document.querySelector("#guest-family-side-filter"),
     dietaryFilter: document.querySelector("#guest-dietary-filter"),
     invitationFilter: document.querySelector("#guest-invitation-filter"),
     rsvpFilter: document.querySelector("#guest-rsvp-filter"),
@@ -65,6 +68,28 @@ function rsvpText(guest) {
     ].join("; ");
 }
 
+const classificationLabels = {
+    scott: "Scott",
+    quiana: "Quiana",
+    friend: "Friend",
+    family: "Family",
+    "moms-side": "Mom's side",
+    "dads-side": "Dad's side"
+};
+
+function classificationTags(guest) {
+    return [
+        guest.classifications.coupleSide,
+        guest.classifications.relationshipType,
+        guest.classifications.familySide
+    ].filter(Boolean);
+}
+
+function classificationMatches(actual, selected) {
+    return selected === "all" ||
+        (selected === "unassigned" ? !actual : actual === selected);
+}
+
 function populateFilters() {
     const households = new Map();
     for (const guest of guestData.guests) {
@@ -95,6 +120,9 @@ function filteredAndSortedGuests() {
     const search = elements.search.value.trim().toLowerCase();
     const household = elements.householdFilter.value;
     const dietary = elements.dietaryFilter.value;
+    const coupleSide = elements.coupleFilter.value;
+    const relationship = elements.relationshipFilter.value;
+    const familySide = elements.familySideFilter.value;
     const invitation = elements.invitationFilter.value;
     const rsvp = elements.rsvpFilter.value;
 
@@ -104,7 +132,10 @@ function filteredAndSortedGuests() {
             guest.lastName,
             guest.household.householdName,
             guest.household.householdKey,
-            dietaryText(guest)
+            dietaryText(guest),
+            ...classificationTags(guest).map(
+                (tag) => classificationLabels[tag]
+            )
         ].join(" ").toLowerCase();
         const dietaryMatches = dietary === "all" ||
             (dietary === "none"
@@ -123,6 +154,18 @@ function filteredAndSortedGuests() {
         return (
             (!search || searchable.includes(search)) &&
             (household === "all" || guest.household.id === Number(household)) &&
+            classificationMatches(
+                guest.classifications.coupleSide,
+                coupleSide
+            ) &&
+            classificationMatches(
+                guest.classifications.relationshipType,
+                relationship
+            ) &&
+            classificationMatches(
+                guest.classifications.familySide,
+                familySide
+            ) &&
             dietaryMatches && invitationMatches && rsvpMatches
         );
     });
@@ -137,6 +180,24 @@ function filteredAndSortedGuests() {
             return compareText(
                 left.household.householdName,
                 right.household.householdName
+            ) || compareText(left.lastName, right.lastName);
+        }
+        if (sort === "coupleSideAsc") {
+            return compareText(
+                classificationLabels[left.classifications.coupleSide] ?? "ZZZ Unassigned",
+                classificationLabels[right.classifications.coupleSide] ?? "ZZZ Unassigned"
+            ) || compareText(left.lastName, right.lastName);
+        }
+        if (sort === "relationshipAsc") {
+            return compareText(
+                classificationLabels[left.classifications.relationshipType] ?? "ZZZ Unassigned",
+                classificationLabels[right.classifications.relationshipType] ?? "ZZZ Unassigned"
+            ) || compareText(left.lastName, right.lastName);
+        }
+        if (sort === "familySideAsc") {
+            return compareText(
+                classificationLabels[left.classifications.familySide] ?? "ZZZ Unassigned",
+                classificationLabels[right.classifications.familySide] ?? "ZZZ Unassigned"
             ) || compareText(left.lastName, right.lastName);
         }
         if (sort === "dietaryAsc") {
@@ -158,10 +219,12 @@ function renderGuests() {
     visibleGuests = filteredAndSortedGuests();
     elements.rows.innerHTML = visibleGuests.map((guest) => {
         const invited = eventLabels(guest.invitations);
+        const tags = classificationTags(guest);
         return `<tr>
             <td data-label="Actions" class="household-actions-cell"><a class="address-edit-button household-edit-button" href="/admin/households/${guest.household.id}#guest-${guest.id}">Edit guest</a></td>
             <th scope="row" data-label="Guest"><span class="household-name">${escapeHtml(`${guest.firstName} ${guest.lastName}`.trim())}</span><span class="household-key">Guest #${guest.id}</span></th>
             <td data-label="Household"><a class="household-detail-link" href="/admin/households/${guest.household.id}">${escapeHtml(guest.household.householdName)}</a></td>
+            <td data-label="Tags">${tags.length ? tags.map((tag) => `<span class="guest-classification-tag tag-${tag}">${escapeHtml(classificationLabels[tag])}</span>`).join(" ") : '<span class="tag-unassigned">Unassigned</span>'}</td>
             <td data-label="Invited to">${invited.length ? invited.map((name) => `<span class="guest-event-tag">${name}</span>`).join(" ") : "—"}</td>
             <td data-label="RSVP">${escapeHtml(rsvpText(guest))}</td>
             <td data-label="Dietary preferences">${escapeHtml(dietaryText(guest))}</td>
@@ -200,7 +263,8 @@ function downloadCsv(filename, headings, rows) {
 function exportGuests() {
     const headings = [
         "First Name", "Last Name", "Household", "Household Key",
-        "Household Email", "Invited: Welcome", "Invited: Wedding",
+        "Household Email", "Scott / Quiana", "Friend / Family", "Family Side",
+        "Invited: Welcome", "Invited: Wedding",
         "Invited: Brunch", "RSVP Recorded", "Attending: Welcome",
         "Attending: Wedding", "Attending: Brunch",
         "Dietary Restrictions", "Dietary Details"
@@ -208,6 +272,9 @@ function exportGuests() {
     const rows = visibleGuests.map((guest) => [
         guest.firstName, guest.lastName, guest.household.householdName,
         guest.household.householdKey, guest.household.email,
+        classificationLabels[guest.classifications.coupleSide] ?? "",
+        classificationLabels[guest.classifications.relationshipType] ?? "",
+        classificationLabels[guest.classifications.familySide] ?? "",
         guest.invitations.welcome ? "Yes" : "No",
         guest.invitations.wedding ? "Yes" : "No",
         guest.invitations.brunch ? "Yes" : "No",
@@ -258,7 +325,9 @@ async function loadGuests() {
     element.addEventListener("input", renderGuests)
 );
 [
-    elements.householdFilter, elements.dietaryFilter,
+    elements.householdFilter, elements.coupleFilter,
+    elements.relationshipFilter, elements.familySideFilter,
+    elements.dietaryFilter,
     elements.invitationFilter, elements.rsvpFilter, elements.sort
 ].forEach((element) => element.addEventListener("change", renderGuests));
 elements.export.addEventListener("click", exportGuests);

@@ -312,6 +312,9 @@ const adminHouseholdPage = `<!DOCTYPE html>
                 <form id="add-guest-form" class="add-guest-form">
                     <label class="address-field"><span>First name</span><input name="firstName" maxlength="100" required></label>
                     <label class="address-field"><span>Last name</span><input name="lastName" maxlength="100"></label>
+                    <label class="address-field"><span>Scott / Quiana</span><select name="coupleSide" required><option value="">Select…</option><option value="scott">Scott</option><option value="quiana">Quiana</option></select></label>
+                    <label class="address-field"><span>Friend / Family</span><select name="relationshipType" required><option value="">Select…</option><option value="friend">Friend</option><option value="family">Family</option></select></label>
+                    <label class="address-field"><span>Family side</span><select name="familySide"><option value="">Not applicable</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option></select></label>
                     <button class="address-save-button" type="submit">Add guest</button>
                     <p class="form-status" aria-live="polite"></p>
                 </form>
@@ -398,15 +401,18 @@ const adminGuestsPage = `<!DOCTYPE html>
                 <div class="admin-filters guest-filters">
                     <div class="filter-field filter-search"><label for="guest-search">Search</label><input id="guest-search" type="search" placeholder="Guest or household" autocomplete="off"></div>
                     <div class="filter-field"><label for="guest-household-filter">Household</label><select id="guest-household-filter"><option value="all">All households</option></select></div>
+                    <div class="filter-field"><label for="guest-couple-filter">Scott / Quiana</label><select id="guest-couple-filter"><option value="all">Either side</option><option value="scott">Scott</option><option value="quiana">Quiana</option><option value="unassigned">Unassigned</option></select></div>
+                    <div class="filter-field"><label for="guest-relationship-filter">Friend / Family</label><select id="guest-relationship-filter"><option value="all">Either relationship</option><option value="friend">Friend</option><option value="family">Family</option><option value="unassigned">Unassigned</option></select></div>
+                    <div class="filter-field"><label for="guest-family-side-filter">Family side</label><select id="guest-family-side-filter"><option value="all">Either family side</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option><option value="unassigned">Unassigned</option></select></div>
                     <div class="filter-field"><label for="guest-dietary-filter">Dietary</label><select id="guest-dietary-filter"><option value="all">All dietary responses</option><option value="none">No restrictions</option></select></div>
                     <div class="filter-field"><label for="guest-invitation-filter">Invited to</label><select id="guest-invitation-filter"><option value="all">Any event</option><option value="welcome">Welcome gathering</option><option value="wedding">Wedding</option><option value="brunch">Brunch</option></select></div>
                     <div class="filter-field"><label for="guest-rsvp-filter">RSVP</label><select id="guest-rsvp-filter"><option value="all">All responses</option><option value="pending">Not recorded</option><option value="responded">Response recorded</option><option value="weddingYes">Wedding: attending</option><option value="weddingNo">Wedding: not attending</option></select></div>
-                    <div class="filter-field"><label for="guest-sort">Sort</label><select id="guest-sort"><option value="lastNameAsc">Last name A–Z</option><option value="firstNameAsc">First name A–Z</option><option value="householdAsc">Household A–Z</option><option value="dietaryAsc">Dietary A–Z</option><option value="weddingYesFirst">Wedding attending first</option></select></div>
+                    <div class="filter-field"><label for="guest-sort">Sort</label><select id="guest-sort"><option value="lastNameAsc">Last name A–Z</option><option value="firstNameAsc">First name A–Z</option><option value="householdAsc">Household A–Z</option><option value="coupleSideAsc">Scott / Quiana</option><option value="relationshipAsc">Friend / Family</option><option value="familySideAsc">Family side</option><option value="dietaryAsc">Dietary A–Z</option><option value="weddingYesFirst">Wedding attending first</option></select></div>
                 </div>
                 <div class="table-scroll">
                     <table class="guest-table"><thead><tr>
                         <th scope="col"><span class="visually-hidden">Actions</span></th>
-                        <th scope="col">Guest</th><th scope="col">Household</th>
+                        <th scope="col">Guest</th><th scope="col">Household</th><th scope="col">Tags</th>
                         <th scope="col">Invited to</th><th scope="col">RSVP</th>
                         <th scope="col">Dietary preferences</th>
                     </tr></thead><tbody id="guest-rows"></tbody></table>

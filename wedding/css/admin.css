@@ -407,10 +407,48 @@ tbody th {
     white-space: nowrap;
 }
 
-.guest-table td:nth-child(5),
-.guest-table td:nth-child(6) {
+.guest-table td:nth-child(6),
+.guest-table td:nth-child(7) {
     min-width: 210px;
     line-height: 1.5;
+}
+
+.guest-classification-tag {
+    display: inline-block;
+    margin: 0.1rem 0.15rem 0.1rem 0;
+    padding: 0.25rem 0.48rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.tag-scott,
+.tag-quiana {
+    color: #315a67;
+    background: #dcecf0;
+}
+
+.tag-friend,
+.tag-family {
+    color: #40584d;
+    background: #dfe9e2;
+}
+
+.tag-moms-side,
+.tag-dads-side {
+    color: #665424;
+    background: #f1e8c4;
+}
+
+.tag-unassigned {
+    color: #8a452d;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.guest-tag-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .status-addressNeeded {
@@ -711,6 +749,7 @@ tbody th {
 @media (max-width: 700px) {
     .detail-form-grid,
     .guest-rsvp-grid,
+    .guest-tag-grid,
     .add-guest-form {
         grid-template-columns: 1fr;
     }

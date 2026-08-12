@@ -34,6 +34,9 @@ interface AdminGuestRow {
     household_email: string | null;
     first_name: string;
     last_name: string;
+    couple_side: string | null;
+    relationship_type: string | null;
+    family_side: string | null;
     is_invited_to_welcome: number;
     is_invited_to_wedding: number;
     is_invited_to_brunch: number;
@@ -254,6 +257,9 @@ export async function getAdminGuests(
                         h.email AS household_email,
                         g.first_name,
                         g.last_name,
+                        g.couple_side,
+                        g.relationship_type,
+                        g.family_side,
                         g.is_invited_to_welcome,
                         g.is_invited_to_wedding,
                         g.is_invited_to_brunch,
@@ -311,6 +317,11 @@ export async function getAdminGuests(
                     householdKey: guest.household_key,
                     householdName: guest.household_name,
                     email: guest.household_email
+                },
+                classifications: {
+                    coupleSide: guest.couple_side,
+                    relationshipType: guest.relationship_type,
+                    familySide: guest.family_side
                 },
                 invitations: {
                     welcome: Boolean(guest.is_invited_to_welcome),
