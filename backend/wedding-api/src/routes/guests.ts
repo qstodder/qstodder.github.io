@@ -1,5 +1,5 @@
 import { Env } from "../types";
-import { ok, badRequest, notFound } from "../lib/responses";
+import { ok } from "../lib/responses";
 
 export async function searchGuests(
     request: Request,
@@ -17,8 +17,8 @@ export async function searchGuests(
 
     const query = `
         SELECT
-            household_id,
-            first_name || ' ' || last_name AS display_name
+            h.id AS household_id,
+            MIN(g.first_name || ' ' || g.last_name) AS display_name
         FROM guests g
         JOIN households h ON h.id = g.household_id
         WHERE g.archived_at IS NULL
@@ -27,7 +27,8 @@ export async function searchGuests(
                 lower(g.first_name) LIKE lower(?)
                 OR lower(g.last_name) LIKE lower(?)
             )
-        ORDER BY last_name, first_name
+        GROUP BY h.id, h.household_name
+        ORDER BY LOWER(h.household_name)
         LIMIT 10
     `;
 

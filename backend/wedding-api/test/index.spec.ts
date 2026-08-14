@@ -25,6 +25,11 @@ import {
     updateAdminHousehold
 } from "../src/routes/adminHouseholds";
 import { getAdminGuests } from "../src/routes/admin";
+import {
+    CompleteRsvp,
+    RsvpValidationError,
+    saveCompleteRsvp
+} from "../src/services/rsvp";
 
 const IncomingRequest =
     Request<unknown, IncomingRequestCfProperties>;
@@ -556,5 +561,169 @@ describe("Admin guest directory", () => {
         );
 
         expect(response.status).toBe(503);
+    });
+});
+
+describe("Public RSVP persistence", () => {
+    async function createRsvpHousehold(
+        name: string,
+        addressNeeded = 1
+    ) {
+        const household = await env.wedding_rsvp_db.prepare(`
+            INSERT INTO households (
+                household_name, household_key, address_needed,
+                country_code
+            ) VALUES (?1, ?2, ?3, 'US')
+        `).bind(
+            name,
+            name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-test",
+            addressNeeded
+        ).run();
+        const householdId = Number(household.meta.last_row_id);
+        const guest = await env.wedding_rsvp_db.prepare(`
+            INSERT INTO guests (
+                household_id, first_name, last_name,
+                is_invited_to_welcome, is_invited_to_wedding,
+                is_invited_to_brunch
+            ) VALUES (?1, 'RSVP', 'Tester', 1, 1, 1)
+        `).bind(householdId).run();
+        return {
+            householdId,
+            guestId: Number(guest.meta.last_row_id)
+        };
+    }
+
+    function completeRsvp(
+        householdId: number,
+        guestId: number
+    ): CompleteRsvp {
+        return {
+            contact: {
+                householdId,
+                email: "Guest@Example.com",
+                street: "Prinsengracht 263",
+                addressLine2: "3rd floor",
+                city: "Amsterdam",
+                state: "Noord-Holland",
+                zip: "1016 GV",
+                countryCode: "NL"
+            },
+            guestRsvps: [{
+                guestId,
+                attendingWelcome: true,
+                attendingWedding: true,
+                attendingBrunch: false
+            }],
+            guestDietary: [{
+                guestId,
+                restrictionIds: [1, 4],
+                otherDietaryDetails: "Allergic to walnuts"
+            }],
+            acknowledgements: {
+                householdId,
+                acknowledgeNoChildren: true,
+                acknowledgeNoPlusOnes: true
+            }
+        };
+    }
+
+    it("atomically stores an international RSVP", async () => {
+        const { householdId, guestId } =
+            await createRsvpHousehold("International RSVP");
+
+        await saveCompleteRsvp(
+            env as unknown as Env,
+            completeRsvp(householdId, guestId)
+        );
+
+        const household = await env.wedding_rsvp_db.prepare(`
+            SELECT email, street, address_line_2, city, state, zip,
+                country_code
+            FROM households WHERE id = ?1
+        `).bind(householdId).first();
+        expect(household).toEqual({
+            email: "guest@example.com",
+            street: "Prinsengracht 263",
+            address_line_2: "3rd floor",
+            city: "Amsterdam",
+            state: "Noord-Holland",
+            zip: "1016 GV",
+            country_code: "NL"
+        });
+
+        const dietary = await env.wedding_rsvp_db.prepare(`
+            SELECT restriction_id, notes
+            FROM guest_dietary_restrictions
+            WHERE guest_id = ?1 ORDER BY restriction_id
+        `).bind(guestId).all();
+        expect(dietary.results).toEqual([
+            { restriction_id: 1, notes: null },
+            { restriction_id: 4, notes: "Allergic to walnuts" }
+        ]);
+    });
+
+    it("rejects guest responses from another household", async () => {
+        const first = await createRsvpHousehold("RSVP Owner");
+        const second = await createRsvpHousehold("RSVP Intruder");
+        const payload = completeRsvp(
+            first.householdId,
+            second.guestId
+        );
+
+        await expect(saveCompleteRsvp(
+            env as unknown as Env,
+            payload
+        )).rejects.toBeInstanceOf(RsvpValidationError);
+    });
+
+    it("rolls back all RSVP writes when the final statement fails", async () => {
+        const { householdId, guestId } =
+            await createRsvpHousehold("Atomic RSVP");
+        await env.wedding_rsvp_db.prepare(`
+            CREATE TRIGGER fail_atomic_rsvp
+            BEFORE INSERT ON household_acknowledgements
+            WHEN NEW.household_id = ${householdId}
+            BEGIN
+                SELECT RAISE(ABORT, 'forced RSVP failure');
+            END;
+        `).run();
+
+        await expect(saveCompleteRsvp(
+            env as unknown as Env,
+            completeRsvp(householdId, guestId)
+        )).rejects.toThrow();
+
+        const household = await env.wedding_rsvp_db.prepare(`
+            SELECT email FROM households WHERE id = ?1
+        `).bind(householdId).first<{ email: string | null }>();
+        const attendance = await env.wedding_rsvp_db.prepare(`
+            SELECT guest_id FROM guest_rsvps WHERE guest_id = ?1
+        `).bind(guestId).first();
+        expect(household?.email).toBeNull();
+        expect(attendance).toBeNull();
+
+        await env.wedding_rsvp_db.prepare(
+            "DROP TRIGGER fail_atomic_rsvp"
+        ).run();
+    });
+
+    it("returns each matching household only once", async () => {
+        const { householdId } =
+            await createRsvpHousehold("Duplicate Search");
+        await env.wedding_rsvp_db.prepare(`
+            INSERT INTO guests (
+                household_id, first_name, last_name
+            ) VALUES (?1, 'Second', 'Tester')
+        `).bind(householdId).run();
+
+        const response = await SELF.fetch(
+            "https://example.com/api/guests?search=Tester"
+        );
+        const results = await response.json<Array<{
+            householdId: number;
+        }>>();
+        expect(results.filter(
+            (result) => result.householdId === householdId
+        )).toHaveLength(1);
     });
 });

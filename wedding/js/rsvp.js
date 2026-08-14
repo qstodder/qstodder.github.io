@@ -68,6 +68,32 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
+function draftKey(householdId) {
+    return `wedding-rsvp-draft-${householdId}`;
+}
+
+function saveDraft() {
+    const householdId = state.rsvp?.household?.id;
+    if (!householdId) {
+        return;
+    }
+    sessionStorage.setItem(
+        draftKey(householdId),
+        JSON.stringify(state.rsvp)
+    );
+}
+
+function restoreDraft(rsvp) {
+    try {
+        const saved = sessionStorage.getItem(
+            draftKey(rsvp.household.id)
+        );
+        return saved ? JSON.parse(saved) : rsvp;
+    } catch {
+        return rsvp;
+    }
+}
+
 
 /* =========================================================
    Screen navigation
@@ -97,8 +123,16 @@ function showScreen(screen) {
 
     window.scrollTo({
         top: 0,
-        behavior: "smooth"
+        behavior: window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches ? "auto" : "smooth"
     });
+
+    const heading = screen.querySelector("h2");
+    if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+    }
 }
 
 
@@ -116,6 +150,9 @@ function populateContactForm() {
     document.getElementById("street").value =
         household.street ?? "";
 
+    document.getElementById("address-line-2").value =
+        household.addressLine2 ?? "";
+
     document.getElementById("city").value =
         household.city ?? "";
 
@@ -124,6 +161,18 @@ function populateContactForm() {
 
     document.getElementById("zip").value =
         household.zip ?? "";
+
+    document.getElementById("country-code").value =
+        household.countryCode ?? "US";
+
+    const addressRequired = household.addressNeeded === true;
+    for (const id of ["street", "city", "zip"]) {
+        document.getElementById(id).required = addressRequired;
+    }
+    document.getElementById("address-requirement").textContent =
+        addressRequired
+            ? "A mailing address is required so we can send your invitation."
+            : "Your invitation will be hand-delivered; a mailing address is optional.";
 }
 
 
@@ -136,6 +185,11 @@ function saveContactFormToState() {
 
     state.household.street =
         document.getElementById("street")
+            .value
+            .trim();
+
+    state.household.addressLine2 =
+        document.getElementById("address-line-2")
             .value
             .trim();
 
@@ -154,6 +208,12 @@ function saveContactFormToState() {
         document.getElementById("zip")
             .value
             .trim();
+
+    state.household.countryCode =
+        document.getElementById("country-code")
+            .value
+            .trim()
+            .toUpperCase();
 }
 
 
@@ -251,8 +311,9 @@ resultsDiv.addEventListener(
 
         try {
 
-            const rsvp =
+            const serverRsvp =
                 await getRsvp(householdId);
+            const rsvp = restoreDraft(serverRsvp);
 
 
             /*
@@ -380,6 +441,8 @@ contactForm.addEventListener(
         */
         state.rsvp.household =
             state.household;
+
+        saveDraft();
 
         renderWelcomeGuests();
 
@@ -604,6 +667,8 @@ function saveWelcomeResponses() {
             selected.value === "yes";
     }
 
+    saveDraft();
+
     return {
         success: true
     };
@@ -757,6 +822,8 @@ function saveWeddingResponses() {
         guest.attendance.wedding =
             selected.value === "yes";
     }
+
+    saveDraft();
 
     return {
         success: true
@@ -1055,6 +1122,8 @@ function saveDietaryResponses() {
                 : "";
     }
 
+    saveDraft();
+
     return {
         success: true
     };
@@ -1138,6 +1207,8 @@ function saveAcknowledgements() {
         noPlusOnes:
             noPlusOnesCheckbox.checked
     };
+
+    saveDraft();
 }
 
 
@@ -1289,6 +1360,8 @@ function saveBrunchResponses() {
             selected.value === "yes";
     }
 
+    saveDraft();
+
     return {
         success: true
     };
@@ -1356,6 +1429,24 @@ function attendanceLabel(
     return guest.attendance?.[attendanceField]
         ? "Attending"
         : "Not attending";
+}
+
+function reviewAddressMarkup(household) {
+    const locality = [
+        household.city,
+        household.state,
+        household.zip
+    ].filter(Boolean).join(", ");
+    const lines = [
+        household.street,
+        household.addressLine2,
+        locality,
+        household.countryCode
+    ].filter(Boolean).map(escapeHtml);
+
+    return lines.length > 1
+        ? lines.join("<br>")
+        : "Mailing address not needed";
 }
 
 
@@ -1435,12 +1526,7 @@ function renderRsvpReview() {
 
             <p>${escapeHtml(household.email)}</p>
 
-            <p>
-                ${escapeHtml(household.street)}<br>
-                ${escapeHtml(household.city)},
-                ${escapeHtml(household.state)}
-                ${escapeHtml(household.zip)}
-            </p>
+            <p>${reviewAddressMarkup(household)}</p>
         </section>
 
         <section class="review-section">
@@ -1479,9 +1565,11 @@ function buildRsvpPayload() {
             householdId: household.id,
             email: household.email,
             street: household.street,
+            addressLine2: household.addressLine2,
             city: household.city,
             state: household.state,
-            zip: household.zip
+            zip: household.zip,
+            countryCode: household.countryCode
         },
 
         guestRsvps:
@@ -1572,6 +1660,9 @@ submitRsvpButton.addEventListener(
             backToBrunchButton.disabled = true;
             submitRsvpButton.textContent =
                 "RSVP Submitted";
+            sessionStorage.removeItem(
+                draftKey(state.rsvp.household.id)
+            );
 
         } catch (error) {
 
@@ -1581,9 +1672,8 @@ submitRsvpButton.addEventListener(
             );
 
             submitError.textContent =
-                "We couldn't submit your RSVP. " +
-                "Your responses are still here, so please " +
-                "try again.";
+                `${error.message} Your responses are still here, ` +
+                "so please try again.";
 
             submitError.classList.remove(
                 "hidden"

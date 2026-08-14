@@ -8,6 +8,7 @@ import {
 
 import {
     CompleteRsvp,
+    RsvpValidationError,
     saveCompleteRsvp
 } from "../services/rsvp";
 import {
@@ -31,14 +32,14 @@ export async function getRsvpRoute(
             .prepare(`
                 SELECT
                     id,
-                    household_key,
                     household_name,
                     email,
                     street,
+                    address_line_2,
                     city,
                     state,
                     zip,
-                    notes,
+                    country_code,
                     address_needed
 
                 FROM households
@@ -165,15 +166,15 @@ export async function getRsvpRoute(
 
         household: {
             id: household.id,
-            householdKey: household.household_key,
             householdName:
                 household.household_name,
             email: household.email,
             street: household.street,
+            addressLine2: household.address_line_2,
             city: household.city,
             state: household.state,
             zip: household.zip,
-            notes: household.notes,
+            countryCode: household.country_code,
             addressNeeded:
                 Boolean(household.address_needed)
         },
@@ -273,45 +274,54 @@ export async function saveRsvpRoute(
     env: Env
 ): Promise<Response> {
 
-    const body =
-        await request.json() as CompleteRsvp;
+    let body: CompleteRsvp;
+
+    try {
+        body = await request.json() as CompleteRsvp;
+    } catch {
+        return badRequest("RSVP information must be valid JSON.");
+    }
 
     //-----------------------------------------
     // Minimal validation
     //-----------------------------------------
 
-    if (!body.contact) {
+    if (!body?.contact) {
 
         return badRequest(
             "Missing contact information."
         );
     }
 
-    if (!body.guestRsvps) {
+    if (!body?.guestRsvps) {
 
         return badRequest(
             "Missing guest RSVPs."
         );
     }
 
-    if (!body.guestDietary) {
+    if (!body?.guestDietary) {
 
         return badRequest(
             "Missing guest dietary information."
         );
     }
 
-    if (!body.acknowledgements) {
+    if (!body?.acknowledgements) {
 
         return badRequest(
             "Missing acknowledgements."
         );
     }
 
-    await saveCompleteRsvp(
-        env,
-        body
-    );
+    try {
+        await saveCompleteRsvp(env, body);
+    } catch (error) {
+        if (error instanceof RsvpValidationError) {
+            return badRequest(error.message);
+        }
+        throw error;
+    }
 
     let emailSent = false;
 

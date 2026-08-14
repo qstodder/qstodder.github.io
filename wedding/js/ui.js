@@ -74,17 +74,3 @@ export function renderHousehold(household, guests) {
     });
 
 }
-
-export function showRSVPScreen() {
-
-    document
-        .getElementById("household-screen")
-        .classList
-        .add("hidden");
-
-    document
-        .getElementById("rsvp-screen")
-        .classList
-        .remove("hidden");
-
-}

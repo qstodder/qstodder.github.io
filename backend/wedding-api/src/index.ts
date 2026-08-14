@@ -1,12 +1,7 @@
-import { Env, RSVPRequest } from "./types";
+import { Env } from "./types";
 import { searchGuests } from "./routes/guests";
-import { ok, badRequest, notFound } from "./lib/responses";
-import { getHouseholdRoute } from "./routes/household";
+import { ok, badRequest } from "./lib/responses";
 import { getDietaryRestrictionsRoute } from "./routes/dietary";
-import { saveContactInfoRoute } from "./routes/contact";
-import { saveGuestRsvpsRoute } from "./routes/guestRsvps";
-import { saveGuestDietaryRoute } from "./routes/guestDietary";
-import { saveAcknowledgementsRoute } from "./routes/acknowledgements";
 import { getRsvpRoute, saveRsvpRoute } from "./routes/rsvp"
 import {
     refreshGmailAccessToken
@@ -207,20 +202,6 @@ export default {
         }
 		
 		//-------------------------------------------------
-        // Get household information
-        //-------------------------------------------------
-
-        if (
-			request.method === "GET" &&
-			url.pathname.startsWith("/api/household/")
-		) {
-			return getHouseholdRoute(
-				request,
-				env
-			);
-		}
-
-		//-------------------------------------------------
         // Get dietary information
         //-------------------------------------------------
 		if (
@@ -228,67 +209,6 @@ export default {
 					url.pathname === "/api/dietary-restrictions"
 		) {
 			return getDietaryRestrictionsRoute(
-				request,
-				env
-			);
-		}
-
-		//-------------------------------------------------
-        // Get household contact information
-        //-------------------------------------------------
-
-
-		if (
-			request.method === "POST" &&
-			url.pathname === "/api/contact-info"
-		) {
-
-			return saveContactInfoRoute(
-				request,
-				env
-			);
-		}
-
-		//-------------------------------------------------
-        // Get Guest RSVPs information
-        //-------------------------------------------------
-		
-		if (
-			request.method === "POST" &&
-			url.pathname === "/api/guest-rsvps"
-		) {
-
-			return saveGuestRsvpsRoute(
-				request,
-				env
-			);
-		}
-
-		//-------------------------------------------------
-		// Save guest dietary restrictions
-		//-------------------------------------------------
-
-		if (
-			request.method === "POST" &&
-			url.pathname === "/api/guest-dietary"
-		) {
-
-			return saveGuestDietaryRoute(
-				request,
-				env
-			);
-		}
-
-		//-------------------------------------------------
-		// Save household acknowledgements
-		//-------------------------------------------------
-
-		if (
-			request.method === "POST" &&
-			url.pathname === "/api/acknowledgements"
-		) {
-
-			return saveAcknowledgementsRoute(
 				request,
 				env
 			);

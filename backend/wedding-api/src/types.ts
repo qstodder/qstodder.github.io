@@ -8,25 +8,3 @@ export interface Env {
     ACCESS_AUD?: string;
     ADMIN_EMAILS?: string;
 }
-
-export interface RSVPRequest {
-    householdId: number;
-
-    email: string;
-
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-
-    attendingWelcome: boolean;
-    attendingWedding: boolean;
-    attendingBrunch: boolean;
-
-    dietaryVegetarian: boolean;
-    dietaryVegan: boolean;
-    dietaryGlutenFree: boolean;
-
-    acknowledgeNoChildren: boolean;
-    acknowledgeNoPlusOnes: boolean;
-}

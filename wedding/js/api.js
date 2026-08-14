@@ -28,20 +28,6 @@ export async function searchGuests(search) {
     return await response.json();
 }
 
-export async function getHousehold(householdId) {
-
-    const response =
-        await fetch(
-            `${API_BASE}/api/household/${householdId}`
-        );
-
-    if (!response.ok) {
-        throw new Error("Failed to load household.");
-    }
-
-    return await response.json();
-}
-
 export async function getDietaryRestrictions() {
 
     const response =
@@ -72,11 +58,15 @@ export async function submitRSVP(data) {
             }
         );
 
+    const result = await response.json();
+
     if (!response.ok) {
-        throw new Error("Failed to save RSVP.");
+        throw new Error(
+            result.error || "Failed to save RSVP."
+        );
     }
 
-    return await response.json();
+    return result;
 }
 
 export async function getRsvp(householdId) {

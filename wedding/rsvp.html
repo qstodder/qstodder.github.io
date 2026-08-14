@@ -8,13 +8,13 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
+    <meta name="robots" content="noindex, nofollow">
 
     <title>RSVP</title>
 
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
 
     <link
         rel="stylesheet"
@@ -24,7 +24,18 @@
 
 <body>
 
+    <header class="rsvp-header">
+        <a class="rsvp-home-link" href="index.html">Quiana &amp; Scott</a>
+        <p>Wedding RSVP</p>
+    </header>
+
     <main class="rsvp-page">
+
+        <div class="rsvp-intro">
+            <p class="rsvp-kicker">San Diego, California</p>
+            <h1>Kindly Reply</h1>
+            <p>We can’t wait to celebrate with you.</p>
+        </div>
 
         <!-- =============================================
              Step 1: Find invitation
@@ -38,6 +49,10 @@
 
             <p>
                 Begin typing your first or last name.
+            </p>
+
+            <p class="form-note">
+                Select your household to begin or update your RSVP.
             </p>
 
             <label
@@ -65,7 +80,7 @@
 
 
         <!-- =============================================
-             Step 2: Confirm household
+             Step 1: Confirm household
              ============================================= -->
 
         <section
@@ -104,7 +119,7 @@
 
 
         <!-- =============================================
-             Step 3: Contact information
+             Step 2: Contact information
              ============================================= -->
 
         <section
@@ -119,7 +134,8 @@
 
             <p>
                 Please review and update your household’s
-                email and mailing address.
+                email and mailing address. Fields marked required
+                must be completed before continuing.
             </p>
 
             <form id="contact-form">
@@ -140,7 +156,7 @@
 
                 <div class="form-field">
                     <label for="street">
-                        Street address
+                        Address line 1
                     </label>
 
                     <input
@@ -148,7 +164,21 @@
                         name="street"
                         type="text"
                         autocomplete="street-address"
-                        required
+                        maxlength="200"
+                    >
+                </div>
+
+                <div class="form-field">
+                    <label for="address-line-2">
+                        Address line 2 <span class="optional-label">Optional</span>
+                    </label>
+
+                    <input
+                        id="address-line-2"
+                        name="addressLine2"
+                        type="text"
+                        autocomplete="address-line2"
+                        maxlength="200"
                     >
                 </div>
 
@@ -164,13 +194,14 @@
                             name="city"
                             type="text"
                             autocomplete="address-level2"
+                            maxlength="100"
                             required
                         >
                     </div>
 
                     <div class="form-field form-field-small">
                         <label for="state">
-                            State
+                            State / Province / Region
                         </label>
 
                         <input
@@ -178,27 +209,58 @@
                             name="state"
                             type="text"
                             autocomplete="address-level1"
-                            maxlength="2"
-                            required
+                            maxlength="100"
                         >
                     </div>
 
                     <div class="form-field form-field-small">
                         <label for="zip">
-                            ZIP
+                            Postal code
                         </label>
 
                         <input
                             id="zip"
                             name="zip"
                             type="text"
-                            inputmode="numeric"
                             autocomplete="postal-code"
-                            required
+                            maxlength="20"
                         >
                     </div>
 
                 </div>
+
+                <div class="form-field form-field-country">
+                    <label for="country-code">
+                        Country <span class="optional-label">Two-letter code</span>
+                    </label>
+
+                    <input
+                        id="country-code"
+                        name="countryCode"
+                        autocomplete="country"
+                        maxlength="2"
+                        pattern="[A-Za-z]{2}"
+                        list="country-code-options"
+                        value="US"
+                        required
+                    >
+                    <datalist id="country-code-options">
+                        <option value="US">United States</option>
+                        <option value="NL">Netherlands</option>
+                        <option value="CA">Canada</option>
+                        <option value="GB">United Kingdom</option>
+                        <option value="DE">Germany</option>
+                        <option value="FR">France</option>
+                        <option value="BE">Belgium</option>
+                        <option value="ES">Spain</option>
+                        <option value="IT">Italy</option>
+                        <option value="AU">Australia</option>
+                        <option value="NZ">New Zealand</option>
+                        <option value="MX">Mexico</option>
+                    </datalist>
+                </div>
+
+                <p id="address-requirement" class="form-note"></p>
 
                 <div
                     id="contact-error"
