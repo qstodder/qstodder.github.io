@@ -391,10 +391,33 @@ button:disabled {
     margin-top: 0;
 }
 
+#review-screen .review-section {
+    margin: .8rem 0;
+    padding: 1rem;
+}
+
+#review-screen .review-section h3 {
+    margin-bottom: .65rem;
+}
+
+#review-screen .review-section h4 {
+    margin-bottom: .4rem;
+}
+
+#review-screen .review-section p {
+    margin-bottom: .3rem;
+    line-height: 1.45;
+}
+
 .review-guest + .review-guest {
-    margin-top: 1.25rem;
-    padding-top: 1.25rem;
+    margin-top: .75rem;
+    padding-top: .75rem;
     border-top: 1px solid var(--color-divider);
+}
+
+#review-screen .screen-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
 }
 
 @media (max-width: 640px) {
