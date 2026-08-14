@@ -560,7 +560,11 @@ const backToBrunchButton =
 const submitRsvpButton =
     document.getElementById("submit-rsvp");
 
+const returnHomeLink =
+    document.getElementById("return-home");
+
 let dietaryOptions = [];
+let rsvpSubmitted = false;
 
 
 function renderWelcomeGuests() {
@@ -1625,6 +1629,20 @@ backToBrunchButton.addEventListener(
     }
 );
 
+returnHomeLink.addEventListener(
+    "click",
+    (event) => {
+        if (
+            !rsvpSubmitted &&
+            !window.confirm(
+                "Are you sure? Your RSVP has not been submitted."
+            )
+        ) {
+            event.preventDefault();
+        }
+    }
+);
+
 
 submitRsvpButton.addEventListener(
     "click",
@@ -1658,6 +1676,7 @@ submitRsvpButton.addEventListener(
             );
 
             backToBrunchButton.disabled = true;
+            rsvpSubmitted = true;
             submitRsvpButton.textContent =
                 "RSVP Submitted";
             sessionStorage.removeItem(

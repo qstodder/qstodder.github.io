@@ -100,6 +100,61 @@ body {
     font-size: .95rem;
 }
 
+.event-information {
+    display: grid;
+    gap: .75rem;
+    margin: 1.25rem 0 1.5rem;
+}
+
+.event-information-wedding {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.event-detail-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(122, 157, 176, .09);
+    border: 1px solid rgba(122, 157, 176, .25);
+    border-radius: var(--radius-md);
+}
+
+.event-detail-card h3 {
+    margin: 0 0 .25rem;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.event-detail-card address {
+    color: var(--color-text-light);
+    font-size: .95rem;
+    font-style: normal;
+    line-height: 1.4;
+}
+
+.event-type,
+.event-time {
+    font-family: var(--font-ui);
+    font-size: .72rem;
+    font-weight: 750;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.event-type {
+    margin: 0 0 .3rem;
+    color: var(--color-steel-blue);
+}
+
+.event-time {
+    margin: .1rem 0 0;
+    color: var(--color-deep-ocean) !important;
+    white-space: nowrap;
+}
+
 .optional-label {
     color: var(--color-text-light);
     font-size: .72rem;
@@ -284,6 +339,26 @@ button.secondary-button {
     background: transparent;
 }
 
+.home-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.8rem;
+    padding: .65rem 1.15rem;
+    color: var(--color-deep-ocean);
+    background: rgba(122, 157, 176, .12);
+    border: 1px solid rgba(36, 55, 70, .28);
+    border-radius: 999px;
+    font-family: var(--font-ui);
+    font-size: .84rem;
+    font-weight: 750;
+}
+
+.home-button:hover,
+.home-button:focus-visible {
+    background: rgba(122, 157, 176, .22);
+}
+
 button:disabled {
     opacity: .6;
     cursor: wait;
@@ -332,8 +407,14 @@ button:disabled {
     }
 
     .form-row,
-    .dietary-options {
+    .dietary-options,
+    .event-information-wedding {
         grid-template-columns: 1fr;
+    }
+
+    .event-detail-card {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .screen-actions {
@@ -342,6 +423,10 @@ button:disabled {
     }
 
     .screen-actions button {
+        width: 100%;
+    }
+
+    .screen-actions .home-button {
         width: 100%;
     }
 }
