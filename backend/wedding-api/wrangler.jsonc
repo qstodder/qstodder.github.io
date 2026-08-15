@@ -22,9 +22,21 @@
 			"GMAIL_SENDER_EMAIL",
 			"ACCESS_TEAM_DOMAIN",
 			"ACCESS_AUD",
-			"ADMIN_EMAILS"
+			"ADMIN_EMAILS",
+			"WEDDING_SITE_PASSWORD",
+			"WEDDING_SESSION_SECRET"
 		]
 	},
+	"routes": [
+		{
+			"pattern": "www.qstodder.com/wedding",
+			"zone_name": "qstodder.com"
+		},
+		{
+			"pattern": "www.qstodder.com/wedding/*",
+			"zone_name": "qstodder.com"
+		}
+	],
 	"d1_databases": [
 		{
 			"binding": "wedding_rsvp_db",

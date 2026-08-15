@@ -7,4 +7,6 @@ export interface Env {
     ACCESS_TEAM_DOMAIN?: string;
     ACCESS_AUD?: string;
     ADMIN_EMAILS?: string;
+    WEDDING_SITE_PASSWORD?: string;
+    WEDDING_SESSION_SECRET?: string;
 }

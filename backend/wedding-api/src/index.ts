@@ -29,6 +29,7 @@ import {
     updateAdminGuest,
     updateAdminHousehold
 } from "./routes/adminHouseholds";
+import { handleWeddingSiteRequest } from "./routes/weddingSite";
 
 export default {
 
@@ -38,6 +39,10 @@ export default {
     ): Promise<Response> {
 
         const url = new URL(request.url);
+
+        if (url.pathname === "/wedding" || url.pathname.startsWith("/wedding/")) {
+            return handleWeddingSiteRequest(request, env);
+        }
 
         if (
             request.method === "OPTIONS" &&
