@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@500;600&family=Pinyon+Script&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Italianno&family=Montserrat:wght@500;600&family=Pinyon+Script&display=swap");
 
 :root {
     --navy: #243746;
@@ -146,16 +146,37 @@ body {
 
 .invitation {
     position: relative;
+    isolation: isolate;
     display: none;
     width: min(100%, 850px);
     padding: clamp(42px, 9vw, 90px) clamp(25px, 9vw, 100px);
-    overflow: hidden;
-    background: rgba(255, 253, 248, .93);
-    border: 1px solid rgba(99, 128, 140, .38);
-    box-shadow: 0 35px 90px rgba(36, 55, 70, .2);
+    overflow: visible;
+    background: rgba(247, 250, 249, .97);
+    border: 11px solid #29465a;
+    box-shadow: inset 0 0 0 6px #dbe7eb, inset 0 0 0 7px rgba(56, 88, 106, .42), 0 14px 34px rgba(25, 47, 61, .14);
     text-align: center;
     opacity: 0;
     transform: translateY(40px);
+}
+
+.invitation::before,
+.invitation::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+}
+
+.invitation::before {
+    z-index: -1;
+    inset: -18px;
+    background: #91aebe;
+    box-shadow: 0 9px 22px rgba(25, 47, 61, .1);
+}
+
+.invitation::after {
+    z-index: 1;
+    inset: 12px;
+    border: 1px solid #c5a75e;
 }
 
 .invitation.is-visible {
@@ -172,9 +193,9 @@ body {
 
 .invitation h1 span {
     color: var(--steel);
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: .82em;
-    font-style: italic;
+    font-family: "Italianno", "Pinyon Script", "Cormorant Garamond", cursive;
+    font-size: 1em;
+    font-style: normal;
     font-weight: 400;
     letter-spacing: 0;
     text-transform: none;
@@ -182,7 +203,7 @@ body {
 
 .invitation-copy {
     margin: 1.1rem 0 .6rem;
-    font: 400 clamp(1.65rem, 4vw, 1.85rem) / 1.2 "Pinyon Script", "Cormorant Garamond", cursive;
+    font: 400 clamp(1.85rem, 4.4vw, 2.65rem) / 1.2 "Italianno", "Pinyon Script", "Cormorant Garamond", cursive;
     letter-spacing: .015em;
 }
 

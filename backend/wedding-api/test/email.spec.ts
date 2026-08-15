@@ -315,6 +315,7 @@ describe("Admin household email", () => {
         expect(reveal.html).toContain("Quiana &amp; Scott");
         expect(reveal.html).toContain("Blue Family");
         expect(reveal.html).not.toContain("Dear Blue Family");
+        expect(reveal.html).toContain("padding:1px;background:#c5a75e");
         expect(reveal.text).toContain("Open our invitation:");
     });
 
