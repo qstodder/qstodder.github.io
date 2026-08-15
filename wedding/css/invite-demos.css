@@ -16,12 +16,12 @@ body { margin:0; color:var(--ink); background:#e9edef; font-family:Montserrat,Ar
 .inbox-head strong,.inbox-head span { display:block; }
 .inbox-head span { color:#728086; }
 .email-shell { padding:28px 18px 38px; background:#f4f6f6; }
-.email { position:relative; max-width:600px; margin:auto; overflow:hidden; background:var(--paper); text-align:center; font-family:"Cormorant Garamond",Georgia,serif; }
+.email { position:relative; max-width:600px; margin:auto; overflow:hidden; color:#243746; background:linear-gradient(180deg,#fff,#edf5f7); text-align:center; font-family:"Cormorant Garamond",Georgia,serif; }
 .email-inner { padding:52px clamp(24px,8vw,62px); }
 .email .greeting { margin:0 0 2rem; color:#5c6d73; text-align:left; font-size:1.05rem; }
 .eyebrow { margin:0; color:#657e8b; font:600 .67rem/1.4 Montserrat,Arial,sans-serif; letter-spacing:.19em; text-transform:uppercase; }
-.names { margin:1rem 0 .5rem; color:var(--ink); font:500 clamp(3rem,10vw,5.2rem)/.86 "Cormorant Garamond",Georgia,serif; }
-.ampersand { display:block; color:#88a6b4; font-size:.58em; font-style:italic; line-height:.7; }
+.names { margin:1.2rem 0 .65rem; color:var(--ink); font:500 clamp(2.15rem,7vw,3.35rem)/1.1 Montserrat,Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.ampersand { display:inline; color:#7a9db0; font-family:"Cormorant Garamond",Georgia,serif; font-size:.85em; font-style:italic; letter-spacing:0; line-height:1; text-transform:none; }
 .invite-copy { max-width:380px; margin:1.6rem auto; font-size:1.18rem; line-height:1.55; }
 .date-rule { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:15px; margin:2rem auto; color:#455e69; font-size:1rem; letter-spacing:.08em; text-transform:uppercase; }
 .date-rule::before,.date-rule::after { height:1px; background:#a9bdc6; content:""; }
@@ -31,11 +31,11 @@ body { margin:0; color:var(--ink); background:#e9edef; font-family:Montserrat,Ar
 .fine-print { margin:1.8rem 0 0; color:#71828a; font-size:.9rem; }
 
 /* Option 1: engraved stationery */
-.classic .email { border:1px solid #adbec6; }
-.classic .email::before,.classic .email::after { position:absolute; inset:10px; border:1px solid #d3dee2; pointer-events:none; content:""; }
+.classic .email { border:1px solid #8faeba; }
+.classic .email::before,.classic .email::after { position:absolute; inset:10px; border:1px solid #c4d6de; pointer-events:none; content:""; }
 .classic .email::after { inset:16px; border-color:#e6ecee; }
 .classic .email-inner { position:relative; z-index:1; }
-.monogram { display:grid; width:55px; height:55px; margin:0 auto 1.5rem; place-items:center; color:#fff; background:#6e8996; border-radius:50%; font-size:1.1rem; letter-spacing:.06em; }
+.monogram { display:grid; width:55px; height:55px; margin:0 auto 1.5rem; place-items:center; color:#fff; background:#365f74; border-radius:50%; font-size:1.1rem; letter-spacing:.06em; }
 
 /* Option 2: a motion concept that would become an animated GIF */
 .motion .email { min-height:690px; background:linear-gradient(180deg,#fafdfe 0%,#edf5f8 58%,#d9e8ee 100%); }

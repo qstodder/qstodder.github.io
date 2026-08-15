@@ -30,6 +30,25 @@ function safeHeader(value: string): string {
     return value.replace(/[\r\n]/g, " ").trim();
 }
 
+function encodeHeader(value: string): string {
+    const safeValue = safeHeader(value);
+
+    if (/^[\x20-\x7E]*$/.test(safeValue)) {
+        return safeValue;
+    }
+
+    const bytes = new TextEncoder().encode(safeValue);
+    let binary = "";
+
+    for (let index = 0; index < bytes.length; index += 8192) {
+        binary += String.fromCharCode(
+            ...bytes.subarray(index, index + 8192)
+        );
+    }
+
+    return `=?UTF-8?B?${btoa(binary)}?=`;
+}
+
 function isSingleEmailAddress(value: string): boolean {
     return /^[^\s@<>,]+@[^\s@<>,]+\.[^\s@<>,]+$/.test(
         value
@@ -47,7 +66,7 @@ function buildMimeMessage(
     return [
         `From: Quiana & Scott <${safeHeader(sender)}>`,
         `To: ${safeHeader(message.to)}`,
-        `Subject: ${safeHeader(message.subject)}`,
+        `Subject: ${encodeHeader(message.subject)}`,
         "MIME-Version: 1.0",
         `Content-Type: multipart/alternative; boundary="${boundary}"`,
         "",

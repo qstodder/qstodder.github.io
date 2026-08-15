@@ -169,6 +169,43 @@ describe("RSVP confirmation email", () => {
         );
     });
 
+    it("encodes smart punctuation in the subject header", async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(Response.json({ access_token: "temporary-access-token" }))
+            .mockResolvedValueOnce(Response.json({ id: "gmail-message-id" }));
+        vi.stubGlobal("fetch", fetchMock);
+        const testEnv = {
+            GMAIL_CLIENT_ID: "client-id",
+            GMAIL_CLIENT_SECRET: "client-secret",
+            GMAIL_REFRESH_TOKEN: "refresh-token",
+            GMAIL_SENDER_EMAIL: "sender@gmail.com"
+        } as Env;
+
+        await sendGmailMessage(testEnv, {
+            ...buildConfirmationEmail(confirmation),
+            subject: "You’re invited to Quiana & Scott’s wedding"
+        });
+
+        const request = fetchMock.mock.calls[1][1] as RequestInit;
+        const raw = JSON.parse(request.body as string).raw as string;
+        const padded = raw.replaceAll("-", "+").replaceAll("_", "/")
+            .padEnd(Math.ceil(raw.length / 4) * 4, "=");
+        const binary = atob(padded);
+        const mime = new TextDecoder().decode(
+            Uint8Array.from(binary, (character) => character.charCodeAt(0))
+        );
+        const encoded = mime.match(/Subject: =\?UTF-8\?B\?([^?]+)\?=/)?.[1];
+
+        expect(encoded).toBeTruthy();
+        const decodedBinary = atob(encoded!);
+        const decodedSubject = new TextDecoder().decode(
+            Uint8Array.from(decodedBinary, (character) => character.charCodeAt(0))
+        );
+        expect(decodedSubject).toBe(
+            "You’re invited to Quiana & Scott’s wedding"
+        );
+    });
+
     it("reports token failures without attempting a send", async () => {
 
         const fetchMock = vi.fn()
