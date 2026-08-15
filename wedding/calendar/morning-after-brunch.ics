@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Quiana and Scott//Wedding Weekend//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:morning-after-brunch-20270919@qstodder.com
+DTSTAMP:20260813T120000Z
+DTSTART:20270919T180000Z
+DTEND:20270919T210000Z
+SUMMARY:Quiana & Scott's Morning-After Brunch
+DESCRIPTION:Stop by for a relaxed brunch before we say goodbye.
+LOCATION:Ellen Browning Scripps Park\, 1100 Coast Blvd\, La Jolla\, CA 92037
+END:VEVENT
+END:VCALENDAR

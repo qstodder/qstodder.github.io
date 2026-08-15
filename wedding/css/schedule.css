@@ -1,129 +1,193 @@
-/* ==========================================================
-   Schedule Page
-   ========================================================== */
-
-
 .schedule-page {
-
     max-width: 900px;
-
     margin: 0 auto;
-
     padding: 0 24px 80px;
-
 }
-
-
 
 .page-intro {
-
-    text-align: center;
-
     margin-bottom: 70px;
-
+    text-align: center;
 }
-
-
 
 .page-intro h2 {
-
     font-family: Copperplate, serif;
-
     font-size: 3rem;
-
     letter-spacing: 2px;
-
 }
-
-
 
 .page-intro p {
-
-    font-size: 1.4rem;
-
     color: var(--steel-blue);
-
+    font-size: 1.4rem;
 }
-
-
-
-/* Timeline */
-
-.timeline {
-
-    position: relative;
-
-}
-
-
 
 .event {
-
     display: grid;
-
-    grid-template-columns: 140px 1fr;
-
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 40px;
-
-    margin-bottom: 60px;
-
+    margin-bottom: 76px;
 }
-
-
 
 .time {
-
-    font-family: Copperplate, serif;
-
     color: var(--steel-blue);
-
-    font-size: 1.2rem;
-
+    font-family: Copperplate, serif;
     text-align: right;
-
 }
 
+.time span,
+.time time {
+    display: block;
+}
 
+.time span {
+    margin-bottom: 8px;
+    color: var(--slate-grey);
+    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.time time { font-size: 1rem; }
+
+.event-type {
+    margin: 0 0 4px;
+    color: var(--steel-blue);
+    font-family: Copperplate, serif;
+    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
 
 .event-details h3 {
-
-    margin-top: 0;
-
-    font-size: 2rem;
-
+    margin: 0;
     color: var(--slate-grey);
-
-}
-
-
-
-.event-details p {
-
     font-size: 1.3rem;
-
+    font-weight: 500;
 }
 
+.event-details address {
+    margin-top: 4px;
+    font-size: 1.05rem;
+    font-style: normal;
+}
 
+.event-actions {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 10px;
+}
 
-/* Mobile */
+.map-link,
+.calendar-menu summary {
+    color: var(--steel-blue);
+    border-bottom: 1px solid currentColor;
+    cursor: pointer;
+    font-family: Copperplate, serif;
+    font-size: .72rem;
+    letter-spacing: .04em;
+    list-style: none;
+    text-decoration: none;
+}
+
+.calendar-menu summary::-webkit-details-marker { display: none; }
+.calendar-menu summary::after { content: " +"; }
+.calendar-menu[open] summary::after { content: " −"; }
+
+.calendar-menu div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin-top: 8px;
+}
+
+.calendar-menu a {
+    color: var(--slate-grey);
+    font-size: .88rem;
+}
+
+.event-blurb {
+    max-width: 390px;
+    margin: 16px 0 0;
+    line-height: 1.45;
+}
+
+.attire {
+    margin: 10px 0 0;
+    color: var(--steel-blue);
+    font-size: .92rem;
+}
+
+.attire-feature {
+    max-width: 390px;
+    margin-top: 17px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(100, 122, 126, .22);
+}
+
+.attire-feature h4 {
+    margin: 0 0 3px;
+    color: var(--steel-blue);
+    font-family: Copperplate, serif;
+    font-size: .76rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.attire-formality {
+    margin: 0;
+    color: var(--slate-grey);
+}
+
+.footwear-note {
+    margin: 4px 0 13px;
+    color: var(--slate-grey);
+    font-size: .88rem;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.palette-group + .palette-group { margin-top: 13px; }
+
+.palette-group p {
+    margin: 0 0 6px;
+    color: var(--slate-grey);
+    font-size: .88rem;
+    line-height: 1.4;
+}
+
+.swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.swatch {
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(39, 54, 59, .18);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .38);
+}
+
+.baby-blue { background: #c5e3f0; }
+.sky-blue { background: #86b9dc; }
+.medium-blue { background: #4f83c2; }
+.royal-blue { background: #3159b7; }
+.navy { background: #172c4d; }
+.black { background: #252525; }
+.grey { background: #858b91; }
+.green { background: #79957b; }
+.light-green { background: #88a189; }
+.purple { background: #75627d; }
+.brown { background: #765c48; }
+.beige { background: #d7c6a8; }
 
 @media (max-width: 768px) {
-
-
-    .event {
-
-        display: block;
-
-    }
-
+    .event { display: block; }
 
     .time {
-
+        margin-bottom: 14px;
         text-align: left;
-
-        margin-bottom: 10px;
-
     }
-
-
 }

@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Quiana and Scott//Wedding Weekend//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:wedding-reception-20270918@qstodder.com
+DTSTAMP:20260813T120000Z
+DTSTART:20270919T000000Z
+DTEND:20270919T050000Z
+SUMMARY:Quiana & Scott's Wedding Reception
+DESCRIPTION:Celebrate with us over dinner\, drinks\, and dancing.
+LOCATION:La Jolla Woman's Club\, 7791 Draper Ave\, La Jolla\, CA 92037
+END:VEVENT
+END:VCALENDAR

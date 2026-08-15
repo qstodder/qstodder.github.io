@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Quiana and Scott//Wedding Weekend//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:wedding-ceremony-20270918@qstodder.com
+DTSTAMP:20260813T120000Z
+DTSTART:20270918T230000Z
+DTEND:20270919T000000Z
+SUMMARY:Quiana & Scott's Wedding Ceremony
+DESCRIPTION:Join us by the ocean as we exchange our vows.
+LOCATION:Cuvier Park\, 590 Coast S Blvd\, La Jolla\, CA 92037
+END:VEVENT
+END:VCALENDAR

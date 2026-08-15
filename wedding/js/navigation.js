@@ -9,6 +9,11 @@ function initializeNavigation() {
             .split("/")
             .pop();
 
+    const navigationPage =
+        /^schedule(?:-[23])?\.html$/.test(currentPage)
+            ? "schedule.html"
+            : currentPage;
+
 
     const navLinks =
         document.querySelectorAll(".main-nav a");
@@ -20,7 +25,7 @@ function initializeNavigation() {
             link.getAttribute("href");
 
 
-        if (linkPage === currentPage) {
+        if (linkPage === navigationPage) {
 
             link.classList.add("active");
 

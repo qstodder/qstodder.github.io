@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Quiana and Scott//Wedding Weekend//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:welcome-gathering-20270917@qstodder.com
+DTSTAMP:20260813T120000Z
+DTSTART:20270918T020000Z
+DTEND:20270918T040000Z
+SUMMARY:Quiana & Scott's Welcome Gathering
+DESCRIPTION:Join us for a casual gathering to kick off the weekend.
+LOCATION:The Public House\, 830 Kline St\, La Jolla\, CA 92037
+END:VEVENT
+END:VCALENDAR
