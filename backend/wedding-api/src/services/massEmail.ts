@@ -29,7 +29,7 @@ function invitationCore(greeting: string, htmlBody: string): string {
         <h1 style="margin:18px 0 8px;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:34px;font-weight:500;letter-spacing:3px;line-height:1.25;text-transform:uppercase">Quiana <span style="color:#7a9db0;font-family:Georgia,serif;font-size:26px;font-style:italic;letter-spacing:0;text-transform:none">&amp;</span> Scott</h1>
         <p style="margin:8px auto 25px;color:#647a7e;font-size:17px;font-variant:small-caps;letter-spacing:1px">joyfully invite you to celebrate their marriage</p>
         <table role="presentation" style="width:100%;margin:28px 0;border-collapse:collapse"><tr><td style="width:30%;border-top:1px solid #7a9db0">&nbsp;</td><td style="padding:0 14px;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:12px;letter-spacing:2px;white-space:nowrap">09 · 18 · 27</td><td style="width:30%;border-top:1px solid #7a9db0">&nbsp;</td></tr></table>
-        <p style="margin:0;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase">Cuvier Park · La Jolla, California</p>
+        <p style="margin:0;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase">Wedding Bowl · La Jolla, California</p>
         <p style="margin:5px 0 0;color:#647a7e;font-size:16px">Saturday at four o’clock</p>
         <div style="margin:32px auto 24px;max-width:440px;color:#3e5965;text-align:left">${htmlBody}</div>
         <p style="margin:24px 0;color:#526b76;font-size:16px">Kindly respond by August 1, 2027</p>
