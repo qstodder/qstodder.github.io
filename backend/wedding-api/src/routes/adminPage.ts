@@ -31,6 +31,7 @@ const adminPage = `<!DOCTYPE html>
         <nav class="admin-tabs" aria-label="Administration sections">
             <a class="admin-tab is-active" href="/admin/" aria-current="page">Households</a>
             <a class="admin-tab" href="/admin/guests/">Guests</a>
+            <a class="admin-tab" href="/admin/email/">Email</a>
         </nav>
     </header>
     <main class="admin-main">
@@ -210,6 +211,10 @@ const adminAssets: Record<
     },
     "admin-guests.js": {
         url: "https://qstodder.github.io/wedding/js/admin-guests.js",
+        contentType: "text/javascript; charset=UTF-8"
+    },
+    "admin-email.js": {
+        url: "https://qstodder.github.io/wedding/js/admin-email.js",
         contentType: "text/javascript; charset=UTF-8"
     }
 };
@@ -396,6 +401,7 @@ const adminGuestsPage = `<!DOCTYPE html>
         <nav class="admin-tabs" aria-label="Administration sections">
             <a class="admin-tab" href="/admin/">Households</a>
             <a class="admin-tab is-active" href="/admin/guests/" aria-current="page">Guests</a>
+            <a class="admin-tab" href="/admin/email/">Email</a>
         </nav>
     </header>
     <main class="admin-main">
@@ -465,5 +471,80 @@ export async function getAdminGuestsPage(
             { error: error instanceof AdminAuthError ? error.message : "Unable to load the guest list." },
             { status: error instanceof AdminAuthError ? error.status : 500 }
         );
+    }
+}
+
+const adminEmailPage = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Email · Wedding Administration</title>
+    <link rel="stylesheet" href="/admin/assets/variables.css">
+    <link rel="stylesheet" href="/admin/assets/base.css">
+    <link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body>
+    <header class="admin-header admin-header-with-tabs">
+        <div class="admin-header-content">
+            <div><p class="admin-eyebrow">Quiana &amp; Scott</p><h1>Email households</h1><p class="admin-subtitle">Choose recipients, draft, review, and send</p></div>
+            <div class="admin-identity"><span id="admin-email">Secure access required</span><button id="refresh-email" class="secondary-button" type="button">Refresh</button></div>
+        </div>
+        <nav class="admin-tabs" aria-label="Administration sections">
+            <a class="admin-tab" href="/admin/">Households</a>
+            <a class="admin-tab" href="/admin/guests/">Guests</a>
+            <a class="admin-tab is-active" href="/admin/email/" aria-current="page">Email</a>
+        </nav>
+    </header>
+    <main class="admin-main">
+        <section id="admin-loading" class="admin-message" aria-live="polite"><div class="loading-mark" aria-hidden="true"></div><h2>Loading households</h2></section>
+        <section id="admin-error" class="admin-message admin-error hidden" role="alert"><h2>Email tool unavailable</h2><p id="admin-error-message"></p></section>
+        <div id="email-content" class="email-layout hidden">
+            <section class="admin-panel">
+                <div class="panel-heading"><div><p class="admin-eyebrow">Recipients</p><h2>Choose households</h2></div><strong id="recipient-count" aria-live="polite">0 households</strong></div>
+                <div class="admin-filters email-filters">
+                    <div class="filter-field filter-search"><label for="email-search">Search</label><input id="email-search" type="search" placeholder="Household or guest name"></div>
+                    <div class="filter-field"><label for="email-rsvp-filter">RSVP</label><select id="email-rsvp-filter"><option value="all">All RSVP statuses</option><option value="submitted">Has RSVP’d</option><option value="notSubmitted">Has not RSVP’d</option><option value="inProgress">In progress</option><option value="pending">Not started</option></select></div>
+                    <div class="filter-field"><label for="email-couple-filter">Scott / Quiana</label><select id="email-couple-filter"><option value="all">Either side</option><option value="scott">Scott</option><option value="quiana">Quiana</option><option value="unassigned">Unassigned</option></select></div>
+                    <div class="filter-field"><label for="email-relationship-filter">Friend / Family</label><select id="email-relationship-filter"><option value="all">Either relationship</option><option value="friend">Friend</option><option value="family">Family</option><option value="unassigned">Unassigned</option></select></div>
+                    <div class="filter-field"><label for="email-family-filter">Family side</label><select id="email-family-filter"><option value="all">Either family side</option><option value="moms-side">Mom’s side</option><option value="dads-side">Dad’s side</option><option value="unassigned">Unassigned</option></select></div>
+                    <div class="filter-field"><label for="email-delivery-filter">Invitation</label><select id="email-delivery-filter"><option value="all">All delivery types</option><option value="addressNeeded">Address needed</option><option value="readyToMail">Ready to mail</option><option value="handDelivery">Hand delivery</option></select></div>
+                </div>
+                <p id="excluded-email-count" class="email-note"></p>
+                <div class="table-scroll email-recipient-table"><table><thead><tr><th scope="col"><input id="select-all-recipients" type="checkbox" aria-label="Select all filtered households"></th><th scope="col">Household</th><th scope="col">Email</th><th scope="col">RSVP</th></tr></thead><tbody id="email-recipient-rows"></tbody></table></div>
+                <div id="email-empty-results" class="empty-results hidden">No households with email addresses match these filters.</div>
+            </section>
+            <section class="admin-panel email-composer">
+                <div class="panel-heading"><div><p class="admin-eyebrow">Message</p><h2>Draft email</h2></div><button id="load-invitation-draft" class="secondary-button" type="button">Load wedding invitation</button></div>
+                <form id="email-form">
+                    <label class="address-field"><span>Subject</span><input id="email-subject" maxlength="150" required value="You’re invited to Quiana &amp; Scott’s wedding"></label>
+                    <label class="address-field"><span>Message body</span><textarea id="email-body" rows="12" maxlength="10000" required></textarea></label>
+                    <p class="email-note">Each message begins with “Dear [Household name],” and is sent separately to that household.</p>
+                    <button class="address-save-button" type="submit">Review email</button>
+                </form>
+            </section>
+            <section id="email-review" class="admin-panel hidden">
+                <div class="panel-heading"><div><p class="admin-eyebrow">Final check</p><h2>Review before sending</h2></div><strong id="review-recipient-count"></strong></div>
+                <div class="email-preview"><p id="preview-greeting"></p><div id="preview-body"></div></div>
+                <p id="send-status" class="form-status" aria-live="polite"></p>
+                <div class="detail-actions"><button id="confirm-send" class="address-save-button" type="button">Confirm and send</button><button id="cancel-review" class="address-cancel-button" type="button">Back to editing</button></div>
+            </section>
+        </div>
+    </main>
+    <script defer src="/admin/assets/admin-email.js"></script>
+</body>
+</html>`;
+
+export async function getAdminEmailPage(request: Request, env: Env): Promise<Response> {
+    try {
+        await authenticateAdmin(request, env);
+        return new Response(adminEmailPage, { headers: {
+            "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store",
+            "Content-Security-Policy": ["default-src 'none'", "script-src 'self'", "style-src 'self' https://fonts.googleapis.com", "font-src https://fonts.gstatic.com", "connect-src 'self'", "base-uri 'none'", "frame-ancestors 'none'", "form-action 'self'"].join("; "),
+            "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"
+        }});
+    } catch (error) {
+        return Response.json({ error: error instanceof AdminAuthError ? error.message : "Unable to load the email tool." }, { status: error instanceof AdminAuthError ? error.status : 500 });
     }
 }

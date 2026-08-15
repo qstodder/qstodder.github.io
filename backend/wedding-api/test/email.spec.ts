@@ -13,6 +13,8 @@ import {
     refreshGmailAccessToken,
     sendGmailMessage
 } from "../src/services/gmail";
+import { buildHouseholdEmail } from "../src/services/massEmail";
+import { sendAdminEmailBatch } from "../src/routes/adminEmail";
 import { Env } from "../src/types";
 
 const confirmation: ConfirmationDetails = {
@@ -90,6 +92,15 @@ describe("RSVP confirmation email", () => {
         );
         expect(email.html).toContain(
             "RSVP Confirmation"
+        );
+        expect(email.text).toContain(
+            "You may edit your responses until Aug 1st, 2027."
+        );
+        expect(email.html).toContain(
+            "You may edit your responses until Aug 1st, 2027."
+        );
+        expect(email.text).not.toContain(
+            "Here is a copy of your responses"
         );
     });
 
@@ -222,5 +233,71 @@ describe("RSVP confirmation email", () => {
         );
 
         expect(fetchMock).not.toHaveBeenCalled();
+    });
+});
+
+describe("Admin household email", () => {
+    it("addresses and escapes each household message", () => {
+        const email = buildHouseholdEmail(
+            {
+                householdName: "The <Blue> Family",
+                email: "blue@example.com"
+            },
+            "Wedding invitation",
+            "You are cordially invited.\n\nPlease RSVP."
+        );
+
+        expect(email.text).toContain(
+            "Dear The <Blue> Family,"
+        );
+        expect(email.html).toContain(
+            "Dear The &lt;Blue&gt; Family,"
+        );
+        expect(email.html).not.toContain("<Blue>");
+    });
+
+    it("refreshes OAuth once for an email batch", async () => {
+        const all = vi.fn().mockResolvedValue({
+            results: [
+                { id: 1, household_name: "Alpha Family", email: "alpha@example.com" },
+                { id: 2, household_name: "Beta Family", email: "beta@example.com" }
+            ]
+        });
+        const bind = vi.fn().mockReturnValue({ all });
+        const prepare = vi.fn().mockReturnValue({ bind });
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(Response.json({ access_token: "batch-token" }))
+            .mockResolvedValueOnce(Response.json({ id: "message-1" }))
+            .mockResolvedValueOnce(Response.json({ id: "message-2" }));
+        vi.stubGlobal("fetch", fetchMock);
+
+        const response = await sendAdminEmailBatch(
+            new Request("http://localhost:8787/api/admin/email/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    householdIds: [1, 2],
+                    subject: "Wedding invitation",
+                    body: "Please RSVP."
+                })
+            }),
+            {
+                wedding_rsvp_db: { prepare },
+                GMAIL_CLIENT_ID: "client-id",
+                GMAIL_CLIENT_SECRET: "client-secret",
+                GMAIL_REFRESH_TOKEN: "refresh-token",
+                GMAIL_SENDER_EMAIL: "sender@gmail.com"
+            } as unknown as Env
+        );
+
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({
+            sent: [1, 2],
+            failed: []
+        });
+        expect(fetchMock).toHaveBeenCalledTimes(3);
+        expect(fetchMock.mock.calls[0][0]).toBe(
+            "https://oauth2.googleapis.com/token"
+        );
     });
 });

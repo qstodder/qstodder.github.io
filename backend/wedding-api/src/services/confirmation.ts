@@ -216,7 +216,7 @@ export function buildConfirmationEmail(
         text: [
             `Hello ${details.householdName},`,
             "",
-            "Thank you for submitting your RSVP. Here is a copy of your responses:",
+            "Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.",
             "",
             textGuests,
             "",
@@ -235,7 +235,7 @@ export function buildConfirmationEmail(
                         </h1>
                         <p>Hello ${escapeHtml(details.householdName)},</p>
                         <p>
-                            Thank you for submitting your RSVP. Here is a copy of your responses:
+                            Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.
                         </p>
                         ${htmlGuests}
                         <p>We can't wait to celebrate with you!</p>

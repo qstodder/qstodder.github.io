@@ -24,6 +24,9 @@ interface AdminHouseholdRow {
     attending_brunch: number;
     submitted_at: string | null;
     guest_names: string | null;
+    couple_side: string | null;
+    relationship_type: string | null;
+    family_side: string | null;
 }
 
 interface AdminGuestRow {
@@ -79,6 +82,9 @@ export async function getAdminData(
                         h.zip,
                         h.country_code,
                         h.address_needed,
+                        h.couple_side,
+                        h.relationship_type,
+                        h.family_side,
                         COUNT(g.id) AS guest_count,
                         SUM(
                             CASE
@@ -173,6 +179,11 @@ export async function getAdminData(
                     welcome: row.attending_welcome,
                     wedding: row.attending_wedding,
                     brunch: row.attending_brunch
+                },
+                classifications: {
+                    coupleSide: row.couple_side,
+                    relationshipType: row.relationship_type,
+                    familySide: row.family_side
                 }
             };
         });

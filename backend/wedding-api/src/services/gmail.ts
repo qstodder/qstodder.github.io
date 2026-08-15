@@ -1,6 +1,6 @@
 import { Env } from "../types";
 
-interface GmailMessage {
+export interface GmailMessage {
     to: string;
     subject: string;
     text: string;
@@ -143,6 +143,27 @@ export async function sendGmailMessage(
 
     const accessToken =
         await refreshGmailAccessToken(env);
+
+    await sendGmailMessageWithAccessToken(
+        env,
+        message,
+        accessToken
+    );
+}
+
+export async function sendGmailMessageWithAccessToken(
+    env: Env,
+    message: GmailMessage,
+    accessToken: string
+): Promise<void> {
+    if (
+        !isSingleEmailAddress(env.GMAIL_SENDER_EMAIL) ||
+        !isSingleEmailAddress(message.to)
+    ) {
+        throw new Error(
+            "Email contains an invalid sender or recipient address."
+        );
+    }
 
     const raw = encodeBase64Url(
         buildMimeMessage(

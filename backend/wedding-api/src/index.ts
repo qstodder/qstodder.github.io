@@ -13,10 +13,12 @@ import {
 import { updateAdminAddress } from "./routes/adminAddress";
 import {
     getAdminAsset,
+    getAdminEmailPage,
     getAdminGuestsPage,
     getAdminHouseholdPage,
     getAdminPage
 } from "./routes/adminPage";
+import { sendAdminEmailBatch } from "./routes/adminEmail";
 import { adminPreflight } from "./lib/adminCors";
 import {
     archiveAdminGuest,
@@ -87,6 +89,13 @@ export default {
             return getAdminGuestsPage(request, env);
         }
 
+        if (
+            request.method === "GET" &&
+            /^\/admin\/email\/?$/.test(url.pathname)
+        ) {
+            return getAdminEmailPage(request, env);
+        }
+
         const adminAssetMatch = url.pathname.match(
             /^\/admin\/assets\/([^/]+)$/
         );
@@ -117,6 +126,13 @@ export default {
             url.pathname === "/api/admin/guests"
         ) {
             return getAdminGuests(request, env);
+        }
+
+        if (
+            request.method === "POST" &&
+            url.pathname === "/api/admin/email/send"
+        ) {
+            return sendAdminEmailBatch(request, env);
         }
 
         if (
