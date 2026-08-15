@@ -8,9 +8,11 @@ const elements = {
     rows: document.querySelector("#email-recipient-rows"), selectAll: document.querySelector("#select-all-recipients"),
     count: document.querySelector("#recipient-count"), excluded: document.querySelector("#excluded-email-count"),
     empty: document.querySelector("#email-empty-results"), form: document.querySelector("#email-form"),
-    subject: document.querySelector("#email-subject"), body: document.querySelector("#email-body"),
+    template: document.querySelector("#email-template"), subject: document.querySelector("#email-subject"), body: document.querySelector("#email-body"),
     draft: document.querySelector("#load-invitation-draft"), review: document.querySelector("#email-review"),
     reviewCount: document.querySelector("#review-recipient-count"), greeting: document.querySelector("#preview-greeting"),
+    preview: document.querySelector("#email-preview"), previewLabel: document.querySelector("#preview-template-label"),
+    previewHeading: document.querySelector("#preview-invitation-heading"), previewAction: document.querySelector("#preview-template-action"),
     previewBody: document.querySelector("#preview-body"), confirm: document.querySelector("#confirm-send"),
     cancel: document.querySelector("#cancel-review"), status: document.querySelector("#send-status")
 };
@@ -84,6 +86,13 @@ function showReview() {
     }
     elements.reviewCount.textContent = `${recipients.length} individual email${recipients.length === 1 ? "" : "s"}`;
     elements.greeting.textContent = `Dear ${recipients[0].householdName},`;
+    const templateLabels = { plain: "Plain email", classic: "Option 1 · Classic HTML", animated: "Option 2 · Animated coastal", reveal: "Option 4 · Website reveal" };
+    elements.preview.dataset.template = elements.template.value;
+    elements.previewLabel.textContent = templateLabels[elements.template.value];
+    const isInvitation = elements.template.value !== "plain";
+    elements.previewHeading.classList.toggle("hidden", !isInvitation);
+    elements.previewAction.classList.toggle("hidden", !isInvitation);
+    elements.previewAction.textContent = elements.template.value === "reveal" ? "Open our invitation →" : "View details & RSVP";
     elements.previewBody.replaceChildren(...elements.body.value.split(/\n{2,}/).map((text) => {
         const paragraph = document.createElement("p");
         paragraph.textContent = text;
@@ -105,7 +114,7 @@ async function sendEmails() {
         for (let index = 0; index < recipients.length; index += 20) {
             const batch = recipients.slice(index, index + 20);
             elements.status.textContent = `Sending ${sent + 1}–${sent + batch.length} of ${recipients.length}…`;
-            const response = await fetch("/api/admin/email/send", { method: "POST", credentials: "include", headers: { "Accept": "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ householdIds: batch.map((item) => item.id), subject: elements.subject.value, body: elements.body.value }) });
+            const response = await fetch("/api/admin/email/send", { method: "POST", credentials: "include", headers: { "Accept": "application/json", "Content-Type": "application/json" }, body: JSON.stringify({ householdIds: batch.map((item) => item.id), subject: elements.subject.value, body: elements.body.value, template: elements.template.value }) });
             const result = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(result.error || "Unable to send this email batch.");
             sent += result.sent.length;

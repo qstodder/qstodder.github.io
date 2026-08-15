@@ -313,6 +313,19 @@ body {
     gap: 1rem;
 }
 
+.email-template-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    margin: -.35rem 0 0;
+    font-family: var(--font-ui);
+    font-size: .82rem;
+}
+
+.email-template-links a {
+    color: var(--color-steel-blue);
+}
+
 .email-composer textarea {
     width: 100%;
     padding: .8rem;
@@ -334,6 +347,71 @@ body {
     font-family: Georgia, serif;
     line-height: 1.6;
     white-space: pre-line;
+}
+
+.preview-template-label {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-light);
+    font: 700 .65rem var(--font-ui);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.preview-invitation-heading {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.preview-invitation-heading small,
+.preview-invitation-heading strong,
+.preview-invitation-heading span {
+    display: block;
+}
+
+.preview-invitation-heading small {
+    color: var(--color-steel-blue);
+    font: 700 .65rem var(--font-ui);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.preview-invitation-heading strong {
+    margin: .8rem 0;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-weight: 500;
+    line-height: .95;
+}
+
+.preview-invitation-heading i { color: var(--color-steel-blue); }
+
+.preview-template-action {
+    display: table;
+    margin: 1.4rem auto 0;
+    padding: .75rem 1.2rem;
+    color: #fff;
+    background: var(--color-deep-ocean);
+    border-radius: 999px;
+    font: 700 .7rem var(--font-ui);
+    letter-spacing: .06em;
+    pointer-events: none;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.email-preview[data-template="classic"] {
+    background: #fffdf9;
+    border: 4px double #adbec6;
+    text-align: left;
+}
+
+.email-preview[data-template="animated"] {
+    background: linear-gradient(180deg, #fafdfe, #d9e8ee);
+    box-shadow: inset 0 -20px 45px rgba(74, 124, 148, .18);
+}
+
+.email-preview[data-template="reveal"] {
+    background: #f9faf9;
+    border-top: 8px solid var(--color-deep-ocean);
 }
 
 @media (max-width: 1180px) {

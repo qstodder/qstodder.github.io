@@ -518,6 +518,8 @@ const adminEmailPage = `<!DOCTYPE html>
             <section class="admin-panel email-composer">
                 <div class="panel-heading"><div><p class="admin-eyebrow">Message</p><h2>Draft email</h2></div><button id="load-invitation-draft" class="secondary-button" type="button">Load wedding invitation</button></div>
                 <form id="email-form">
+                    <label class="address-field"><span>Template</span><select id="email-template"><option value="plain">Plain email</option><option value="classic">Option 1 · Classic HTML invitation</option><option value="animated">Option 2 · Animated coastal invitation</option><option value="reveal">Option 4 · Website reveal invitation</option></select></label>
+                    <p class="email-template-links"><a href="https://qstodder.com/wedding/invite-demo-1.html" target="_blank" rel="noopener">View Option 1</a><a href="https://qstodder.com/wedding/invite-demo-2.html" target="_blank" rel="noopener">View Option 2</a><a href="https://qstodder.com/wedding/invite-demo-4.html" target="_blank" rel="noopener">View Option 4</a></p>
                     <label class="address-field"><span>Subject</span><input id="email-subject" maxlength="150" required value="You’re invited to Quiana &amp; Scott’s wedding"></label>
                     <label class="address-field"><span>Message body</span><textarea id="email-body" rows="12" maxlength="10000" required></textarea></label>
                     <p class="email-note">Each message begins with “Dear [Household name],” and is sent separately to that household.</p>
@@ -526,7 +528,7 @@ const adminEmailPage = `<!DOCTYPE html>
             </section>
             <section id="email-review" class="admin-panel hidden">
                 <div class="panel-heading"><div><p class="admin-eyebrow">Final check</p><h2>Review before sending</h2></div><strong id="review-recipient-count"></strong></div>
-                <div class="email-preview"><p id="preview-greeting"></p><div id="preview-body"></div></div>
+                <div id="email-preview" class="email-preview"><p class="preview-template-label" id="preview-template-label"></p><p id="preview-greeting"></p><div id="preview-invitation-heading" class="preview-invitation-heading hidden"><small>Together with their families</small><strong>Quiana <i>&amp;</i> Scott</strong><span>September 18, 2027 · La Jolla, California</span></div><div id="preview-body"></div><a id="preview-template-action" class="preview-template-action hidden" href="#">View details &amp; RSVP</a></div>
                 <p id="send-status" class="form-status" aria-live="polite"></p>
                 <div class="detail-actions"><button id="confirm-send" class="address-save-button" type="button">Confirm and send</button><button id="cancel-review" class="address-cancel-button" type="button">Back to editing</button></div>
             </section>

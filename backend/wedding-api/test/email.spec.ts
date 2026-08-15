@@ -256,6 +256,27 @@ describe("Admin household email", () => {
         expect(email.html).not.toContain("<Blue>");
     });
 
+    it("renders every invitation template", () => {
+        const recipient = {
+            householdName: "Blue Family",
+            email: "blue@example.com"
+        };
+        const classic = buildHouseholdEmail(
+            recipient, "Invitation", "Please join us.", "classic"
+        );
+        const animated = buildHouseholdEmail(
+            recipient, "Invitation", "Please join us.", "animated"
+        );
+        const reveal = buildHouseholdEmail(
+            recipient, "Invitation", "Please join us.", "reveal"
+        );
+
+        expect(classic.html).toContain("Together with their families");
+        expect(animated.html).toContain("@keyframes tide");
+        expect(reveal.html).toContain("Open our invitation");
+        expect(reveal.html).toContain("invitation-reveal-demo.html");
+    });
+
     it("refreshes OAuth once for an email batch", async () => {
         const all = vi.fn().mockResolvedValue({
             results: [
