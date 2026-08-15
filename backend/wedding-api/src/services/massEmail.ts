@@ -13,6 +13,7 @@ function escapeHtml(value: string): string {
 }
 
 function paragraphs(body: string): string {
+    if (!body.trim()) return "";
     return body.split(/\n{2,}/).map((paragraph) =>
         `<p style="margin:0 0 16px">${escapeHtml(paragraph).replaceAll("\n", "<br>")}</p>`
     ).join("");
@@ -50,10 +51,16 @@ export function buildHouseholdEmail(
     } else if (template === "animated") {
         html = frame(`<style>@keyframes tide{from{background-position:0 100%}to{background-position:75px 100%}}.coastal-motion{animation:tide 7s ease-in-out infinite alternate}</style><section class="coastal-motion" style="padding:54px 42px 165px;background-color:#f7fbfc;background-image:repeating-radial-gradient(ellipse at 50% 112%,#608da2 0,#608da2 24px,#a9c7d3 26px,#a9c7d3 48px,#dcebf0 50px,#dcebf0 72px);background-position:0 100%;background-repeat:repeat-x;background-size:680px 235px;text-align:center">${invitationCore(greeting, htmlBody)}</section><p style="margin:0;padding:12px;color:#fff;background:#365f74;text-align:center;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase">A wedding by the sea</p>`, "#dfecef");
     } else if (template === "reveal") {
-        html = frame(`<section style="padding:62px 45px;background:linear-gradient(180deg,#ffffff,#edf5f7);border-top:9px solid #365f74;text-align:center"><p style="margin:0 0 38px;text-align:left;color:#647a7e">${escapeHtml(greeting)}</p><p style="color:#647a7e;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase">An invitation from</p><h1 style="margin:20px 0;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:32px;font-weight:500;letter-spacing:3px;text-transform:uppercase">Quiana <span style="color:#7a9db0;font-family:Georgia,serif;font-style:italic;letter-spacing:0;text-transform:none">&amp;</span> Scott</h1><table role="presentation" style="width:100%;margin:24px 0;border-collapse:collapse"><tr><td style="border-top:1px solid #9bb8c4">&nbsp;</td><td style="padding:0 14px;color:#526b76;font-size:13px;white-space:nowrap">09 · 18 · 27</td><td style="border-top:1px solid #9bb8c4">&nbsp;</td></tr></table><div style="margin:28px auto;max-width:430px;color:#3e5965;text-align:left">${htmlBody}</div><a href="https://qstodder.com/wedding/invitation-reveal-demo.html" style="display:inline-block;padding:14px 27px;color:#fff;background:#365f74;border-radius:999px;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase">Open our invitation →</a><p style="color:#647a7e">La Jolla, California · Kindly respond by August 1</p></section>`, "#e5f0f3");
+        const optionalMessage = htmlBody
+            ? `<div style="margin:30px auto 0;max-width:390px;color:#526b76;text-align:center">${htmlBody}</div>`
+            : "";
+        html = frame(`<section style="padding:9px;background:#29465a;box-shadow:0 10px 24px rgba(25,47,61,.12)"><section style="min-height:430px;padding:34px 38px 42px;background-color:#fffdf7;background-image:linear-gradient(32deg,transparent 49.6%,rgba(122,157,176,.22) 50%,transparent 50.4%),linear-gradient(-32deg,transparent 49.6%,rgba(122,157,176,.22) 50%,transparent 50.4%);background-position:left bottom,right bottom;background-repeat:no-repeat;background-size:50% 56%;border:5px solid #dbe7eb;box-shadow:inset 0 0 0 1px #8aa5b4;text-align:left"><div style="padding:8px 10px;border:1px solid #c5a75e"><p style="margin:0;color:#365f74;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:12px;letter-spacing:1.4px;text-transform:uppercase">Quiana &amp; Scott</p><div style="padding:92px 12px 70px;text-align:center"><p style="margin:0;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:20px;letter-spacing:2px;line-height:1.45">${escapeHtml(recipient.householdName)}</p>${optionalMessage}</div><div style="text-align:center"><a href="https://qstodder.com/wedding/invitation-reveal-demo.html" style="display:inline-block;padding:14px 27px;color:#fff;background:#365f74;border-radius:999px;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase">Open our invitation →</a></div></div></section></section>`, "#e5f0f3");
     } else {
         html = frame(`<section style="padding:38px;background:#fafdfe;border:1px solid #b9ced7;border-top:7px solid #365f74;border-radius:8px"><p style="color:#526b76">${escapeHtml(greeting)}</p><div style="color:#3e5965">${htmlBody}</div></section>`, "#e9f1f4");
     }
 
-    return { to: recipient.email, subject, text: `${greeting}\n\n${body}`, html };
+    const text = template === "reveal"
+        ? `Quiana & Scott\n\n${recipient.householdName}\n\n${body ? `${body}\n\n` : ""}Open our invitation: https://qstodder.com/wedding/invitation-reveal-demo.html`
+        : `${greeting}\n\n${body}`;
+    return { to: recipient.email, subject, text, html };
 }

@@ -521,7 +521,7 @@ const adminEmailPage = `<!DOCTYPE html>
                     <label class="address-field"><span>Template</span><select id="email-template"><option value="plain">Plain email</option><option value="classic">Option 1 · Classic HTML invitation</option><option value="animated">Option 2 · Animated coastal invitation</option><option value="reveal">Option 4 · Website reveal invitation</option></select></label>
                     <p class="email-template-links"><a href="https://qstodder.com/wedding/invite-demo-1.html" target="_blank" rel="noopener">View Option 1</a><a href="https://qstodder.com/wedding/invite-demo-2.html" target="_blank" rel="noopener">View Option 2</a><a href="https://qstodder.com/wedding/invite-demo-4.html" target="_blank" rel="noopener">View Option 4</a></p>
                     <label class="address-field"><span>Subject</span><input id="email-subject" maxlength="150" required value="You’re invited to Quiana &amp; Scott’s wedding"></label>
-                    <label class="address-field"><span>Message body</span><textarea id="email-body" rows="12" maxlength="10000" required></textarea></label>
+                    <label class="address-field"><span id="email-body-label">Message body (required for plain email)</span><textarea id="email-body" rows="12" maxlength="10000"></textarea></label>
                     <p class="email-note">Each message begins with “Dear [Household name],” and is sent separately to that household.</p>
                     <button class="address-save-button" type="submit">Review email</button>
                 </form>

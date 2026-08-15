@@ -32,11 +32,15 @@ export async function sendAdminEmailBatch(request: Request, env: Env): Promise<R
         if (!householdIds.length || householdIds.length > MAX_BATCH_SIZE) {
             return withAdminCors(request, Response.json({ error: `Choose between 1 and ${MAX_BATCH_SIZE} households per batch.` }, { status: 400 }));
         }
-        if (!subject || subject.length > 150 || !body || body.length > 10000) {
-            return withAdminCors(request, Response.json({ error: "Enter a subject (150 characters maximum) and message body." }, { status: 400 }));
-        }
         if (!templates.includes(template as EmailTemplate)) {
             return withAdminCors(request, Response.json({ error: "Choose a valid email template." }, { status: 400 }));
+        }
+        if (!subject || subject.length > 150 || body.length > 10000 || (template === "plain" && !body)) {
+            return withAdminCors(request, Response.json({
+                error: template === "plain"
+                    ? "Enter a subject (150 characters maximum) and message body."
+                    : "Enter a subject of 150 characters or fewer."
+            }, { status: 400 }));
         }
 
         const placeholders = householdIds.map(() => "?").join(",");

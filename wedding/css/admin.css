@@ -443,8 +443,66 @@ body {
 }
 
 .email-preview[data-template="reveal"] {
-    background: linear-gradient(180deg, #fff, #e7f1f4);
-    border-top: 8px solid #365f74;
+    position: relative;
+    min-height: 390px;
+    padding: 2rem 2.25rem;
+    background-color: #fffdf7;
+    background-image:
+        linear-gradient(32deg, transparent 49.5%, rgba(122, 157, 176, .24) 50%, transparent 50.5%),
+        linear-gradient(-32deg, transparent 49.5%, rgba(122, 157, 176, .24) 50%, transparent 50.5%);
+    background-position: left bottom, right bottom;
+    background-repeat: no-repeat;
+    background-size: 50% 58%;
+    border: 8px solid #29465a;
+    border-radius: 0;
+    box-shadow: inset 0 0 0 5px #dbe7eb, inset 0 0 0 6px #8aa5b4, inset 0 0 0 11px #fffdf7, inset 0 0 0 12px #c5a75e;
+}
+
+.email-preview[data-template="reveal"] .preview-template-label {
+    margin: 0 0 1.5rem;
+    padding: .8rem .85rem 0;
+}
+
+.email-preview[data-template="reveal"] #preview-greeting {
+    display: flex;
+    min-height: 190px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 3.4rem 1rem 1rem;
+    color: var(--color-deep-ocean);
+    font-family: var(--font-heading);
+    font-size: clamp(1.15rem, 3vw, 1.6rem);
+    letter-spacing: .08em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.email-preview[data-template="reveal"] #preview-greeting::before {
+    position: absolute;
+    top: 4.8rem;
+    left: 3.15rem;
+    color: #365f74;
+    font-family: var(--font-heading);
+    font-size: .72rem;
+    letter-spacing: .1em;
+    content: "Quiana & Scott";
+    text-transform: uppercase;
+}
+
+.email-preview[data-template="reveal"] #preview-body {
+    position: relative;
+    z-index: 1;
+    max-width: 26rem;
+    margin: -1rem auto 1rem;
+    color: var(--color-slate-grey);
+    text-align: center;
+}
+
+.email-preview[data-template="reveal"] .preview-template-action {
+    position: relative;
+    z-index: 1;
+    margin-top: 1rem;
 }
 
 @media (max-width: 1180px) {

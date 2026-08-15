@@ -305,13 +305,55 @@ describe("Admin household email", () => {
             recipient, "Invitation", "Please join us.", "animated"
         );
         const reveal = buildHouseholdEmail(
-            recipient, "Invitation", "Please join us.", "reveal"
+            recipient, "Invitation", "", "reveal"
         );
 
         expect(classic.html).toContain("Together with their families");
         expect(animated.html).toContain("@keyframes tide");
         expect(reveal.html).toContain("Open our invitation");
         expect(reveal.html).toContain("invitation-reveal-demo.html");
+        expect(reveal.html).toContain("Quiana &amp; Scott");
+        expect(reveal.html).toContain("Blue Family");
+        expect(reveal.html).not.toContain("Dear Blue Family");
+        expect(reveal.text).toContain("Open our invitation:");
+    });
+
+    it("requires a body for plain email but allows an empty reveal body", async () => {
+        const all = vi.fn().mockResolvedValue({
+            results: [{ id: 1, household_name: "Blue Family", email: "blue@example.com" }]
+        });
+        const bind = vi.fn().mockReturnValue({ all });
+        const prepare = vi.fn().mockReturnValue({ bind });
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(Response.json({ access_token: "batch-token" }))
+            .mockResolvedValueOnce(Response.json({ id: "message-1" }));
+        vi.stubGlobal("fetch", fetchMock);
+        const env = {
+            wedding_rsvp_db: { prepare },
+            GMAIL_CLIENT_ID: "client-id",
+            GMAIL_CLIENT_SECRET: "client-secret",
+            GMAIL_REFRESH_TOKEN: "refresh-token",
+            GMAIL_SENDER_EMAIL: "sender@gmail.com"
+        } as unknown as Env;
+
+        const plainResponse = await sendAdminEmailBatch(
+            new Request("http://localhost:8787/api/admin/email/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ householdIds: [1], subject: "Reminder", body: "", template: "plain" })
+            }), env
+        );
+        expect(plainResponse.status).toBe(400);
+
+        const revealResponse = await sendAdminEmailBatch(
+            new Request("http://localhost:8787/api/admin/email/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ householdIds: [1], subject: "Invitation", body: "", template: "reveal" })
+            }), env
+        );
+        expect(revealResponse.status).toBe(200);
+        expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
     it("refreshes OAuth once for an email batch", async () => {

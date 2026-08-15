@@ -9,6 +9,7 @@ const elements = {
     count: document.querySelector("#recipient-count"), excluded: document.querySelector("#excluded-email-count"),
     empty: document.querySelector("#email-empty-results"), form: document.querySelector("#email-form"),
     template: document.querySelector("#email-template"), subject: document.querySelector("#email-subject"), body: document.querySelector("#email-body"),
+    bodyLabel: document.querySelector("#email-body-label"),
     draft: document.querySelector("#load-invitation-draft"), review: document.querySelector("#email-review"),
     reviewCount: document.querySelector("#review-recipient-count"), greeting: document.querySelector("#preview-greeting"),
     preview: document.querySelector("#email-preview"), previewLabel: document.querySelector("#preview-template-label"),
@@ -78,6 +79,13 @@ function selectedHouseholds() {
     return data.households.filter((household) => visibleIds.has(household.id) && selectedIds.has(household.id));
 }
 
+function updateBodyRequirement() {
+    const isPlain = elements.template.value === "plain";
+    elements.body.required = isPlain;
+    elements.bodyLabel.textContent = isPlain ? "Message body (required for plain email)" : "Message body (optional)";
+    elements.body.placeholder = isPlain ? "Write your message" : "Optional note to include with the invitation";
+}
+
 function showReview() {
     const recipients = selectedHouseholds();
     if (!recipients.length) {
@@ -85,15 +93,16 @@ function showReview() {
         return;
     }
     elements.reviewCount.textContent = `${recipients.length} individual email${recipients.length === 1 ? "" : "s"}`;
-    elements.greeting.textContent = `Dear ${recipients[0].householdName},`;
+    const isReveal = elements.template.value === "reveal";
+    elements.greeting.textContent = isReveal ? recipients[0].householdName : `Dear ${recipients[0].householdName},`;
     const templateLabels = { plain: "Plain email", classic: "Option 1 · Classic HTML", animated: "Option 2 · Animated coastal", reveal: "Option 4 · Website reveal" };
     elements.preview.dataset.template = elements.template.value;
     elements.previewLabel.textContent = templateLabels[elements.template.value];
     const isInvitation = elements.template.value !== "plain";
-    elements.previewHeading.classList.toggle("hidden", !isInvitation);
+    elements.previewHeading.classList.toggle("hidden", !isInvitation || isReveal);
     elements.previewAction.classList.toggle("hidden", !isInvitation);
     elements.previewAction.textContent = elements.template.value === "reveal" ? "Open our invitation →" : "View details & RSVP";
-    elements.previewBody.replaceChildren(...elements.body.value.split(/\n{2,}/).map((text) => {
+    elements.previewBody.replaceChildren(...elements.body.value.split(/\n{2,}/).filter((text) => text.trim()).map((text) => {
         const paragraph = document.createElement("p");
         paragraph.textContent = text;
         return paragraph;
@@ -149,8 +158,10 @@ async function loadData() {
 elements.rows.addEventListener("change", (event) => { const input = event.target.closest("input[data-household-id]"); if (!input) return; const id = Number(input.dataset.householdId); input.checked ? selectedIds.add(id) : selectedIds.delete(id); renderRecipients(); });
 elements.selectAll.addEventListener("change", () => { for (const household of filteredHouseholds()) elements.selectAll.checked ? selectedIds.add(household.id) : selectedIds.delete(household.id); renderRecipients(); });
 elements.draft.addEventListener("click", () => { elements.subject.value = "You’re invited to Quiana & Scott’s wedding"; elements.body.value = invitationDraft; });
+elements.template.addEventListener("change", updateBodyRequirement);
 elements.form.addEventListener("submit", (event) => { event.preventDefault(); if (elements.form.reportValidity()) showReview(); });
 elements.cancel.addEventListener("click", () => elements.review.classList.add("hidden"));
 elements.confirm.addEventListener("click", sendEmails);
 elements.refresh.addEventListener("click", loadData);
+updateBodyRequirement();
 loadData();
