@@ -1,22 +1,22 @@
 /**************************************************************************
  * Wedding Website Photo Carousel
  *
- * Behavior:
- * - Loads engagement photos dynamically
- * - Displays as an infinite scrolling reel
- * - Advances one photo at a time
- * - Pauses between movements
- * - Pauses while hovering
+ * A small pool of image elements covers the viewport plus an off-screen
+ * buffer. After each slide, the first element is recycled at the end with
+ * the next photo. Keeping the pool size even centers the gap between the
+ * two middle photos at every viewport width.
  **************************************************************************/
 
 function initializeCarousel() {
 
     const PHOTO_COUNT = 12;
     const PHOTO_PATH = "assets/photos/carousel/";
+    const BUFFER_PHOTOS = 4;
 
     const INITIAL_DELAY = 1000;
     const PAUSE_TIME = 3000;
     const SLIDE_TIME = 650;
+    const RESIZE_DELAY = 120;
 
     const track = document.getElementById("carousel-track");
     const carousel = document.querySelector(".photo-carousel");
@@ -26,228 +26,140 @@ function initializeCarousel() {
         return;
     }
 
-    let currentIndex = 0;
+    let firstPhotoIndex = Math.floor(Math.random() * PHOTO_COUNT);
+    let nextPhotoIndex = 0;
     let stepWidth = 0;
-
     let isPaused = false;
+    let isAnimating = false;
     let timer = null;
-    let startingOffset = 0;
+    let resizeTimer = null;
+    let timerStart = 0;
+    let remaining = PAUSE_TIME;
 
-    let timerStart;
-    let remaining = 0;
-    let elapsed = 0;
-
-    /**************************************************************************
-     * Create photo element
-     **************************************************************************/
+    function photoUrl(index) {
+        return PHOTO_PATH + String(index + 1).padStart(2, "0") + ".webp";
+    }
 
     function createPhoto(index) {
-
         const img = document.createElement("img");
 
-        img.src =
-            PHOTO_PATH + String(index).padStart(2, "0") + ".webp";
-
+        img.src = photoUrl(index);
         img.alt = "Engagement photo";
-
         img.className = "carousel-photo";
+        img.width = 260;
+        img.height = 390;
+        img.decoding = "async";
 
         return img;
-
     }
 
+    function dimensions() {
+        const styles = getComputedStyle(carousel);
+        const photoWidth = parseFloat(styles.getPropertyValue("--carousel-photo-width"));
+        const gap = parseFloat(styles.getPropertyValue("--carousel-gap"));
 
-    /**************************************************************************
-     * Populate carousel
-     **************************************************************************/
+        return {
+            photoWidth: Number.isFinite(photoWidth) ? photoWidth : 260,
+            gap: Number.isFinite(gap) ? gap : 12
+        };
+    }
+
+    function poolSize() {
+        const { photoWidth, gap } = dimensions();
+        const visiblePhotos = Math.ceil((carousel.clientWidth + gap) / (photoWidth + gap));
+        let size = Math.max(6, visiblePhotos + BUFFER_PHOTOS);
+
+        // An even number places the center gap—not a photo—at 50%.
+        if (size % 2 !== 0) size++;
+
+        return size;
+    }
 
     function buildCarousel() {
-
-        // Random starting number
-        const rand_start = Math.floor(Math.random() * PHOTO_COUNT) + 1;
-
-        const arr1 = Array.from({ length: PHOTO_COUNT - rand_start + 1 }, (_, i) => rand_start + i);
-        const arr2 = Array.from({ length: rand_start - 1 }, (_, i) => i + 1);
-        const photo_array = [...arr1, ...arr2]
+        const fragment = document.createDocumentFragment();
+        const size = poolSize();
 
         track.innerHTML = "";
-
-        // three duplicate arrays
-        for (let i = 0; i < PHOTO_COUNT; i++) {
-            for (const photo of photo_array) {
-                track.appendChild(createPhoto(photo));
-            }
-        }
-    }
-
-
-    /**************************************************************************
-     * Calculate movement distance
-     **************************************************************************/
-
-    function measureStep() {
-
-        const firstPhoto =
-            track.querySelector(".carousel-photo");
-
-        if (!firstPhoto) {
-            return;
-        }
-
-        const gap =
-            parseFloat(getComputedStyle(track).gap);
-
-
-        stepWidth =
-            firstPhoto.getBoundingClientRect().width + gap;
-
-
-        const carouselWidth =
-            document.querySelector(".photo-carousel")
-            .getBoundingClientRect().width;
-
-
-        const photoWidth =
-            firstPhoto.getBoundingClientRect().width;
-
-
-        startingOffset =
-            (carouselWidth / 2) - (photoWidth * 2) - gap;
-
-            /*
         track.style.transition = "none";
+        track.style.transform = "translateX(0)";
 
-        track.style.transform =
-            `translateX(${startingOffset - currentIndex * stepWidth}px)`;
-            */
-
-
-    }
-
-
-    /**************************************************************************
-     * Move carousel one photo
-     **************************************************************************/
-
-    function advanceCarousel() {
-
-        if (isPaused) {
-            return;
+        for (let offset = 0; offset < size; offset++) {
+            fragment.appendChild(createPhoto((firstPhotoIndex + offset) % PHOTO_COUNT));
         }
 
+        track.appendChild(fragment);
+        nextPhotoIndex = (firstPhotoIndex + size) % PHOTO_COUNT;
 
-        currentIndex++;
-
-
-        track.style.transition =
-            `transform ${SLIDE_TIME}ms ease-in-out`;
-
-
-        track.style.transform =
-            `translateX(-${currentIndex * stepWidth}px)`;
-
+        const { photoWidth, gap } = dimensions();
+        stepWidth = photoWidth + gap;
+        isAnimating = false;
     }
-
-
-    /**************************************************************************
-     * Schedule next movement
-     **************************************************************************/
 
     function scheduleNextSlide(delay = PAUSE_TIME) {
-
-        timerStart = Date.now();
-
         clearTimeout(timer);
 
-        timer = setTimeout(() => {
-            if (!isPaused) {
-                advanceCarousel();
-            }
-        }, delay);
+        if (isPaused || document.hidden) return;
 
+        remaining = delay;
+        timerStart = Date.now();
+        timer = window.setTimeout(advanceCarousel, delay);
     }
 
-    track.addEventListener(
-        "transitionend",
-        () => {
+    function advanceCarousel() {
+        if (isPaused || isAnimating || document.hidden) return;
 
-            if (currentIndex === PHOTO_COUNT) {
+        isAnimating = true;
+        track.style.transition = `transform ${SLIDE_TIME}ms ease-in-out`;
+        track.style.transform = `translateX(-${stepWidth}px)`;
+    }
 
-                track.style.transition = "none";
+    function recycleFirstPhoto(event) {
+        if (event.propertyName !== "transform" || !isAnimating) return;
 
-                currentIndex = 0;
+        const firstPhoto = track.firstElementChild;
 
-                track.style.transform =
-                    "translateX(0px)";
+        track.style.transition = "none";
 
-                // Force browser to apply reset
-                void track.offsetWidth;
-
-            }
-
-            scheduleNextSlide();
-
+        if (firstPhoto instanceof HTMLImageElement) {
+            track.appendChild(firstPhoto);
+            firstPhoto.src = photoUrl(nextPhotoIndex);
         }
-    );
 
-    carousel.addEventListener(
-        "mouseenter",
-        () => {
+        firstPhotoIndex = (firstPhotoIndex + 1) % PHOTO_COUNT;
+        nextPhotoIndex = (nextPhotoIndex + 1) % PHOTO_COUNT;
+        track.style.transform = "translateX(0)";
+        isAnimating = false;
 
-            isPaused = true;
+        scheduleNextSlide();
+    }
 
-            clearTimeout(timer);
+    track.addEventListener("transitionend", recycleFirstPhoto);
 
-            elapsed = Date.now() - timerStart;
-            remaining = Math.max(0, PAUSE_TIME - elapsed);
-
-            console.log(elapsed, remaining)
-
-        }
-    );
-
-
-    carousel.addEventListener(
-        "mouseleave",
-        () => {
-
-            isPaused = false;
-
-            scheduleNextSlide(remaining);
-
-        }
-    );
-
-    window.addEventListener(
-        "resize",
-        () => {
-
-            measureStep();
-
-            track.style.transition = "none";
-
-            track.style.transform =
-                `translateX(-${currentIndex * stepWidth}px)`;
-
-        }
-    );
-
-
-    buildCarousel();
-
-    requestAnimationFrame(() => {
-
-        requestAnimationFrame(() => {
-
-            measureStep();
-
-            scheduleNextSlide(
-                INITIAL_DELAY
-            );
-
-        });
-
+    carousel.addEventListener("mouseenter", () => {
+        isPaused = true;
+        clearTimeout(timer);
+        remaining = Math.max(0, remaining - (Date.now() - timerStart));
     });
 
+    carousel.addEventListener("mouseleave", () => {
+        isPaused = false;
+        scheduleNextSlide(remaining || PAUSE_TIME);
+    });
 
-    }
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+            clearTimeout(timer);
+            buildCarousel();
+            scheduleNextSlide();
+        }, RESIZE_DELAY);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        clearTimeout(timer);
+        if (!document.hidden) scheduleNextSlide();
+    });
+
+    buildCarousel();
+    scheduleNextSlide(INITIAL_DELAY);
+}

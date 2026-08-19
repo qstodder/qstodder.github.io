@@ -14,6 +14,7 @@ button.addEventListener("click", () => {
     window.setTimeout(() => opening.classList.add("is-departing"), 1100);
     window.setTimeout(() => {
         opening.hidden = true;
+        document.body.classList.add("invitation-open");
         invitation.setAttribute("aria-hidden", "false");
         invitation.classList.add("is-visible");
         invitation.focus({ preventScroll: true });

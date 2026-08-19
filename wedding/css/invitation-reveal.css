@@ -16,6 +16,41 @@ body {
     font-family: "Cormorant Garamond", Georgia, serif;
 }
 
+body.invitation-open {
+    position: relative;
+    background-color: #edf7fb;
+    background-image: none;
+}
+
+body.invitation-open::before {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    background: #498fb4;
+    content: "";
+    pointer-events: none;
+    -webkit-mask-image:
+        repeating-linear-gradient(45deg, transparent 0 15px, #000 15px 19px, transparent 19px 34px),
+        repeating-linear-gradient(-45deg, transparent 0 15px, #000 15px 19px, transparent 19px 34px);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        repeating-linear-gradient(45deg, transparent 0 15px, #000 15px 19px, transparent 19px 34px),
+        repeating-linear-gradient(-45deg, transparent 0 15px, #000 15px 19px, transparent 19px 34px);
+    mask-composite: intersect;
+    opacity: .13;
+}
+
+body.diamond-tile-version.invitation-open {
+    background-color: #edf7fb;
+    background-image:
+        repeating-linear-gradient(45deg, transparent 0 15px, rgba(73, 143, 180, .07) 15px 17px),
+        repeating-linear-gradient(-45deg, transparent 0 15px, rgba(73, 143, 180, .07) 15px 17px);
+}
+
+body.diamond-tile-version.invitation-open::before {
+    display: none;
+}
+
 .back {
     position: fixed;
     z-index: 10;
@@ -31,6 +66,8 @@ body {
 }
 
 .reveal-page {
+    position: relative;
+    z-index: 1;
     display: grid;
     min-height: 100vh;
     place-items: center;
@@ -207,9 +244,8 @@ body {
 
 .invitation h1 {
     margin: 1.25rem 0 1rem;
-    font: 500 clamp(2.4rem, 8vw, 3.5rem) / 1.08 Montserrat, sans-serif;
+    font: 500 clamp(2.4rem, 8vw, 3.5rem) / 1.08 Copperplate, "Copperplate Gothic Light", serif;
     letter-spacing: .09em;
-    text-transform: uppercase;
 }
 
 .invitation h1 span {

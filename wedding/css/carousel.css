@@ -15,6 +15,9 @@
 
 .photo-carousel {
 
+    --carousel-photo-width: 260px;
+    --carousel-gap: 12px;
+
     width: 100vw;
 
     margin-left: calc(50% - 50vw);
@@ -49,7 +52,7 @@
 
     align-items: center;
 
-    gap: 12px;
+    gap: var(--carousel-gap);
 
     transition: transform 650ms ease-in-out;
 
@@ -64,7 +67,7 @@
 
 .carousel-photo {
 
-    width: 260px;
+    width: var(--carousel-photo-width);
 
     height: 390px;
 
@@ -94,9 +97,15 @@
 
 @media (max-width: 768px) {
 
+    .photo-carousel {
+
+        --carousel-gap: 8px;
+
+    }
+
     .carousel-track {
 
-        gap: 8px;
+        gap: var(--carousel-gap);
 
     }
 
