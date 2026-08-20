@@ -4,6 +4,7 @@ import {
     authenticateAdmin
 } from "../lib/adminAuth";
 import { withAdminCors } from "../lib/adminCors";
+import { uniqueGuestEmails } from "../services/guestEmails";
 
 interface AdminHouseholdRow {
     id: number;
@@ -24,6 +25,7 @@ interface AdminHouseholdRow {
     attending_brunch: number;
     submitted_at: string | null;
     guest_names: string | null;
+    guest_emails: string | null;
     couple_side: string | null;
     relationship_type: string | null;
     family_side: string | null;
@@ -37,6 +39,7 @@ interface AdminGuestRow {
     household_email: string | null;
     first_name: string;
     last_name: string;
+    email: string | null;
     couple_side: string | null;
     relationship_type: string | null;
     family_side: string | null;
@@ -106,7 +109,8 @@ export async function getAdminData(
                                 COALESCE(g.last_name, '')
                             ),
                             '||'
-                        ) AS guest_names
+                        ) AS guest_names,
+                        GROUP_CONCAT(g.email, '||') AS guest_emails
                     FROM households h
                     LEFT JOIN guests g
                         ON g.household_id = h.id
@@ -129,13 +133,15 @@ export async function getAdminData(
                 .all<AdminHouseholdRow>();
 
         const households = result.results.map((row) => {
+            const emails = uniqueGuestEmails(
+                row.guest_emails?.split("||") ?? []
+            );
             const hasAddress =
                 Boolean(row.street?.trim());
             const missingAddress =
                 Boolean(row.address_needed) &&
                 !hasAddress;
-            const missingEmail =
-                !Boolean(row.email?.trim());
+            const missingEmail = emails.length === 0;
             const isSubmitted =
                 Boolean(row.submitted_at);
             const isInProgress =
@@ -146,7 +152,8 @@ export async function getAdminData(
                 id: row.id,
                 householdKey: row.household_key,
                 householdName: row.household_name,
-                email: row.email,
+                email: emails[0] ?? null,
+                emails,
                 missingEmail,
                 address: {
                     street: row.street,
@@ -275,6 +282,7 @@ export async function getAdminGuests(
                         h.email AS household_email,
                         g.first_name,
                         g.last_name,
+                        g.email,
                         h.couple_side,
                         h.relationship_type,
                         h.family_side,
@@ -330,6 +338,7 @@ export async function getAdminGuests(
                 id: guest.id,
                 firstName: guest.first_name,
                 lastName: guest.last_name,
+                email: guest.email,
                 household: {
                     id: guest.household_id,
                     householdKey: guest.household_key,

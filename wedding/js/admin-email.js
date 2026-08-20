@@ -64,9 +64,11 @@ function renderRecipients() {
     elements.rows.innerHTML = households.map((household) => `
         <tr><td data-label="Selected"><input type="checkbox" data-household-id="${household.id}" aria-label="Email ${escapeHtml(household.householdName)}" ${selectedIds.has(household.id) ? "checked" : ""}></td>
         <th scope="row" data-label="Household">${escapeHtml(household.householdName)}<span class="guest-names">${household.guests.map(escapeHtml).join(", ")}</span></th>
-        <td data-label="Email">${escapeHtml(household.email)}</td><td data-label="RSVP"><span class="status-pill status-${household.rsvpStatus}">${household.rsvpStatus === "submitted" ? "Submitted" : household.rsvpStatus === "inProgress" ? "In progress" : "Not started"}</span></td></tr>`).join("");
+        <td data-label="Email">${escapeHtml((household.emails || [household.email]).filter(Boolean).join(", "))}</td><td data-label="RSVP"><span class="status-pill status-${household.rsvpStatus}">${household.rsvpStatus === "submitted" ? "Submitted" : household.rsvpStatus === "inProgress" ? "In progress" : "Not started"}</span></td></tr>`).join("");
     const visibleSelected = households.filter((household) => selectedIds.has(household.id)).length;
-    elements.count.textContent = `${visibleSelected} household${visibleSelected === 1 ? "" : "s"} selected`;
+    const recipientCount = households.filter((household) => selectedIds.has(household.id))
+        .reduce((count, household) => count + (household.emails?.length || 1), 0);
+    elements.count.textContent = `${visibleSelected} household${visibleSelected === 1 ? "" : "s"} selected · ${recipientCount} recipient${recipientCount === 1 ? "" : "s"}`;
     elements.selectAll.checked = households.length > 0 && visibleSelected === households.length;
     elements.selectAll.indeterminate = visibleSelected > 0 && visibleSelected < households.length;
     elements.empty.classList.toggle("hidden", households.length > 0);
@@ -92,7 +94,8 @@ function showReview() {
         window.alert("Select at least one household with an email address.");
         return;
     }
-    elements.reviewCount.textContent = `${recipients.length} individual email${recipients.length === 1 ? "" : "s"}`;
+    const recipientCount = recipients.reduce((count, household) => count + (household.emails?.length || 1), 0);
+    elements.reviewCount.textContent = `${recipients.length} household${recipients.length === 1 ? "" : "s"} · ${recipientCount} recipient${recipientCount === 1 ? "" : "s"}`;
     const isReveal = elements.template.value === "reveal";
     elements.greeting.textContent = isReveal ? recipients[0].householdName : `Dear ${recipients[0].householdName},`;
     const templateLabels = { plain: "Plain email", classic: "Option 1 · Classic HTML", animated: "Option 2 · Animated coastal", reveal: "Option 4 · Website reveal" };
@@ -114,7 +117,8 @@ function showReview() {
 
 async function sendEmails() {
     const recipients = selectedHouseholds();
-    if (!window.confirm(`Send ${recipients.length} individual email${recipients.length === 1 ? "" : "s"} now? This cannot be undone.`)) return;
+    const recipientCount = recipients.reduce((count, household) => count + (household.emails?.length || 1), 0);
+    if (!window.confirm(`Send one household message to ${recipients.length} household${recipients.length === 1 ? "" : "s"} (${recipientCount} recipients) now? This cannot be undone.`)) return;
     elements.confirm.disabled = true;
     elements.cancel.disabled = true;
     const failed = [];

@@ -223,6 +223,7 @@ function renderGuests() {
         return `<tr>
             <td data-label="Actions" class="household-actions-cell"><a class="address-edit-button household-edit-button" href="/admin/households/${guest.household.id}#guest-${guest.id}">Edit guest</a></td>
             <th scope="row" data-label="Guest"><span class="household-name">${escapeHtml(`${guest.firstName} ${guest.lastName}`.trim())}</span><span class="household-key">Guest #${guest.id}</span></th>
+            <td data-label="Email">${escapeHtml(guest.email || "—")}</td>
             <td data-label="Household"><a class="household-detail-link" href="/admin/households/${guest.household.id}">${escapeHtml(guest.household.householdName)}</a></td>
             <td data-label="Tags">${tags.length ? tags.map((tag) => `<span class="guest-classification-tag tag-${tag}">${escapeHtml(classificationLabels[tag])}</span>`).join(" ") : '<span class="tag-unassigned">Unassigned</span>'}</td>
             <td data-label="Invited to">${invited.length ? invited.map((name) => `<span class="guest-event-tag">${name}</span>`).join(" ") : "—"}</td>
@@ -263,7 +264,7 @@ function downloadCsv(filename, headings, rows) {
 function exportGuests() {
     const headings = [
         "First Name", "Last Name", "Household", "Household Key",
-        "Household Email", "Scott / Quiana", "Friend / Family", "Family Side",
+        "Guest Email", "Household Email", "Scott / Quiana", "Friend / Family", "Family Side",
         "Invited: Welcome", "Invited: Wedding",
         "Invited: Brunch", "RSVP Recorded", "Attending: Welcome",
         "Attending: Wedding", "Attending: Brunch",
@@ -271,7 +272,7 @@ function exportGuests() {
     ];
     const rows = visibleGuests.map((guest) => [
         guest.firstName, guest.lastName, guest.household.householdName,
-        guest.household.householdKey, guest.household.email,
+        guest.household.householdKey, guest.email, guest.household.email,
         classificationLabels[guest.classifications.coupleSide] ?? "",
         classificationLabels[guest.classifications.relationshipType] ?? "",
         classificationLabels[guest.classifications.familySide] ?? "",

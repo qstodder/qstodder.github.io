@@ -1,8 +1,18 @@
 import { Env } from "../types";
+import {
+    normalizeGuestEmail,
+    syncHouseholdEmailStatement
+} from "./guestEmails";
+
+export interface GuestEmail {
+    guestId: number;
+    email: string;
+}
 
 export interface ContactInfo {
     householdId: number;
-    email: string;
+    email?: string;
+    guestEmails?: GuestEmail[];
     street: string;
     addressLine2?: string;
     city: string;
@@ -144,6 +154,9 @@ export async function saveCompleteRsvp(
     }
 
     const householdGuestIds = guestResult.results.map((guest) => guest.id);
+    if (!householdGuestIds.length) {
+        throw new RsvpValidationError("This household does not have any active guests.");
+    }
     const rsvpGuestIds = uniqueIds(
         input.guestRsvps.map((guest) => guest?.guestId),
         "Guest RSVP"
@@ -159,9 +172,49 @@ export async function saveCompleteRsvp(
         );
     }
 
-    const email = text(input.contact.email, "Email", 254).toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        throw new RsvpValidationError("Enter a valid email address.");
+    const guestEmails = new Map<number, string | null>();
+    if (Array.isArray(input.contact.guestEmails)) {
+        const emailGuestIds = uniqueIds(
+            input.contact.guestEmails.map((item) => item?.guestId),
+            "Guest email"
+        );
+        if (!sameIds(emailGuestIds, householdGuestIds)) {
+            throw new RsvpValidationError(
+                "Email entries do not match this household."
+            );
+        }
+        try {
+            for (const item of input.contact.guestEmails) {
+                guestEmails.set(
+                    item.guestId,
+                    normalizeGuestEmail(item.email, "Email address")
+                );
+            }
+        } catch (error) {
+            throw new RsvpValidationError(
+                error instanceof Error ? error.message : "Enter a valid email address."
+            );
+        }
+    } else {
+        // Compatibility for the original one-email RSVP form during rollout.
+        try {
+            guestEmails.set(
+                householdGuestIds[0],
+                normalizeGuestEmail(input.contact.email, "Email address")
+            );
+        } catch (error) {
+            throw new RsvpValidationError(
+                error instanceof Error ? error.message : "Enter a valid email address."
+            );
+        }
+        for (const guestId of householdGuestIds.slice(1)) {
+            guestEmails.set(guestId, null);
+        }
+    }
+    if (![...guestEmails.values()].some(Boolean)) {
+        throw new RsvpValidationError(
+            "Please enter a valid email address for at least one household member."
+        );
     }
     const street = text(input.contact.street ?? "", "Street", 200);
     const addressLine2 = text(
@@ -259,15 +312,27 @@ export async function saveCompleteRsvp(
 
     const statements: D1PreparedStatement[] = [
         env.wedding_rsvp_db.prepare(`
-            UPDATE households SET email = ?1, street = ?2,
-                address_line_2 = ?3, city = ?4, state = ?5,
-                zip = ?6, country_code = ?7
-            WHERE id = ?8 AND archived_at IS NULL
+            UPDATE households SET street = ?1,
+                address_line_2 = ?2, city = ?3, state = ?4,
+                zip = ?5, country_code = ?6
+            WHERE id = ?7 AND archived_at IS NULL
         `).bind(
-            email, street || null, addressLine2 || null, city || null,
+            street || null, addressLine2 || null, city || null,
             state || null, zip || null, countryCode, householdId
         )
     ];
+
+    for (const guestId of householdGuestIds) {
+        statements.push(env.wedding_rsvp_db.prepare(`
+            UPDATE guests SET email = ?1
+            WHERE id = ?2 AND household_id = ?3 AND archived_at IS NULL
+        `).bind(guestEmails.get(guestId) ?? null, guestId, householdId));
+    }
+
+    statements.push(syncHouseholdEmailStatement(
+        env.wedding_rsvp_db,
+        householdId
+    ));
 
     for (const guest of guestResult.results) {
         const response = rsvps.get(guest.id)!;

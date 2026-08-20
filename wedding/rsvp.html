@@ -134,24 +134,10 @@
 
             <p>
                 Please review and update your household’s
-                email and mailing address.
+                mailing address and email addresses.
             </p>
 
             <form id="contact-form">
-
-                <div class="form-field">
-                    <label for="email">
-                        Email address
-                    </label>
-
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autocomplete="email"
-                        required
-                    >
-                </div>
 
                 <div class="form-field">
                     <label for="street">
@@ -260,6 +246,14 @@
                 </div>
 
                 <p id="address-requirement" class="form-note"></p>
+
+                <section class="guest-email-section">
+                    <h3>Please enter at least one email address</h3>
+                    <p class="form-note">
+                        Add an email for each household member who should receive wedding updates and RSVP confirmations.
+                    </p>
+                    <div id="guest-email-fields"></div>
+                </section>
 
                 <div
                     id="contact-error"

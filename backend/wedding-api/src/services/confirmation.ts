@@ -1,5 +1,6 @@
 import { Env } from "../types";
 import { sendGmailMessage } from "./gmail";
+import { uniqueGuestEmails } from "./guestEmails";
 
 interface ConfirmationGuest {
     id: number;
@@ -16,7 +17,9 @@ interface ConfirmationGuest {
 
 export interface ConfirmationDetails {
     householdName: string;
-    email: string;
+    emails?: string[];
+    /** Compatibility for older callers while guest-email rollout completes. */
+    email?: string;
     guests: ConfirmationGuest[];
 }
 
@@ -51,7 +54,7 @@ async function getConfirmationDetails(
     const household =
         await env.wedding_rsvp_db
             .prepare(`
-                SELECT household_name, email
+                SELECT household_name
                 FROM households
                 WHERE id = ? AND archived_at IS NULL
             `)
@@ -61,9 +64,9 @@ async function getConfirmationDetails(
                 email: string | null;
             }>();
 
-    if (!household?.email) {
+    if (!household) {
         throw new Error(
-            "RSVP household does not have an email address."
+            "RSVP household was not found."
         );
     }
 
@@ -74,6 +77,7 @@ async function getConfirmationDetails(
                     g.id,
                     g.first_name,
                     g.last_name,
+                    g.email,
                     g.is_invited_to_welcome,
                     g.is_invited_to_wedding,
                     g.is_invited_to_brunch,
@@ -109,9 +113,16 @@ async function getConfirmationDetails(
             .bind(householdId)
             .all<any>();
 
+    const emails = uniqueGuestEmails(
+        guestResult.results.map((guest) => guest.email)
+    );
+    if (!emails.length) {
+        throw new Error("RSVP household does not have an email address.");
+    }
+
     return {
         householdName: household.household_name,
-        email: household.email,
+        emails,
         guests: guestResult.results.map((guest) => ({
             id: guest.id,
             firstName: guest.first_name,
@@ -211,7 +222,9 @@ export function buildConfirmationEmail(
         .join("");
 
     return {
-        to: details.email,
+        to: uniqueGuestEmails(
+            details.emails ?? [details.email]
+        ).join(", "),
         subject: "Your RSVP for Quiana & Scott's Wedding",
         text: [
             `Hello ${details.householdName},`,

@@ -242,7 +242,7 @@ describe("RSVP confirmation email", () => {
         expect(fetchMock).toHaveBeenCalledTimes(1);
     });
 
-    it("rejects recipient header injection before OAuth", async () => {
+    it("allows multiple recipients but rejects recipient header injection before OAuth", async () => {
 
         const fetchMock = vi.fn();
 
@@ -262,7 +262,7 @@ describe("RSVP confirmation email", () => {
                     ...buildConfirmationEmail(
                         confirmation
                     ),
-                    to: "guest@example.com,other@example.com"
+                    to: "guest@example.com\r\nBcc: other@example.com"
                 }
             )
         ).rejects.toThrow(

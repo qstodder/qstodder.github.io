@@ -307,7 +307,8 @@ const adminHouseholdPage = `<!DOCTYPE html>
                     <div class="detail-form-grid">
                         <label class="address-field"><span>Household name</span><input name="householdName" maxlength="150" required></label>
                         <label class="address-field"><span>Household key</span><input name="householdKey" maxlength="150" pattern="[a-z0-9]+(-[a-z0-9]+)*" required></label>
-                        <label class="address-field detail-field-wide"><span>Email</span><input name="email" type="email" maxlength="254" autocomplete="email"></label>
+                        <label class="address-field detail-field-wide"><span>Primary household email</span><input name="email" type="email" readonly aria-describedby="primary-email-help"></label>
+                        <p id="primary-email-help" class="field-help detail-field-wide">Derived from the first active guest email below.</p>
                         <label class="address-field"><span>Scott / Quiana</span><select name="coupleSide" required><option value="">Select…</option><option value="scott">Scott</option><option value="quiana">Quiana</option></select></label>
                         <label class="address-field"><span>Friend / Family</span><select name="relationshipType" required><option value="">Select…</option><option value="friend">Friend</option><option value="family">Family</option></select></label>
                         <label class="address-field"><span>Family side</span><select name="familySide"><option value="">Not applicable</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option></select></label>
@@ -334,6 +335,7 @@ const adminHouseholdPage = `<!DOCTYPE html>
                 <form id="add-guest-form" class="add-guest-form">
                     <label class="address-field"><span>First name</span><input name="firstName" maxlength="100" required></label>
                     <label class="address-field"><span>Last name</span><input name="lastName" maxlength="100"></label>
+                    <label class="address-field"><span>Email</span><input name="email" type="email" maxlength="254" autocomplete="email"></label>
                     <button class="address-save-button" type="submit">Add guest</button>
                     <p class="form-status" aria-live="polite"></p>
                 </form>
@@ -432,7 +434,7 @@ const adminGuestsPage = `<!DOCTYPE html>
                 <div class="table-scroll">
                     <table class="guest-table"><thead><tr>
                         <th scope="col"><span class="visually-hidden">Actions</span></th>
-                        <th scope="col">Guest</th><th scope="col">Household</th><th scope="col">Tags</th>
+                        <th scope="col">Guest</th><th scope="col">Email</th><th scope="col">Household</th><th scope="col">Tags</th>
                         <th scope="col">Invited to</th><th scope="col">RSVP</th>
                         <th scope="col">Dietary preferences</th>
                     </tr></thead><tbody id="guest-rows"></tbody></table>

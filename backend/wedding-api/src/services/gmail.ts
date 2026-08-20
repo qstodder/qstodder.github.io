@@ -55,6 +55,11 @@ function isSingleEmailAddress(value: string): boolean {
     );
 }
 
+function isEmailAddressList(value: string): boolean {
+    const addresses = value.split(",").map((address) => address.trim());
+    return addresses.length > 0 && addresses.every(isSingleEmailAddress);
+}
+
 function buildMimeMessage(
     sender: string,
     message: GmailMessage
@@ -153,7 +158,7 @@ export async function sendGmailMessage(
 
     if (
         !isSingleEmailAddress(env.GMAIL_SENDER_EMAIL) ||
-        !isSingleEmailAddress(message.to)
+        !isEmailAddressList(message.to)
     ) {
         throw new Error(
             "Confirmation email contains an invalid sender or recipient address."
@@ -177,7 +182,7 @@ export async function sendGmailMessageWithAccessToken(
 ): Promise<void> {
     if (
         !isSingleEmailAddress(env.GMAIL_SENDER_EMAIL) ||
-        !isSingleEmailAddress(message.to)
+        !isEmailAddressList(message.to)
     ) {
         throw new Error(
             "Email contains an invalid sender or recipient address."

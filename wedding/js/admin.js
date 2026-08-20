@@ -327,7 +327,7 @@ function downloadCsv(filename, headings, rows) {
 
 function exportHouseholds() {
     const headings = [
-        "Household", "Household Key", "Email", "Guests",
+        "Household", "Household Key", "Emails", "Guests",
         "Guest Count", "Delivery Status", "Address Line 1",
         "Address Line 2", "City", "State/Province/Region",
         "Postal Code", "Country", "RSVP Status", "Responded Guests",
@@ -336,7 +336,7 @@ function exportHouseholds() {
     const rows = filteredHouseholds().map((household) => [
         household.householdName,
         household.householdKey,
-        household.email,
+        (household.emails || [household.email]).filter(Boolean).join("; "),
         household.guests.join("; "),
         household.guestCount,
         deliveryLabels[household.deliveryStatus],

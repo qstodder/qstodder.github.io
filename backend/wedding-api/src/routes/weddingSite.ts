@@ -3,6 +3,7 @@ import { Env } from "../types";
 const COOKIE_NAME = "wedding_access";
 const SESSION_SECONDS = 60 * 60 * 24 * 180;
 const RAW_SITE_ORIGIN = "https://raw.githubusercontent.com/qstodder/qstodder.github.io/master";
+const ADMIN_DASHBOARD_URL = "https://wedding-rsvp-api.qstodder.workers.dev/admin/";
 
 function encode(bytes: Uint8Array): string {
     let binary = "";
@@ -98,6 +99,12 @@ async function protectedAsset(request: Request): Promise<Response> {
 
 export async function handleWeddingSiteRequest(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    if (
+        request.method === "GET" &&
+        (url.pathname === "/wedding/admin" || url.pathname === "/wedding/admin/")
+    ) {
+        return redirect(ADMIN_DASHBOARD_URL);
+    }
     if (!configured(env)) return loginPage("The wedding website password has not been configured yet.", "/wedding/", 503);
     if (url.pathname === "/wedding/logout") return redirect("/wedding/login", `${COOKIE_NAME}=; Path=/wedding; Max-Age=0; HttpOnly; Secure; SameSite=Lax`);
     if (url.pathname === "/wedding/login") {

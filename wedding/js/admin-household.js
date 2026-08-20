@@ -117,6 +117,7 @@ function renderGuest(guest) {
             <div class="detail-form-grid">
                 <label class="address-field"><span>First name</span><input name="firstName" value="${escapeAttribute(guest.firstName)}" maxlength="100" required></label>
                 <label class="address-field"><span>Last name</span><input name="lastName" value="${escapeAttribute(guest.lastName)}" maxlength="100"></label>
+                <label class="address-field"><span>Email</span><input name="email" type="email" value="${escapeAttribute(guest.email ?? "")}" maxlength="254" autocomplete="email"></label>
                 <label class="address-field detail-field-wide"><span>Household</span><select name="householdId">${householdOptions}</select></label>
             </div>
             <fieldset class="guest-fieldset"><legend>Invited to</legend><div class="guest-options">
@@ -175,6 +176,7 @@ function guestPayload(form) {
     return {
         firstName: formData.get("firstName"),
         lastName: formData.get("lastName"),
+        email: formData.get("email"),
         householdId: Number(formData.get("householdId")),
         invitations: {
             welcome: formData.has("inviteWelcome"),
@@ -217,7 +219,6 @@ elements.householdForm.addEventListener("submit", async (event) => {
             body: JSON.stringify({
                 householdName: value(form, "householdName"),
                 householdKey: value(form, "householdKey"),
-                email: value(form, "email"),
                 addressNeeded: form.elements.addressNeeded.checked,
                 classifications: {
                     coupleSide: value(form, "coupleSide"),
@@ -317,7 +318,8 @@ elements.addGuestForm.addEventListener("submit", async (event) => {
             method: "POST",
             body: JSON.stringify({
                 firstName: value(form, "firstName"),
-                lastName: value(form, "lastName")
+                lastName: value(form, "lastName"),
+                email: value(form, "email")
             })
         });
         form.reset();

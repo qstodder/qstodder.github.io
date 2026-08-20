@@ -3,11 +3,13 @@ import { AdminAuthError, authenticateAdmin } from "../lib/adminAuth";
 import { withAdminCors } from "../lib/adminCors";
 import { refreshGmailAccessToken, sendGmailMessageWithAccessToken } from "../services/gmail";
 import { buildHouseholdEmail, EmailTemplate } from "../services/massEmail";
+import { uniqueGuestEmails } from "../services/guestEmails";
 
 interface RecipientRow {
     id: number;
     household_name: string;
-    email: string;
+    guest_emails?: string;
+    email?: string;
 }
 
 const MAX_BATCH_SIZE = 20;
@@ -45,12 +47,16 @@ export async function sendAdminEmailBatch(request: Request, env: Env): Promise<R
 
         const placeholders = householdIds.map(() => "?").join(",");
         const result = await env.wedding_rsvp_db.prepare(`
-            SELECT id, household_name, email
-            FROM households
-            WHERE archived_at IS NULL
-              AND TRIM(COALESCE(email, '')) <> ''
-              AND id IN (${placeholders})
-            ORDER BY id
+            SELECT h.id, h.household_name,
+                GROUP_CONCAT(g.email, '||') AS guest_emails
+            FROM households h
+            JOIN guests g ON g.household_id = h.id
+                AND g.archived_at IS NULL
+                AND TRIM(COALESCE(g.email, '')) <> ''
+            WHERE h.archived_at IS NULL
+              AND h.id IN (${placeholders})
+            GROUP BY h.id, h.household_name
+            ORDER BY h.id
         `).bind(...householdIds).all<RecipientRow>();
         const accessToken = await refreshGmailAccessToken(env);
         const sent: number[] = [];
@@ -66,7 +72,9 @@ export async function sendAdminEmailBatch(request: Request, env: Env): Promise<R
             try {
                 await sendGmailMessageWithAccessToken(env, buildHouseholdEmail({
                     householdName: recipient.household_name,
-                    email: recipient.email
+                    email: uniqueGuestEmails(
+                        recipient.guest_emails?.split("||") ?? [recipient.email]
+                    ).join(", ")
                 }, subject, body, template as EmailTemplate), accessToken);
                 sent.push(recipient.id);
             } catch (error) {

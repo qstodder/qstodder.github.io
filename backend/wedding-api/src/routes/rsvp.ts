@@ -71,6 +71,7 @@ export async function getRsvpRoute(
                     g.id,
                     g.first_name,
                     g.last_name,
+                    g.email,
                     g.is_invited_to_welcome,
                     g.is_invited_to_wedding,
                     g.is_invited_to_brunch,
@@ -162,6 +163,10 @@ export async function getRsvpRoute(
         return Boolean(value);
     };
 
+    const hasGuestEmail = guests.results.some(
+        (guest: any) => Boolean(guest.email?.trim())
+    );
+
     const response = {
 
         household: {
@@ -181,7 +186,7 @@ export async function getRsvpRoute(
 
         guests:
             guests.results.map(
-                (guest: any) => ({
+                (guest: any, index: number) => ({
 
                     id: guest.id,
 
@@ -190,6 +195,12 @@ export async function getRsvpRoute(
 
                     lastName:
                         guest.last_name,
+
+                    email: guest.email ?? (
+                        !hasGuestEmail && index === 0
+                            ? household.email
+                            : null
+                    ),
 
                     isInvitedToWelcome:
                         Boolean(

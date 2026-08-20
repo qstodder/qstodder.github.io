@@ -10,6 +10,19 @@ const configuredEnv = {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("wedding website password", () => {
+    it("redirects the public admin shortcut to the secure dashboard", async () => {
+        for (const path of ["/wedding/admin", "/wedding/admin/"]) {
+            const response = await handleWeddingSiteRequest(
+                new Request(`https://www.qstodder.com${path}`),
+                {} as Env
+            );
+            expect(response.status).toBe(303);
+            expect(response.headers.get("Location")).toBe(
+                "https://wedding-rsvp-api.qstodder.workers.dev/admin/"
+            );
+        }
+    });
+
     it("fails closed when password secrets are missing", async () => {
         const response = await handleWeddingSiteRequest(
             new Request("https://www.qstodder.com/wedding/"),

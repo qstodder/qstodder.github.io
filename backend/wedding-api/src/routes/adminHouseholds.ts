@@ -4,6 +4,7 @@ import {
     authenticateAdmin
 } from "../lib/adminAuth";
 import { withAdminCors } from "../lib/adminCors";
+import { normalizeGuestEmail, syncHouseholdEmailStatement } from "../services/guestEmails";
 
 interface HouseholdRow {
     id: number;
@@ -28,6 +29,7 @@ interface GuestRow {
     household_id: number;
     first_name: string;
     last_name: string;
+    email: string | null;
     is_invited_to_welcome: number;
     is_invited_to_wedding: number;
     is_invited_to_brunch: number;
@@ -224,7 +226,7 @@ export async function getAdminHousehold(
         const [guestResult, dietaryResult, restrictions, householdOptions] =
             await Promise.all([
                 env.wedding_rsvp_db.prepare(`
-                    SELECT g.id, g.household_id, g.first_name, g.last_name,
+                    SELECT g.id, g.household_id, g.first_name, g.last_name, g.email,
                         g.is_invited_to_welcome,
                         g.is_invited_to_wedding,
                         g.is_invited_to_brunch,
@@ -275,6 +277,7 @@ export async function getAdminHousehold(
                     householdId: guest.household_id,
                     firstName: guest.first_name,
                     lastName: guest.last_name,
+                    email: guest.email,
                     invitations: {
                         welcome: Boolean(guest.is_invited_to_welcome),
                         wedding: Boolean(guest.is_invited_to_wedding),
@@ -320,7 +323,6 @@ export async function updateAdminHousehold(
 
         let householdName: string;
         let householdKey: string;
-        let email: string | null;
         let line1: string | null;
         let line2: string | null;
         let city: string | null;
@@ -336,10 +338,6 @@ export async function updateAdminHousehold(
             householdKey = text(input.householdKey, "Household key", 150, true)!;
             if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(householdKey)) {
                 throw new Error("Household key must contain lowercase letters, numbers, and hyphens only.");
-            }
-            email = text(input.email, "Email", 254);
-            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                throw new Error("Enter a valid household email address.");
             }
             const address = input.address as Record<string, unknown> | undefined;
             line1 = text(address?.line1, "Address line 1", 200);
@@ -364,21 +362,20 @@ export async function updateAdminHousehold(
             UPDATE households SET
                 household_name = ?1,
                 household_key = ?2,
-                email = ?3,
-                street = ?4,
-                address_line_2 = ?5,
-                city = ?6,
-                state = ?7,
-                zip = ?8,
-                country_code = ?9,
-                notes = ?10,
-                address_needed = ?11,
-                couple_side = ?12,
-                relationship_type = ?13,
-                family_side = ?14
-            WHERE id = ?15 AND archived_at IS NULL
+                street = ?3,
+                address_line_2 = ?4,
+                city = ?5,
+                state = ?6,
+                zip = ?7,
+                country_code = ?8,
+                notes = ?9,
+                address_needed = ?10,
+                couple_side = ?11,
+                relationship_type = ?12,
+                family_side = ?13
+            WHERE id = ?14 AND archived_at IS NULL
         `).bind(
-            householdName, householdKey, email, line1, line2,
+            householdName, householdKey, line1, line2,
             city, region, postalCode, countryCode, notes,
             addressNeeded ? 1 : 0,
             householdClassifications.coupleSide,
@@ -473,6 +470,7 @@ function guestFields(input: Record<string, unknown>) {
     return {
         firstName: text(input.firstName, "First name", 100, true)!,
         lastName: text(input.lastName, "Last name", 100) ?? "",
+        email: normalizeGuestEmail(input.email, "Guest email"),
         householdId: Number(input.householdId),
         welcome: boolean(invitations?.welcome, "Welcome invitation"),
         wedding: boolean(invitations?.wedding, "Wedding invitation"),
@@ -512,16 +510,17 @@ export async function createAdminGuest(
 
         const result = await env.wedding_rsvp_db.prepare(`
             INSERT INTO guests (
-                household_id, first_name, last_name,
+                household_id, first_name, last_name, email,
                 is_invited_to_welcome, is_invited_to_wedding,
                 is_invited_to_brunch
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
         `).bind(
-            householdId, guest.firstName, guest.lastName,
+            householdId, guest.firstName, guest.lastName, guest.email,
             guest.welcome ? 1 : 0,
             guest.wedding ? 1 : 0,
             guest.brunch ? 1 : 0
         ).run();
+        await syncHouseholdEmailStatement(env.wedding_rsvp_db, householdId).run();
         return json(request, {
             success: true,
             guestId: result.meta.last_row_id
@@ -567,6 +566,12 @@ export async function updateAdminGuest(
             return json(request, { error: (error as Error).message }, 400);
         }
 
+        const existingGuest = await env.wedding_rsvp_db.prepare(
+            "SELECT household_id FROM guests WHERE id = ?1 AND archived_at IS NULL"
+        ).bind(guestId).first<{ household_id: number }>();
+        if (!existingGuest) {
+            return json(request, { error: "Guest not found." }, 404);
+        }
         const targetHousehold = await env.wedding_rsvp_db.prepare(
             "SELECT id FROM households WHERE id = ?1 AND archived_at IS NULL"
         ).bind(guest.householdId).first();
@@ -577,11 +582,11 @@ export async function updateAdminGuest(
         const statements = [
             env.wedding_rsvp_db.prepare(`
                 UPDATE guests SET household_id = ?1, first_name = ?2,
-                    last_name = ?3, is_invited_to_welcome = ?4,
-                    is_invited_to_wedding = ?5, is_invited_to_brunch = ?6
-                WHERE id = ?7 AND archived_at IS NULL
+                    last_name = ?3, email = ?4, is_invited_to_welcome = ?5,
+                    is_invited_to_wedding = ?6, is_invited_to_brunch = ?7
+                WHERE id = ?8 AND archived_at IS NULL
             `).bind(
-                guest.householdId, guest.firstName, guest.lastName,
+                guest.householdId, guest.firstName, guest.lastName, guest.email,
                 guest.welcome ? 1 : 0, guest.wedding ? 1 : 0,
                 guest.brunch ? 1 : 0, guestId
             ),
@@ -616,7 +621,9 @@ export async function updateAdminGuest(
                     FROM dietary_restrictions
                     WHERE id = ?2
                 `).bind(guestId, restrictionId, dietaryNotes)
-            )
+            ),
+            syncHouseholdEmailStatement(env.wedding_rsvp_db, existingGuest.household_id),
+            syncHouseholdEmailStatement(env.wedding_rsvp_db, guest.householdId)
         ];
 
         const results = await env.wedding_rsvp_db.batch(statements);
@@ -636,6 +643,12 @@ export async function archiveAdminGuest(
 ): Promise<Response> {
     try {
         await authenticateAdmin(request, env);
+        const existingGuest = await env.wedding_rsvp_db.prepare(
+            "SELECT household_id FROM guests WHERE id = ?1 AND archived_at IS NULL"
+        ).bind(guestId).first<{ household_id: number }>();
+        if (!existingGuest) {
+            return json(request, { error: "Guest not found." }, 404);
+        }
         const result = await env.wedding_rsvp_db.prepare(`
             UPDATE guests SET archived_at = CURRENT_TIMESTAMP
             WHERE id = ?1 AND archived_at IS NULL
@@ -643,6 +656,7 @@ export async function archiveAdminGuest(
         if (result.meta.changes === 0) {
             return json(request, { error: "Guest not found." }, 404);
         }
+        await syncHouseholdEmailStatement(env.wedding_rsvp_db, existingGuest.household_id).run();
         return json(request, { success: true });
     } catch (error) {
         return errorResponse(request, error, "Unable to archive the guest.");

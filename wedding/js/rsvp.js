@@ -49,6 +49,8 @@ const contactForm =
 
 const contactError =
     document.getElementById("contact-error");
+const guestEmailFields =
+    document.getElementById("guest-email-fields");
 
 
 /* =========================================================
@@ -144,8 +146,23 @@ function populateContactForm() {
 
     const household = state.household;
 
-    document.getElementById("email").value =
-        household.email ?? "";
+    const guests = state.rsvp.guests;
+    const hasGuestEmail = guests.some((guest) => guest.email);
+    guestEmailFields.innerHTML = guests.map((guest, index) => {
+        const value = guest.email ?? (
+            !hasGuestEmail && index === 0 ? household.email ?? "" : ""
+        );
+        return `
+            <div class="form-field">
+                <label for="guest-email-${guest.id}">
+                    ${escapeHtml(`${guest.firstName} ${guest.lastName}`.trim())}
+                </label>
+                <input id="guest-email-${guest.id}" type="email"
+                    autocomplete="email" maxlength="254"
+                    value="${escapeHtml(value)}">
+            </div>
+        `;
+    }).join("");
 
     document.getElementById("street").value =
         household.street ?? "";
@@ -178,10 +195,14 @@ function populateContactForm() {
 
 function saveContactFormToState() {
 
-    state.household.email =
-        document.getElementById("email")
-            .value
-            .trim();
+    for (const guest of state.rsvp.guests) {
+        guest.email = document
+            .getElementById(`guest-email-${guest.id}`)
+            .value.trim().toLowerCase();
+    }
+    state.household.email = state.rsvp.guests
+        .map((guest) => guest.email)
+        .find(Boolean) ?? "";
 
     state.household.street =
         document.getElementById("street")
@@ -393,7 +414,7 @@ continueToContactButton.addEventListener(
         showScreen(contactScreen);
 
         document
-            .getElementById("email")
+            .getElementById("street")
             .focus();
     }
 );
@@ -408,6 +429,14 @@ backToHouseholdButton.addEventListener(
     () => {
 
         saveContactFormToState();
+
+        if (!state.rsvp.guests.some((guest) => guest.email)) {
+            contactError.textContent =
+                "Please enter a valid email address for at least one household member.";
+            contactError.classList.remove("hidden");
+            guestEmailFields.querySelector("input")?.focus();
+            return;
+        }
 
         showScreen(householdScreen);
     }
@@ -1528,9 +1557,12 @@ function renderRsvpReview() {
         <section class="review-section">
             <h3>Contact Information</h3>
 
-            <p>${escapeHtml(household.email)}</p>
-
             <p>${reviewAddressMarkup(household)}</p>
+
+            ${state.rsvp.guests
+                .filter((guest) => guest.email)
+                .map((guest) => `<p>${escapeHtml(`${guest.firstName} ${guest.lastName}`.trim())}: ${escapeHtml(guest.email)}</p>`)
+                .join("")}
         </section>
 
         <section class="review-section">
@@ -1568,6 +1600,10 @@ function buildRsvpPayload() {
         contact: {
             householdId: household.id,
             email: household.email,
+            guestEmails: state.rsvp.guests.map((guest) => ({
+                guestId: guest.id,
+                email: guest.email ?? ""
+            })),
             street: household.street,
             addressLine2: household.addressLine2,
             city: household.city,
