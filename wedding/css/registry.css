@@ -1,0 +1,264 @@
+body {
+    background-color: #f6f9fa;
+    background-image: radial-gradient(rgba(122, 157, 176, .17) .7px, transparent .7px);
+    background-size: 10px 10px;
+}
+
+.registry-page {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto 100px;
+}
+
+.registry-intro {
+    max-width: 680px;
+    margin: 0 auto 54px;
+    text-align: center;
+}
+
+.registry-eyebrow,
+.fund-number,
+.dialog-fund {
+    margin: 0 0 10px;
+    color: #7a9db0;
+    font-family: Copperplate, "Copperplate Gothic Light", sans-serif;
+    font-size: .72rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+}
+
+.registry-intro h2 {
+    margin: 0 0 16px;
+    color: #3d5664;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-size: clamp(2.25rem, 5vw, 3.7rem);
+    font-weight: 400;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.registry-intro > p:last-child {
+    margin: 0;
+    color: #5b7079;
+    font-size: 1.22rem;
+}
+
+.fund-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+}
+
+.fund-card {
+    overflow: hidden;
+    background: rgba(255, 255, 255, .97);
+    border: 1px solid #c8dbe3;
+    box-shadow: 0 9px 26px rgba(43, 72, 86, .09);
+}
+
+.fund-image-wrap {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #dce8ec;
+}
+
+.fund-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fund-card[data-fund="house"] .fund-image {
+    object-position: center;
+}
+
+.fund-content {
+    padding: 28px 28px 32px;
+    text-align: center;
+}
+
+.fund-content h3 {
+    margin: 0;
+    color: #3d5664;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: .05em;
+}
+
+.fund-content > p:not(.fund-number) {
+    min-height: 4.8em;
+    margin: 15px 0 24px;
+    color: #62767f;
+    font-size: 1.05rem;
+}
+
+.payment-options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.payment-button {
+    display: inline-flex;
+    width: 64px;
+    height: 54px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #bfd1d9;
+    border-radius: 8px;
+    color: #365f74;
+    cursor: pointer;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.payment-button:hover,
+.payment-button:focus-visible {
+    transform: translateY(-2px);
+    border-color: #7a9db0;
+    box-shadow: 0 5px 12px rgba(43, 72, 86, .12);
+    outline: none;
+}
+
+.payment-logo {
+    display: grid;
+    place-items: center;
+    font-family: Arial, sans-serif;
+    font-weight: 800;
+}
+
+.payment-logo.venmo {
+    color: #008cff;
+    font-size: 1.65rem;
+    font-style: italic;
+}
+
+.payment-logo.zelle {
+    width: 31px;
+    height: 31px;
+    background: #6d1ed4;
+    color: white;
+    font-size: 1.35rem;
+}
+
+.payment-logo.card {
+    position: relative;
+    width: 37px;
+    height: 25px;
+    border: 2px solid #55788a;
+    border-radius: 3px;
+}
+
+.payment-logo.card::before {
+    position: absolute;
+    top: 5px;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: #7a9db0;
+    content: "";
+}
+
+.payment-logo.card::after {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    width: 9px;
+    height: 3px;
+    background: #c5a75e;
+    content: "";
+}
+
+.payment-dialog {
+    width: min(520px, calc(100% - 32px));
+    padding: 42px;
+    background: #fffdf9;
+    border: 1px solid #a9c1cc;
+    color: #455e69;
+    box-shadow: 0 24px 65px rgba(29, 53, 65, .25);
+    text-align: center;
+}
+
+.payment-dialog::backdrop {
+    background: rgba(30, 50, 60, .54);
+    backdrop-filter: blur(2px);
+}
+
+.dialog-close {
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    padding: 2px 8px;
+    background: transparent;
+    border: 0;
+    color: #647a7e;
+    cursor: pointer;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.dialog-logo {
+    display: flex;
+    min-height: 45px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.dialog-fund { margin-bottom: 7px; }
+
+.payment-dialog h2 {
+    margin: 0 0 18px;
+    color: #365f74;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-size: 1.55rem;
+    font-weight: 400;
+    letter-spacing: .08em;
+}
+
+.dialog-copy p { margin: 0 0 14px; }
+.dialog-copy strong { color: #314e5c; }
+
+.dialog-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.dialog-action {
+    display: inline-block;
+    padding: 11px 22px;
+    background: #365f74;
+    border: 1px solid #365f74;
+    border-radius: 999px;
+    color: #fff;
+    cursor: pointer;
+    font-family: Copperplate, "Copperplate Gothic Light", sans-serif;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.dialog-action.secondary {
+    background: transparent;
+    color: #365f74;
+}
+
+@media (max-width: 860px) {
+    .fund-grid { grid-template-columns: 1fr; }
+    .fund-card { display: grid; grid-template-columns: minmax(220px, 42%) 1fr; }
+    .fund-image-wrap { height: 100%; aspect-ratio: auto; }
+    .fund-content > p:not(.fund-number) { min-height: 0; }
+}
+
+@media (max-width: 580px) {
+    .registry-page { width: min(100% - 24px, 430px); }
+    .registry-intro { margin-bottom: 34px; }
+    .fund-card { display: block; }
+    .fund-image-wrap { height: auto; aspect-ratio: 4 / 3; }
+    .fund-content { padding: 24px 20px 27px; }
+    .payment-dialog { padding: 38px 22px 28px; }
+}

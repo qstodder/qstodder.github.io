@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quiana and Scott’s wedding registry funds.">
+    <title>Registry | Quiana &amp; Scott</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/registry.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="registry-page">
+        <section class="registry-intro">
+            <p class="registry-eyebrow">Celebrating our next chapter</p>
+            <h2>Registry</h2>
+            <p>Your presence is the greatest gift. If you would like to contribute to our future, we’ve created three funds close to our hearts.</p>
+        </section>
+
+        <section class="fund-grid" aria-label="Wedding funds">
+            <article class="fund-card" data-fund="honeymoon" data-fund-name="Honeymoon Fund" data-emoji="🏝️">
+                <div class="fund-image-wrap"><img src="assets/registry/honeymoon-fund.png" alt="Mount Fuji framed by cherry blossoms" class="fund-image"></div>
+                <div class="fund-content">
+                    <p class="fund-number">01</p>
+                    <h3>Honeymoon Fund</h3>
+                    <p>Help us make memories together on our first adventure as newlyweds.</p>
+                    <div class="payment-options" aria-label="Payment options for the Honeymoon Fund"></div>
+                </div>
+            </article>
+
+            <article class="fund-card" data-fund="house" data-fund-name="House Fund" data-emoji="🏠">
+                <div class="fund-image-wrap"><img src="assets/registry/house-fund.png" alt="Illustrated house surrounded by flowers" class="fund-image"></div>
+                <div class="fund-content">
+                    <p class="fund-number">02</p>
+                    <h3>House Fund</h3>
+                    <p>Help us build a home for all the everyday moments still to come.</p>
+                    <div class="payment-options" aria-label="Payment options for the House Fund"></div>
+                </div>
+            </article>
+
+            <article class="fund-card" data-fund="surfboard" data-fund-name="Surfboard Fund" data-emoji="🌊">
+                <div class="fund-image-wrap"><img src="assets/registry/surfboard-fund.png" alt="A couple carrying surfboards along the beach" class="fund-image"></div>
+                <div class="fund-content">
+                    <p class="fund-number">03</p>
+                    <h3>Surfboard Fund</h3>
+                    <p>Help us catch a few more waves and add a little fun to married life.</p>
+                    <div class="payment-options" aria-label="Payment options for the Surfboard Fund"></div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <dialog id="payment-dialog" class="payment-dialog" aria-labelledby="payment-dialog-title">
+        <button class="dialog-close" type="button" aria-label="Close payment information">×</button>
+        <div id="payment-dialog-icon" class="dialog-logo" aria-hidden="true"></div>
+        <p id="payment-dialog-fund" class="dialog-fund"></p>
+        <h2 id="payment-dialog-title"></h2>
+        <div id="payment-dialog-copy" class="dialog-copy"></div>
+        <div id="payment-dialog-actions" class="dialog-actions"></div>
+    </dialog>
+
+    <script src="js/loadHeader.js"></script>
+    <script src="js/carousel.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/registry.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
