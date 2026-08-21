@@ -508,9 +508,17 @@ body {
 .preview-password {
     margin: 9px 0 0;
     color: #526b76;
-    font-family: Copperplate, "Trebuchet MS", Arial, sans-serif;
-    font-size: .68rem;
-    letter-spacing: .08em;
+    font-family: Arial, sans-serif;
+    font-size: .72rem;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.preview-password code {
+    font-family: "Courier New", monospace;
+    font-size: .78rem;
+    font-weight: 600;
+    text-transform: none;
 }
 
 @media (max-width: 1180px) {
