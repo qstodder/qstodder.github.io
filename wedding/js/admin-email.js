@@ -12,7 +12,7 @@ const elements = {
     bodyLabel: document.querySelector("#email-body-label"),
     draft: document.querySelector("#load-invitation-draft"), review: document.querySelector("#email-review"),
     reviewCount: document.querySelector("#review-recipient-count"), greeting: document.querySelector("#preview-greeting"),
-    preview: document.querySelector("#email-preview"), previewLabel: document.querySelector("#preview-template-label"),
+    preview: document.querySelector("#email-preview"), previewLabel: document.querySelector("#preview-template-label"), previewPassword: document.querySelector("#preview-password"),
     previewHeading: document.querySelector("#preview-invitation-heading"), previewAction: document.querySelector("#preview-template-action"),
     previewBody: document.querySelector("#preview-body"), confirm: document.querySelector("#confirm-send"),
     cancel: document.querySelector("#cancel-review"), status: document.querySelector("#send-status")
@@ -105,6 +105,7 @@ function showReview() {
     elements.previewHeading.classList.toggle("hidden", !isInvitation || isReveal);
     elements.previewAction.classList.toggle("hidden", !isInvitation);
     elements.previewAction.textContent = elements.template.value === "reveal" ? "Open our invitation →" : "View details & RSVP";
+    elements.previewPassword.classList.toggle("hidden", !isReveal);
     elements.previewBody.replaceChildren(...elements.body.value.split(/\n{2,}/).filter((text) => text.trim()).map((text) => {
         const paragraph = document.createElement("p");
         paragraph.textContent = text;

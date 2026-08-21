@@ -505,6 +505,14 @@ body {
     margin-top: 1rem;
 }
 
+.preview-password {
+    margin: 9px 0 0;
+    color: #526b76;
+    font-family: Copperplate, "Trebuchet MS", Arial, sans-serif;
+    font-size: .68rem;
+    letter-spacing: .08em;
+}
+
 @media (max-width: 1180px) {
     .email-filters { grid-template-columns: repeat(3, minmax(150px, 1fr)); }
     .email-filters .filter-search { grid-column: 1 / -1; }

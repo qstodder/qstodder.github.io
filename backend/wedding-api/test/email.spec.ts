@@ -317,7 +317,9 @@ describe("Admin household email", () => {
         expect(reveal.html).toContain("Blue Family");
         expect(reveal.html).not.toContain("Dear Blue Family");
         expect(reveal.html).toContain("padding:1px;background:#c5a75e");
+        expect(reveal.html).toContain("password: rufus");
         expect(reveal.text).toContain("Open our invitation:");
+        expect(reveal.text).toContain("Password: rufus");
     });
 
     it("requires a body for plain email but allows an empty reveal body", async () => {

@@ -530,7 +530,7 @@ const adminEmailPage = `<!DOCTYPE html>
             </section>
             <section id="email-review" class="admin-panel hidden">
                 <div class="panel-heading"><div><p class="admin-eyebrow">Final check</p><h2>Review before sending</h2></div><strong id="review-recipient-count"></strong></div>
-                <div id="email-preview" class="email-preview"><p class="preview-template-label" id="preview-template-label"></p><p id="preview-greeting"></p><div id="preview-invitation-heading" class="preview-invitation-heading hidden"><small>Together with their families</small><strong>Quiana <i>&amp;</i> Scott</strong><span>September 18, 2027 · La Jolla, California</span></div><div id="preview-body"></div><a id="preview-template-action" class="preview-template-action hidden" href="#">View details &amp; RSVP</a></div>
+                <div id="email-preview" class="email-preview"><p class="preview-template-label" id="preview-template-label"></p><p id="preview-greeting"></p><div id="preview-invitation-heading" class="preview-invitation-heading hidden"><small>Together with their families</small><strong>Quiana <i>&amp;</i> Scott</strong><span>September 18, 2027 · La Jolla, California</span></div><div id="preview-body"></div><a id="preview-template-action" class="preview-template-action hidden" href="#">View details &amp; RSVP</a><p id="preview-password" class="preview-password hidden">password: rufus</p></div>
                 <p id="send-status" class="form-status" aria-live="polite"></p>
                 <div class="detail-actions"><button id="confirm-send" class="address-save-button" type="button">Confirm and send</button><button id="cancel-review" class="address-cancel-button" type="button">Back to editing</button></div>
             </section>
