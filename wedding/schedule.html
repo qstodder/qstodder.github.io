@@ -4,16 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Quiana and Scott’s wedding weekend schedule in La Jolla, California.">
-    <title>Schedule Option Three | Quiana &amp; Scott</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/carousel.css">
-    <link rel="stylesheet" href="css/schedule.css">
+    <title>Schedule | Quiana &amp; Scott</title>
+    <link rel="stylesheet" href="redesign/redesign.css">
+    <link rel="stylesheet" href="css/schedule-7-live.css">
 </head>
-<body>
-    <div id="header-placeholder"></div>
+<body class="coastal-letterpress porcelain-refined live-schedule-type">
+    <header class="mock-header">
+        <div class="photo-carousel">
+            <div class="carousel-track-wrapper">
+                <div class="carousel-track" id="carousel-track"></div>
+            </div>
+        </div>
+        <div class="masthead">
+            <h1>Quiana &amp; Scott</h1>
+            <p>09 . 18 . 27 &nbsp; · &nbsp; La Jolla, California</p>
+        </div>
+        <nav class="mock-nav" aria-label="Wedding navigation">
+            <a class="active" href="schedule.html" aria-current="page">Schedule</a>
+            <a href="accommodation.html">Accommodation</a>
+            <a href="registry.html">Registry</a>
+            <a href="faq.html">FAQ</a>
+            <a href="rsvp.html">RSVP</a>
+        </nav>
+    </header>
 
+    <div class="porcelain-stage">
     <main class="schedule-page">
         <section class="page-intro">
+            <p class="eyebrow">The wedding weekend</p>
             <h2>Schedule</h2>
             <p>We can’t wait to celebrate with you!</p>
         </section>
@@ -70,8 +88,7 @@
                         <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=La+Jolla+Womans+Club+7791+Draper+Ave+La+Jolla+CA+92037" target="_blank" rel="noopener">View map ↗</a>
                         <details class="calendar-menu"><summary>Add to calendar</summary><div><a href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Quiana+%26+Scott%27s+Wedding+Reception&amp;dates=20270918T170000/20270918T220000&amp;ctz=America%2FLos_Angeles&amp;details=Celebrate+with+us+over+dinner%2C+drinks%2C+and+dancing.&amp;location=La+Jolla+Woman%27s+Club%2C+7791+Draper+Ave%2C+La+Jolla%2C+CA+92037" target="_blank" rel="noopener">Google Calendar</a><a href="calendar/wedding-reception.ics" download>Apple Calendar</a></div></details>
                     </div>
-                    <p class="event-blurb">The reception venue is two blocks up the hill. Transportation will be provided to those who need it, please inquire with Quiana and/or Scott!</p>
-                    <p class="attire"><strong>Attire:</strong> Come as you are!</p>
+                    <p class="event-blurb">The reception venue is a two block walk up the hill. Transportation will be provided to those who need it, please inquire with Quiana and/or Scott!</p>
                 </div>
             </article>
 
@@ -91,10 +108,15 @@
             </article>
         </section>
     </main>
+    </div>
 
-    <script src="js/loadHeader.js"></script>
     <script src="js/carousel.js"></script>
     <script src="js/navigation.js"></script>
-    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeNavigation();
+            initializeCarousel();
+        });
+    </script>
 </body>
 </html>
