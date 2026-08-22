@@ -1,35 +1,171 @@
-.schedule-page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
+:root {
+    --ink: #334d5d;
+    --blue: #789fb6;
+    --line: rgba(92, 133, 156, .28);
 }
 
-.page-intro {
-    margin-bottom: 70px;
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--ink);
+    background-color: #faf9f5;
+    background-image: radial-gradient(rgba(79, 113, 131, .06) .7px, transparent .7px);
+    background-size: 7px 7px;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    line-height: 1.55;
+}
+
+.mock-header {
+    position: relative;
+    overflow: hidden;
+    padding: 0 6vw 38px;
+    background: rgba(255, 255, 255, .74);
+}
+
+.photo-carousel {
+    --carousel-photo-width: 260px;
+    --carousel-gap: 12px;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow: hidden;
+}
+
+.carousel-track-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.carousel-track {
+    display: flex;
+    align-items: center;
+    gap: var(--carousel-gap);
+    transition: transform 650ms ease-in-out;
+    will-change: transform;
+}
+
+.carousel-photo {
+    width: var(--carousel-photo-width);
+    height: 390px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.masthead {
+    margin: 34px auto 28px;
     text-align: center;
 }
 
-.page-intro h2 {
-    font-family: Copperplate, serif;
-    font-size: 3rem;
-    letter-spacing: 2px;
+.masthead h1 {
+    margin: 0;
+    color: #516f80;
+    font: normal clamp(2.4rem, 6vw, 4.4rem)/1.1 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .045em;
 }
 
-.page-intro p {
-    color: var(--steel-blue);
-    font-size: 1.4rem;
+.masthead p {
+    margin: 12px 0 0;
+    font-size: 1.2rem;
+    letter-spacing: .08em;
+}
+
+.mock-nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(14px, 3vw, 34px);
+    color: #68899b;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    line-height: 1.2;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.mock-nav a {
+    color: inherit;
+    border-bottom: 1px solid transparent;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.mock-nav a.active {
+    border-bottom-color: currentColor;
+}
+
+.mock-nav a:hover,
+.mock-nav a:focus-visible {
+    color: #365f74;
+}
+
+.mock-nav a:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 5px;
+}
+
+.porcelain-stage {
+    padding: 72px 28px 100px;
+    border-top: 4px double #b8d2df;
+    background-color: #f8fbfc;
+    background-image:
+        linear-gradient(rgba(111, 158, 182, .085) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(111, 158, 182, .085) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.schedule-page {
+    max-width: 930px;
+    margin: 0 auto;
+    padding: 72px 28px 100px;
+    background: #fff;
+    border: 1px solid #c5dbe4;
+    box-shadow: 0 14px 40px rgba(55, 90, 108, .08);
+}
+
+.page-intro {
+    margin-bottom: 64px;
+    text-align: center;
+}
+
+.page-intro::after {
+    display: block;
+    width: 64px;
+    margin: 26px auto 0;
+    border-top: 1px solid #b99a62;
+    content: "";
+}
+
+.page-intro .eyebrow,
+.event-type {
+    margin: 0 0 7px;
+    font: 12px/1.2 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.page-intro h2 {
+    margin: 0;
+    font: normal clamp(2.6rem, 6vw, 4rem)/1.1 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .05em;
+}
+
+.page-intro > p:last-child {
+    margin: 12px 0 0;
+    font-size: 1.35rem;
 }
 
 .event {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 40px;
-    margin-bottom: 76px;
+    grid-template-columns: 1fr 1fr;
+    gap: 44px;
+    margin-bottom: 72px;
 }
 
 .time {
-    color: var(--steel-blue);
-    font-family: Copperplate, serif;
     text-align: right;
 }
 
@@ -39,34 +175,32 @@
 }
 
 .time span {
-    margin-bottom: 8px;
-    color: var(--slate-grey);
-    font-size: clamp(1.2rem, 2.2vw, 1.45rem);
-    letter-spacing: .05em;
+    font: 23px/1.35 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .055em;
     text-transform: uppercase;
 }
 
-.time time { font-size: 1rem; }
+.time time {
+    margin-top: 7px;
+    font-size: 1rem;
+}
 
 .event-type {
-    margin: 0 0 4px;
-    color: var(--steel-blue);
-    font-family: Copperplate, serif;
+    margin-bottom: 4px;
+    color: var(--blue);
     font-size: clamp(1.2rem, 2.2vw, 1.45rem);
     letter-spacing: .08em;
-    text-transform: uppercase;
 }
 
 .event-details h3 {
     margin: 0;
-    color: var(--slate-grey);
     font-size: 1.3rem;
     font-weight: 500;
 }
 
 .event-details address {
-    margin-top: 4px;
-    font-size: 1.05rem;
+    margin-top: 2px;
+    font-size: 1.03rem;
     font-style: normal;
 }
 
@@ -74,25 +208,34 @@
     display: flex;
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 8px 14px;
-    margin-top: 10px;
+    gap: 8px 18px;
+    margin-top: 9px;
+    color: var(--blue);
 }
 
 .map-link,
 .calendar-menu summary {
-    color: var(--steel-blue);
+    color: var(--blue);
     border-bottom: 1px solid currentColor;
     cursor: pointer;
-    font-family: Copperplate, serif;
-    font-size: .72rem;
-    letter-spacing: .04em;
+    font: 12px/1.6 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .08em;
     list-style: none;
     text-decoration: none;
+    text-transform: uppercase;
 }
 
-.calendar-menu summary::-webkit-details-marker { display: none; }
-.calendar-menu summary::after { content: " +"; }
-.calendar-menu[open] summary::after { content: " −"; }
+.calendar-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.calendar-menu summary::after {
+    content: " +";
+}
+
+.calendar-menu[open] summary::after {
+    content: " −";
+}
 
 .calendar-menu div {
     display: flex;
@@ -102,72 +245,63 @@
 }
 
 .calendar-menu a {
-    color: var(--slate-grey);
+    color: var(--ink);
     font-size: .88rem;
+    text-decoration: none;
+}
+
+.calendar-menu a:hover,
+.calendar-menu a:focus-visible {
+    color: var(--blue);
 }
 
 .event-blurb {
-    max-width: 390px;
-    margin: 16px 0 0;
-    line-height: 1.45;
+    max-width: 410px;
+    margin: 17px 0 0;
 }
 
 .attire {
     margin: 10px 0 0;
-    color: var(--steel-blue);
-    font-size: .92rem;
+    color: var(--blue);
+    font-size: .93rem;
 }
 
 .attire-feature {
-    max-width: 390px;
+    max-width: 410px;
     margin-top: 17px;
     padding-top: 14px;
-    border-top: 1px solid rgba(100, 122, 126, .22);
+    border-top: 1px solid var(--line);
 }
 
-.attire-feature h4 {
-    margin: 0 0 3px;
-    color: var(--steel-blue);
-    font-family: Copperplate, serif;
-    font-size: .76rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
+.attire-feature .attire {
+    margin-top: 0;
 }
 
-.attire-formality {
-    margin: 0;
-    color: var(--slate-grey);
+.footwear-note,
+.palette-group p {
+    margin: 5px 0 10px;
+    font-size: .88rem;
 }
 
 .footwear-note {
-    margin: 4px 0 13px;
-    color: var(--slate-grey);
-    font-size: .88rem;
     font-style: italic;
-    line-height: 1.4;
 }
 
-.palette-group + .palette-group { margin-top: 13px; }
-
-.palette-group p {
-    margin: 0 0 6px;
-    color: var(--slate-grey);
-    font-size: .88rem;
-    line-height: 1.4;
+.palette-group + .palette-group {
+    margin-top: 13px;
 }
 
 .swatches {
     display: flex;
-    flex-wrap: wrap;
     gap: 7px;
 }
 
 .swatch {
-    width: 20px;
-    height: 20px;
-    border: 1px solid rgba(39, 54, 59, .18);
+    width: 19px;
+    height: 19px;
+    border: 1px solid rgba(30, 50, 60, .15);
     border-radius: 50%;
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .38);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .35);
 }
 
 .baby-blue { background: #c5e3f0; }
@@ -175,16 +309,36 @@
 .medium-blue { background: #4f83c2; }
 .royal-blue { background: #3159b7; }
 .navy { background: #172c4d; }
+.beige { background: #d7c6a8; }
+.green { background: #79957b; }
+.brown { background: #765c48; }
 .black { background: #252525; }
 .grey { background: #858b91; }
-.green { background: #79957b; }
-.light-green { background: #88a189; }
-.purple { background: #75627d; }
-.brown { background: #765c48; }
-.beige { background: #d7c6a8; }
 
-@media (max-width: 768px) {
-    .event { display: block; }
+@media (max-width: 720px) {
+    .photo-carousel {
+        --carousel-gap: 8px;
+    }
+
+    .carousel-photo {
+        height: 280px;
+    }
+
+    .mock-nav {
+        gap: 12px 18px;
+    }
+
+    .porcelain-stage {
+        padding: 38px 14px 60px;
+    }
+
+    .schedule-page {
+        padding: 54px 22px 70px;
+    }
+
+    .event {
+        display: block;
+    }
 
     .time {
         margin-bottom: 14px;
