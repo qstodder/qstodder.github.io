@@ -12,7 +12,7 @@ const methods = {
         logo: '<span class="payment-logo venmo" aria-hidden="true">V</span>',
         copy: ({ emoji }) => `
             <p>You’ll be taken to Quiana’s Venmo profile at <strong>@quiana-stodder</strong>.</p>
-            <p>Please include a ${emoji} emoji in your payment message so we know which fund you’re contributing to.</p>
+            <p>Please indicate which fund you’re contributing to!</p>
         `,
         action: '<a class="dialog-action" href="https://venmo.com/u/quiana-stodder" target="_blank" rel="noopener noreferrer">Continue to Venmo</a>'
     },
@@ -22,15 +22,7 @@ const methods = {
         copy: () => `
             <p>Open Zelle through your bank’s website or mobile app and choose <strong>Send money</strong>.</p>
             <p>Send your gift to <strong>Quiana at 808-214-7336</strong>. Please confirm the recipient name shown by your bank before completing the transfer.</p>
-        `,
-        action: ""
-    },
-    card: {
-        name: "Bank, Debit or Credit",
-        logo: '<span class="payment-logo card" aria-hidden="true"></span>',
-        copy: () => `
-            <p>You’ll be taken to our registry on The Knot, where you can contribute by bank account, debit card, or credit card.</p>
-            <p><strong>A processing fee will apply.</strong> Our Knot registry link is coming soon.</p>
+            <p>Please indicate which fund you're contributing to!</p>
         `,
         action: ""
     }

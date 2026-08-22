@@ -19,17 +19,11 @@
    ========================================================== */
 
 body {
-
     margin: 0;
-
     font-family: "Cormorant Garamond", serif;
-
     color: var(--text-dark);
-
     background: white;
-
     line-height: 1.6;
-
 }
 
 
@@ -48,9 +42,7 @@ body {
 .hero-text h1 {
 
     margin: 0;
-
     font-family: Copperplate, "Copperplate Gothic Light", serif;
-
     font-size: 3.5rem;
 
     font-weight: normal;
@@ -103,11 +95,8 @@ body {
 }
 
 .main-nav a {
-
     color: var(--slate-grey);
-
     text-decoration: none;
-
     transition: color 0.2s ease;
 
 }
@@ -121,17 +110,12 @@ body {
 .main-nav a.active {
 
     color: var(--olive-wood);
-
     border-bottom: 1px solid var(--olive-wood);
-
     padding-bottom: 3px;
-
 }
 
 .divider {
-
     color: var(--cool-steel);
-
 }
 
 
@@ -142,23 +126,16 @@ body {
 @media (max-width: 768px) {
 
     .hero-text h1 {
-
         font-size: 2.5rem;
-
     }
 
     .subtitle {
-
         font-size: 1.3rem;
-
     }
 
     .main-nav {
-
         gap: 10px;
-
         font-size: 0.8rem;
-
     }
 
 }
