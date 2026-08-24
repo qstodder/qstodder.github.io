@@ -104,7 +104,7 @@ function showReview() {
     const isInvitation = elements.template.value !== "plain";
     elements.previewHeading.classList.toggle("hidden", !isInvitation || isReveal);
     elements.previewAction.classList.toggle("hidden", !isInvitation);
-    elements.previewAction.textContent = elements.template.value === "reveal" ? "Open our invitation →" : "View details & RSVP";
+    elements.previewAction.textContent = elements.template.value === "reveal" ? "Open your invitation →" : "View details & RSVP";
     elements.previewPassword.classList.toggle("hidden", !isReveal);
     elements.previewBody.replaceChildren(...elements.body.value.split(/\n{2,}/).filter((text) => text.trim()).map((text) => {
         const paragraph = document.createElement("p");

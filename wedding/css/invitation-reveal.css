@@ -108,21 +108,29 @@ body.diamond-tile-version.invitation-open::before {
     border-radius: 5px;
 }
 
-.envelope-back { background: #8cabb8; }
+.envelope-back {
+    background: #d5cfc3;
+    border: 1px solid rgba(105, 96, 82, .18);
+    box-shadow: inset 0 1px 8px rgba(255, 255, 255, .5);
+}
 
 .envelope-front {
     z-index: 3;
     background:
-        linear-gradient(145deg, transparent 49.5%, #edf3f4 50%) 0 0 / 50% 100%,
-        linear-gradient(215deg, transparent 49.5%, #e4edef 50%) 100% 0 / 50% 100%;
+        linear-gradient(145deg, transparent 49.35%, rgba(132, 119, 99, .18) 49.7%, #f2eee5 50.15%) 0 0 / 50.2% 100%,
+        linear-gradient(215deg, transparent 49.35%, rgba(132, 119, 99, .16) 49.7%, #e4dfd4 50.15%) 100% 0 / 50.2% 100%;
     background-repeat: no-repeat;
+    box-shadow: inset 0 -1px 0 rgba(111, 99, 81, .12);
 }
 
 .envelope-flap {
     z-index: 4;
     height: 63%;
-    background: #d7e4e8;
+    background: linear-gradient(155deg, #f6f3ec, #e8e2d7 78%);
+    border-top: 1px solid rgba(255, 255, 255, .8);
     clip-path: polygon(0 0, 100% 0, 50% 100%);
+    backface-visibility: hidden;
+    filter: drop-shadow(0 2px 1px rgba(102, 91, 74, .18));
     transform-origin: top;
     transition: transform .8s ease;
 }
@@ -249,6 +257,8 @@ body.diamond-tile-version.invitation-open::before {
 }
 
 .invitation h1 span {
+    display: inline-block;
+    margin: 0 .18em;
     color: var(--steel);
     font-family: "Italianno", "Pinyon Script", "Cormorant Garamond", cursive;
     font-size: 1em;
@@ -323,7 +333,7 @@ body.diamond-tile-version.invitation-open::before {
     .invitation-card { min-height: 0; padding: 62px 30px 52px; }
     .details { grid-template-columns: 1fr; }
     .details p + p { padding-top: 20px; border-top: 1px solid #d8e2e5; }
-    .invitation h1 span { display: block; line-height: .7; }
+    .invitation h1 span { display: block; margin: .04em 0; line-height: .7; }
 }
 
 @media (prefers-reduced-motion: reduce) {

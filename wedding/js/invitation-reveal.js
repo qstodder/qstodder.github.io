@@ -8,9 +8,6 @@ button.addEventListener("click", () => {
     letter.style.transitionDelay = "0.8s";
     opening.classList.add("is-open");
     button.setAttribute("aria-expanded", "true");
-    window.setTimeout(() => {
-        letter.style.zIndex = "5";
-    }, 800);
     window.setTimeout(() => opening.classList.add("is-departing"), 1100);
     window.setTimeout(() => {
         opening.hidden = true;

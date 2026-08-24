@@ -310,7 +310,7 @@ describe("Admin household email", () => {
 
         expect(classic.html).toContain("Together with their families");
         expect(animated.html).toContain("@keyframes tide");
-        expect(reveal.html).toContain("Open our invitation");
+        expect(reveal.html).toContain("Open your invitation");
         expect(reveal.html).toContain("/wedding/invitation.html");
         expect(reveal.html).toContain("max-width:480px");
         expect(reveal.html).toContain("Quiana &amp; Scott");
@@ -319,7 +319,7 @@ describe("Admin household email", () => {
         expect(reveal.html).toContain("padding:1px;background:#c5a75e");
         expect(reveal.html).toContain("password:");
         expect(reveal.html).toContain(">rufus</span>");
-        expect(reveal.text).toContain("Open our invitation:");
+        expect(reveal.text).toContain("Open your invitation:");
         expect(reveal.text).toContain("Password: rufus");
     });
 
