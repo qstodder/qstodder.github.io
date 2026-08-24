@@ -1,0 +1,22 @@
+.faq-placeholder {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 42px;
+    background: #f4f8fa;
+    border: 1px solid #d8e3e8;
+    text-align: center;
+}
+
+.faq-placeholder h3 {
+    margin: 0 0 12px;
+    color: #516f80;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-size: 1.45rem;
+    font-weight: 400;
+    letter-spacing: .05em;
+}
+
+.faq-placeholder p {
+    margin: 0;
+    font-size: 1.15rem;
+}

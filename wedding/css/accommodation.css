@@ -1,209 +1,88 @@
-/* ==========================================================
-   Accommodation Page
-   ========================================================== */
-
-
-.accommodation-page {
-
-    max-width: 1000px;
-
-    margin: 0 auto;
-
-    padding: 0 24px 80px;
-
-}
-
-
-
-/* Intro */
-
-.page-intro {
-
-    text-align: center;
-
-    max-width: 700px;
-
-    margin: 0 auto 60px;
-
-}
-
-
-.page-intro h2 {
-
-    font-family: Copperplate, serif;
-
-    font-size: 3rem;
-
-    letter-spacing: 2px;
-
-}
-
-
-.page-intro p {
-
-    font-size: 1.4rem;
-
-    color: var(--steel-blue);
-
-}
-
-
-
-/* Lodging cards */
-
-
 .lodging-section {
-
     display: grid;
-
-    grid-template-columns: repeat(3, 1fr);
-
-    gap: 30px;
-
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
 }
-
-
 
 .lodging-card {
-
-    background: #F4F8FA;
-
-    border: 1px solid #D8E3E8;
-    
-    border-radius: 10px;
-
-    padding: 32px;
-
+    min-width: 0;
+    padding: 30px 24px;
+    background: #f4f8fa;
+    border: 1px solid #c8dbe3;
     text-align: center;
-
-    transition: 
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-
+    box-shadow: 0 9px 26px rgba(43, 72, 86, .07);
+    transition: transform .2s ease, box-shadow .2s ease;
 }
-
-
 
 .lodging-card:hover {
-
-    transform: translateY(-4px);
-
-    box-shadow:
-        0 8px 20px rgba(100, 122, 126, 0.12);
-
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(43, 72, 86, .12);
 }
 
-
+.lodging-card h3,
+.travel-note h3 {
+    margin: 0;
+    color: #3d5664;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-weight: 400;
+    letter-spacing: .04em;
+}
 
 .lodging-card h3 {
-
-    font-size: 1.8rem;
-
-    color: var(--slate-grey);
-
-    margin-top: 0;
-
-    margin-bottom: 8px;
-
+    font-size: 1.45rem;
 }
 
-
-
-.location {
-
-    font-size: 1.2rem;
-
+.lodging-card .location {
+    margin: 8px 0 18px;
+    color: #68899b;
+    font-size: 1.1rem;
     font-style: italic;
-
-    color: var(--steel-blue);
-
-    margin-bottom: 20px;
-
 }
 
-
-
-.lodging-card p {
-
-    font-size: 1.15rem;
-
+.lodging-card p:not(.location) {
+    margin: 0;
+    color: #526b77;
+    font-size: 1.08rem;
 }
-
-
 
 .lodging-card a {
-
     display: inline-block;
-
     margin-top: 20px;
-
-    color: var(--olive-wood);
-
+    color: #516f80;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-size: .78rem;
+    letter-spacing: .08em;
     text-decoration: none;
-
-    transition: color 0.2s ease;
-
+    text-transform: uppercase;
 }
 
-
-
-.lodging-card a:hover {
-
+.lodging-card a:hover,
+.lodging-card a:focus-visible {
+    color: #365f74;
     text-decoration: underline;
-
-    color: var(--slate-grey);
-
+    text-underline-offset: 4px;
 }
-
-
-
-/* Note */
-
 
 .travel-note {
-
-    margin-top: 70px;
-
+    max-width: 700px;
+    margin: 64px auto 0;
+    padding-top: 40px;
+    border-top: 1px solid #d5e2e7;
     text-align: center;
-
-    max-width: 750px;
-
-    margin-left: auto;
-
-    margin-right: auto;
-
 }
-
 
 .travel-note h3 {
-
-    color: var(--slate-grey);
-
-    font-size: 2rem;
-
+    font-size: 1.75rem;
 }
-
-
 
 .travel-note p {
-
-    font-size: 1.25rem;
-
+    margin: 14px 0 0;
+    color: #526b77;
+    font-size: 1.18rem;
 }
 
-
-
-/* Mobile */
-
-
 @media (max-width: 900px) {
-
-
     .lodging-section {
-
         grid-template-columns: 1fr;
-
     }
-
-
 }

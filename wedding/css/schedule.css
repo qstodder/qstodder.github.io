@@ -315,6 +315,131 @@ body {
 .black { background: #252525; }
 .grey { background: #858b91; }
 
+.weekend-map-section {
+    margin-top: 90px;
+    padding-top: 68px;
+    border-top: 1px solid var(--line);
+}
+
+.map-heading {
+    max-width: 620px;
+    margin: 0 auto 34px;
+    text-align: center;
+}
+
+.map-heading .eyebrow {
+    margin: 0 0 8px;
+    color: var(--blue);
+    font: 12px/1.2 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.map-heading h2 {
+    margin: 0;
+    color: var(--ink);
+    font: normal clamp(2rem, 5vw, 3rem)/1.1 Copperplate, "Copperplate Gothic Light", serif;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.map-heading > p:last-child {
+    margin: 12px 0 0;
+    font-size: 1.18rem;
+}
+
+.weekend-map {
+    width: 100%;
+    height: 480px;
+    border: 1px solid #b9d0da;
+    background: #edf4f6;
+    box-shadow: 0 10px 28px rgba(55, 90, 108, .09);
+}
+
+.event-map-marker {
+    background: transparent;
+    border: 0;
+}
+
+.event-map-icon {
+    display: inline-grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    place-items: center;
+    background: #fff;
+    border: 2px solid currentColor;
+    border-radius: 50% 50% 50% 8px;
+    color: #516f80;
+    font: 700 16px/1 Georgia, serif;
+    transform: rotate(-45deg);
+    box-shadow: 0 4px 10px rgba(40, 67, 80, .2);
+}
+
+.event-map-symbol {
+    transform: rotate(45deg);
+}
+
+.icon-welcome { color: #6f91a5; }
+.icon-ceremony { color: #a27a8d; }
+.icon-reception { color: #4e7188; }
+.icon-brunch { color: #b18c51; }
+.icon-lodging { color: #6e897f; }
+
+.map-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 28px;
+    margin-top: 24px;
+}
+
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #526b77;
+    font-size: 1.02rem;
+}
+
+.map-legend .event-map-icon {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+    border-radius: 50%;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+.weekend-map .leaflet-popup-content-wrapper {
+    border-radius: 0;
+    color: #334d5d;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    box-shadow: 0 8px 26px rgba(40, 67, 80, .2);
+}
+
+.weekend-map .leaflet-popup-content {
+    margin: 16px 18px;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.weekend-map .leaflet-popup-content strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #334d5d;
+    font-family: Copperplate, "Copperplate Gothic Light", serif;
+    font-size: .82rem;
+    font-weight: 400;
+    letter-spacing: .04em;
+}
+
+.weekend-map .leaflet-popup-content a {
+    display: inline-block;
+    margin-top: 7px;
+    color: #68899b;
+    text-underline-offset: 3px;
+}
+
 @media (max-width: 720px) {
     .photo-carousel {
         --carousel-gap: 8px;
@@ -343,5 +468,18 @@ body {
     .time {
         margin-bottom: 14px;
         text-align: left;
+    }
+
+    .weekend-map-section {
+        margin-top: 64px;
+        padding-top: 48px;
+    }
+
+    .weekend-map {
+        height: 390px;
+    }
+
+    .map-legend {
+        grid-template-columns: 1fr;
     }
 }
