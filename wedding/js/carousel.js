@@ -12,6 +12,7 @@ function initializeCarousel() {
     const PHOTO_COUNT = 12;
     const PHOTO_PATH = "assets/photos/carousel/";
     const BUFFER_PHOTOS = 4;
+    const STORAGE_KEY = "weddingCarouselState";
 
     const INITIAL_DELAY = 1000;
     const PAUSE_TIME = 3000;
@@ -26,7 +27,9 @@ function initializeCarousel() {
         return;
     }
 
-    let firstPhotoIndex = Math.floor(Math.random() * PHOTO_COUNT);
+    const restoredState = readCarouselState();
+    let firstPhotoIndex = restoredState?.firstPhotoIndex
+        ?? Math.floor(Math.random() * PHOTO_COUNT);
     let nextPhotoIndex = 0;
     let stepWidth = 0;
     let isPaused = false;
@@ -34,7 +37,49 @@ function initializeCarousel() {
     let timer = null;
     let resizeTimer = null;
     let timerStart = 0;
-    let remaining = PAUSE_TIME;
+    let remaining = restoredState?.remaining ?? INITIAL_DELAY;
+
+    function readCarouselState() {
+        try {
+            const savedState = JSON.parse(sessionStorage.getItem(STORAGE_KEY));
+
+            if (
+                !savedState
+                || !Number.isInteger(savedState.firstPhotoIndex)
+                || savedState.firstPhotoIndex < 0
+                || savedState.firstPhotoIndex >= PHOTO_COUNT
+                || !Number.isFinite(savedState.remaining)
+            ) {
+                return null;
+            }
+
+            return {
+                firstPhotoIndex: savedState.firstPhotoIndex,
+                remaining: Math.max(100, Math.min(PAUSE_TIME, savedState.remaining))
+            };
+        }
+        catch {
+            return null;
+        }
+    }
+
+    function saveCarouselState() {
+        let savedRemaining = remaining;
+
+        if (timer && !isPaused && !document.hidden) {
+            savedRemaining = Math.max(0, remaining - (Date.now() - timerStart));
+        }
+
+        try {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+                firstPhotoIndex,
+                remaining: Math.max(100, savedRemaining)
+            }));
+        }
+        catch {
+            // The carousel still works when browser storage is disabled.
+        }
+    }
 
     function photoUrl(index) {
         return PHOTO_PATH + String(index + 1).padStart(2, "0") + ".webp";
@@ -103,6 +148,7 @@ function initializeCarousel() {
         remaining = delay;
         timerStart = Date.now();
         timer = window.setTimeout(advanceCarousel, delay);
+        saveCarouselState();
     }
 
     function advanceCarousel() {
@@ -156,10 +202,20 @@ function initializeCarousel() {
     });
 
     document.addEventListener("visibilitychange", () => {
-        clearTimeout(timer);
-        if (!document.hidden) scheduleNextSlide();
+        if (document.hidden) {
+            if (timer && !isPaused) {
+                remaining = Math.max(0, remaining - (Date.now() - timerStart));
+            }
+            clearTimeout(timer);
+            saveCarouselState();
+        }
+        else {
+            scheduleNextSlide(remaining);
+        }
     });
 
+    window.addEventListener("pagehide", saveCarouselState);
+
     buildCarousel();
-    scheduleNextSlide(INITIAL_DELAY);
+    scheduleNextSlide(remaining);
 }
