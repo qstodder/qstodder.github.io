@@ -101,6 +101,7 @@ body.diamond-tile-version.invitation-open::before {
 }
 
 .envelope-back,
+.envelope-side,
 .envelope-front,
 .envelope-flap {
     position: absolute;
@@ -109,28 +110,36 @@ body.diamond-tile-version.invitation-open::before {
 }
 
 .envelope-back {
-    background: #d5cfc3;
-    border: 1px solid rgba(105, 96, 82, .18);
-    box-shadow: inset 0 1px 8px rgba(255, 255, 255, .5);
+    background: #8cabb8;
 }
 
 .envelope-front {
     z-index: 3;
-    background:
-        linear-gradient(145deg, transparent 49.35%, rgba(132, 119, 99, .18) 49.7%, #f2eee5 50.15%) 0 0 / 50.2% 100%,
-        linear-gradient(215deg, transparent 49.35%, rgba(132, 119, 99, .16) 49.7%, #e4dfd4 50.15%) 100% 0 / 50.2% 100%;
-    background-repeat: no-repeat;
-    box-shadow: inset 0 -1px 0 rgba(111, 99, 81, .12);
+    background: #edf3f4;
+    clip-path: polygon(0 100%, 50% 46%, 100% 100%);
+}
+
+.envelope-side {
+    z-index: 3;
+    pointer-events: none;
+}
+
+.envelope-side-left {
+    background: #e4edef;
+    clip-path: polygon(0 0, 53% 52%, 0 100%);
+}
+
+.envelope-side-right {
+    background: #e4edef;
+    clip-path: polygon(100% 0, 47% 52%, 100% 100%);
 }
 
 .envelope-flap {
     z-index: 4;
     height: 63%;
-    background: linear-gradient(155deg, #f6f3ec, #e8e2d7 78%);
-    border-top: 1px solid rgba(255, 255, 255, .8);
+    background: #d7e4e8;
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     backface-visibility: hidden;
-    filter: drop-shadow(0 2px 1px rgba(102, 91, 74, .18));
     transform-origin: top;
     transition: transform .8s ease;
 }
