@@ -184,10 +184,6 @@ function populateContactForm() {
     for (const id of ["street", "city", "zip"]) {
         document.getElementById(id).required = addressRequired;
     }
-    document.getElementById("address-requirement").textContent =
-        addressRequired
-            ? "A mailing address is required so we can send your invitation."
-            : "Your invitation will be hand-delivered; a mailing address is optional.";
 }
 
 
