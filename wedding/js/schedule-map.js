@@ -48,6 +48,13 @@ const weekendLocations = [
         icon: "⌂",
         className: "icon-lodging",
         isLodging: true
+    },
+    {
+        name: "Grande Colonial",
+        coordinates: [32.84730, -117.27482],
+        icon: "⌂",
+        className: "icon-lodging",
+        isLodging: true
     }
 ];
 

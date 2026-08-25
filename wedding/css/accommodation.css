@@ -5,6 +5,8 @@
 }
 
 .lodging-card {
+    display: flex;
+    flex-direction: column;
     min-width: 0;
     padding: 30px 24px;
     background: #f4f8fa;
@@ -12,6 +14,14 @@
     text-align: center;
     box-shadow: 0 9px 26px rgba(43, 72, 86, .07);
     transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.lodging-image {
+    width: calc(100% + 48px);
+    height: 190px;
+    margin: -30px -24px 24px;
+    object-fit: cover;
+    object-position: center;
 }
 
 .lodging-card:hover {
@@ -47,7 +57,8 @@
 
 .lodging-card a {
     display: inline-block;
-    margin-top: 20px;
+    margin-top: auto;
+    padding-top: 20px;
     color: #516f80;
     font-family: Copperplate, "Copperplate Gothic Light", serif;
     font-size: .78rem;

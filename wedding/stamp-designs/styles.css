@@ -1,0 +1,228 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Italianno&family=Montserrat:wght@500;600&family=Pinyon+Script&display=swap");
+
+:root {
+    --navy: #29495b;
+    --blue: #557b90;
+    --silver: #b7ccd5;
+    --paper: #f8f7f2;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--navy);
+    background:
+        linear-gradient(rgba(255,255,255,.72), rgba(255,255,255,.72)),
+        repeating-linear-gradient(45deg, #dce8ed 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(-45deg, #dce8ed 0 1px, #eef4f6 1px 18px);
+    font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+.page {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 54px 0 72px;
+    text-align: center;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    font: 600 .7rem/1.4 Montserrat, sans-serif;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+}
+
+h1 { margin: 0; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 500; }
+.intro { max-width: 620px; margin: 10px auto 38px; font-size: 1.16rem; }
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+}
+
+.design-card,
+.single-card {
+    padding: 36px 24px 28px;
+    background: rgba(255,255,255,.94);
+    border: 1px solid #c7d8df;
+    box-shadow: 0 9px 25px rgba(43,72,87,.09);
+}
+
+.single-card { max-width: 720px; margin: 0 auto; padding-block: 54px 42px; }
+.seal-stage { display: grid; min-height: 220px; place-items: center; }
+.single-card .seal-stage { min-height: 330px; }
+
+.seal {
+    position: relative;
+    display: grid;
+    width: 148px;
+    height: 148px;
+    place-items: center;
+    overflow: hidden;
+    color: #fff;
+    background: var(--navy);
+    border-radius: 50%;
+    box-shadow: 0 8px 16px rgba(35,55,66,.18);
+}
+
+.single-card .seal { width: 220px; height: 220px; }
+.seal::before,
+.seal::after { position: absolute; border-radius: inherit; content: ""; }
+.seal::before { inset: 8px; border: 1px solid var(--silver); }
+.seal::after { inset: 13px; border: 1px solid rgba(255,255,255,.62); }
+
+.seal-content { position: relative; z-index: 1; display: grid; place-items: center; }
+
+.design-title { margin: 8px 0 2px; font-size: 1.5rem; font-weight: 500; }
+.design-note { min-height: 2.7em; margin: 0 0 16px; color: #617986; }
+.view-link,
+.back-link {
+    color: var(--navy);
+    font: 600 .7rem/1 Montserrat, sans-serif;
+    letter-spacing: .15em;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+    text-transform: uppercase;
+}
+.back-link { display: inline-block; margin-top: 30px; }
+
+/* 1: timeless double-ring monogram */
+.seal-classic .monogram {
+    font-size: 3.4rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    line-height: 1;
+}
+.seal-classic .dot { margin-inline: -.02em .03em; color: var(--silver); font-size: .55em; }
+
+/* 2: paired first-and-last initials */
+.seal-paired { background: #496d80; }
+.seal-paired .monogram { display: flex; align-items: center; font-size: 2.35rem; letter-spacing: .02em; line-height: 1; }
+.seal-paired .divider { width: 1px; height: 47px; margin: 0 9px; background: #d7e3e8; }
+.single-card .seal-paired .monogram { font-size: 3.45rem; }
+.single-card .seal-paired .divider { height: 68px; margin-inline: 13px; }
+
+/* 3: stacked first-and-last initials */
+.seal-stacked { background: #34576a; }
+.seal-stacked::before { inset: 10px; border: 3px double #b8cdd6; }
+.seal-stacked::after { display: none; }
+.seal-stacked .monogram { font-size: 2.25rem; letter-spacing: .12em; line-height: .92; }
+.seal-stacked .monogram span { display: block; }
+.seal-stacked .monogram span + span { margin-top: 7px; padding-top: 7px; border-top: 1px solid #b8cdd6; }
+.single-card .seal-stacked .monogram { font-size: 3.4rem; }
+
+/* 4: diamond medallion */
+.seal-diamond { background: #5a7f92; }
+.seal-diamond::before { inset: 17px; border: 1px solid #e5edf0; border-radius: 0; transform: rotate(45deg); }
+.seal-diamond::after { display: none; }
+.seal-diamond .monogram { font-size: 2.75rem; letter-spacing: .05em; }
+.seal-diamond .amp { color: #d9e5e9; font-size: .55em; font-style: italic; }
+
+/* 5: Q-S-B with the center S shared by both names */
+.seal-shared { background: #29495b; }
+.seal-shared::before { inset: 9px; border: 3px double #b7ccd5; }
+.seal-shared::after { display: none; }
+.seal-shared .monogram { display: flex; align-items: center; line-height: 1; }
+.seal-shared .outer { font-size: 2.25rem; }
+.seal-shared .shared { margin-inline: -7px; color: #d4e0e5; font-size: 6.35rem; font-style: italic; }
+.single-card .seal-shared .outer { font-size: 3.25rem; }
+.single-card .seal-shared .shared { margin-inline: -10px; font-size: 10.25rem; }
+
+/* 6: stacked initials inside a double hexagon */
+.seal-hexagon {
+    background: #3e6477;
+    border-radius: 0;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+}
+.seal-hexagon::before {
+    inset: 7px;
+    background: #c0d2da;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+}
+.seal-hexagon::after {
+    inset: 10px;
+    background: #3e6477;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+}
+.seal-hexagon .hex-ring,
+.seal-hexagon .hex-ring::after {
+    position: absolute;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+    content: "";
+}
+.seal-hexagon .hex-ring { z-index: 1; inset: 16px; background: rgba(211,225,231,.82); }
+.seal-hexagon .hex-ring::after { inset: 2px; background: #3e6477; }
+.seal-hexagon .monogram { z-index: 2; font-size: 2.25rem; letter-spacing: .12em; line-height: .92; }
+.seal-hexagon .monogram span { display: block; }
+.seal-hexagon .monogram span + span { margin-top: 7px; padding-top: 7px; border-top: 1px solid #c0d2da; }
+.single-card .seal-hexagon .monogram { font-size: 3.4rem; }
+
+/* 7: circular seal with a double hexagon inside */
+.seal-circle-hexagon { background: #3e6477; }
+.seal-circle-hexagon::before {
+    inset: 4px;
+    background: #c0d2da;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+}
+.seal-circle-hexagon::after {
+    inset: 7px;
+    background: #3e6477;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+}
+.seal-circle-hexagon .hex-ring,
+.seal-circle-hexagon .hex-ring::after {
+    position: absolute;
+    clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
+    content: "";
+}
+.seal-circle-hexagon .hex-ring { z-index: 1; inset: 12px; background: rgba(211,225,231,.82); }
+.seal-circle-hexagon .hex-ring::after { inset: 2px; background: #3e6477; }
+.seal-circle-hexagon .monogram,
+.seal-circle-nonagon .monogram { z-index: 2; font-size: 2.5rem; letter-spacing: .1em; line-height: .88; }
+.seal-circle-hexagon .monogram span,
+.seal-circle-nonagon .monogram span { display: block; }
+.seal-circle-hexagon .monogram span + span,
+.seal-circle-nonagon .monogram span + span { margin-top: 5px; padding-top: 5px; border-top: 1px solid #c0d2da; }
+.single-card .seal-circle-hexagon .monogram,
+.single-card .seal-circle-nonagon .monogram { font-size: 4.5rem; }
+
+/* 8: circular seal with a double nonagon inside */
+.seal-circle-nonagon { background: #3e6477; }
+.seal-circle-nonagon::before {
+    inset: 4px;
+    background: #c0d2da;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(50% 2%, 81% 13%, 98% 41%, 93% 73%, 67% 96%, 33% 96%, 7% 73%, 2% 41%, 19% 13%);
+}
+.seal-circle-nonagon::after {
+    inset: 7px;
+    background: #3e6477;
+    border: 0;
+    border-radius: 0;
+    clip-path: polygon(50% 2%, 81% 13%, 98% 41%, 93% 73%, 67% 96%, 33% 96%, 7% 73%, 2% 41%, 19% 13%);
+}
+.seal-circle-nonagon .nonagon-ring,
+.seal-circle-nonagon .nonagon-ring::after {
+    position: absolute;
+    clip-path: polygon(50% 2%, 81% 13%, 98% 41%, 93% 73%, 67% 96%, 33% 96%, 7% 73%, 2% 41%, 19% 13%);
+    content: "";
+}
+.seal-circle-nonagon .nonagon-ring { z-index: 1; inset: 12px; background: rgba(211,225,231,.82); }
+.seal-circle-nonagon .nonagon-ring::after { inset: 2px; background: #3e6477; }
+
+@media (max-width: 520px) {
+    .page { width: min(100% - 20px, 1120px); padding-top: 32px; }
+    .single-card { padding-inline: 12px; }
+}
