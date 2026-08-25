@@ -122,10 +122,9 @@ function showScreen(screen) {
         );
     }
 
-    const rsvpPage = document.querySelector(".rsvp-page");
-    const scrollTop = screen === searchScreen || !rsvpPage
+    const scrollTop = screen === searchScreen
         ? 0
-        : rsvpPage.getBoundingClientRect().top + window.scrollY - 24;
+        : screen.getBoundingClientRect().top + window.scrollY - 16;
 
     window.scrollTo({ top: Math.max(0, scrollTop), behavior: "auto" });
 
