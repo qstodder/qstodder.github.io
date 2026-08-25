@@ -408,6 +408,7 @@ body {
     flex-basis: 27px;
     border-radius: 50%;
     font-size: 13px;
+    transform: none;
     box-shadow: none;
 }
 
