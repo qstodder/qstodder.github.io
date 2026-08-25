@@ -20,7 +20,7 @@
         rel="stylesheet"
         href="css/rsvp.css"
     >
-    <link rel="stylesheet" href="css/site-shell.css?v=3">
+    <link rel="stylesheet" href="css/site-shell.css?v=5">
 </head>
 
 <body>
@@ -85,7 +85,7 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 1 of 8
+                Step 1 of 7
             </p>
 
             <h2 id="household-name"></h2>
@@ -95,6 +95,10 @@
             </p>
 
             <div id="household-guests"></div>
+
+            <p class="invitation-boundary-note">
+                Due to size constraints, we are only able to extend invitations to those named on the invite. Thank you for your understanding!
+            </p>
 
             <div class="screen-actions">
                 <button
@@ -124,15 +128,10 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 2 of 8
+                Step 2 of 7
             </p>
 
             <h2>Confirm Your Contact Information</h2>
-
-            <p>
-                Please review and update your household’s
-                mailing address and email addresses.
-            </p>
 
             <form id="contact-form">
 
@@ -246,9 +245,7 @@
 
                 <section class="guest-email-section">
                     <h3>Please enter at least one email address</h3>
-                    <p class="form-note">
-                        Add an email for each household member who should receive wedding updates and RSVP confirmations.
-                    </p>
+
                     <div id="guest-email-fields"></div>
                 </section>
 
@@ -287,7 +284,7 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 3 of 8
+                Step 3 of 7
             </p>
 
             <h2>Welcome Gathering</h2>
@@ -351,7 +348,7 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 4 of 8
+                Step 4 of 7
             </p>
 
             <h2>Wedding</h2>
@@ -428,7 +425,7 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 5 of 8
+                Step 5 of 7
             </p>
 
             <h2>Dietary Restrictions</h2>
@@ -468,76 +465,7 @@
         </section>
 
         <!-- =============================================
-             Step 6: Acknowledgements
-             ============================================= -->
-
-        <section
-            id="acknowledgements-screen"
-            class="rsvp-screen hidden"
-        >
-            <p class="step-label">
-                Step 6 of 8
-            </p>
-
-            <h2>A Few Important Notes</h2>
-
-            <p>
-                Please confirm that you understand the
-                following details about our celebration.
-            </p>
-
-            <form id="acknowledgements-form">
-
-                <label class="acknowledgement-option">
-                    <input
-                        id="acknowledge-no-children"
-                        type="checkbox"
-                        required
-                    >
-
-                    I understand that the ceremony and reception will be an
-                    adults-only celebration with no children.
-                </label>
-
-                <label class="acknowledgement-option">
-                    <input
-                        id="acknowledge-no-plus-ones"
-                        type="checkbox"
-                        required
-                    >
-
-                    I understand that only the guests named
-                    on this invitation are invited, with no
-                    additional plus-ones.
-                </label>
-
-                <div
-                    id="acknowledgements-error"
-                    class="form-error hidden"
-                    role="alert"
-                ></div>
-
-                <div class="screen-actions">
-
-                    <button
-                        id="back-to-dietary"
-                        type="button"
-                        class="secondary-button"
-                    >
-                        Back
-                    </button>
-
-                    <button type="submit">
-                        Continue
-                    </button>
-
-                </div>
-
-            </form>
-        </section>
-
-        <!-- =============================================
-             Step 7: Morning-after brunch
+             Step 6: Morning-after brunch
              ============================================= -->
 
         <section
@@ -545,7 +473,7 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 7 of 8
+                Step 6 of 7
             </p>
 
             <h2>Morning-After Brunch</h2>
@@ -582,7 +510,7 @@
                 <div class="screen-actions">
 
                     <button
-                        id="back-to-acknowledgements"
+                        id="back-to-dietary"
                         type="button"
                         class="secondary-button"
                     >
@@ -599,7 +527,7 @@
         </section>
 
         <!-- =============================================
-             Step 8: Review and submit
+             Step 7: Review and submit
              ============================================= -->
 
         <section
@@ -607,7 +535,7 @@
             class="rsvp-screen hidden"
         >
             <p class="step-label">
-                Step 8 of 8
+                Step 7 of 7
             </p>
 
             <h2>Review Your RSVP</h2>
@@ -662,14 +590,14 @@
     </main>
     </div>
 
-    <script src="js/loadHeader.js?v=2"></script>
+    <script src="js/loadHeader.js?v=3"></script>
     <script src="js/carousel.js?v=2"></script>
     <script src="js/navigation.js?v=2"></script>
     <script src="js/main.js"></script>
 
     <script
         type="module"
-        src="js/rsvp.js"
+        src="js/rsvp.js?v=2"
     ></script>
 
 </body>

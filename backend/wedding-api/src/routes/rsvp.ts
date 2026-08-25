@@ -318,13 +318,6 @@ export async function saveRsvpRoute(
         );
     }
 
-    if (!body?.acknowledgements) {
-
-        return badRequest(
-            "Missing acknowledgements."
-        );
-    }
-
     try {
         await saveCompleteRsvp(env, body);
     } catch (error) {

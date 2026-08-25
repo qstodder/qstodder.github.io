@@ -676,13 +676,13 @@ describe("Public RSVP persistence", () => {
         )).rejects.toBeInstanceOf(RsvpValidationError);
     });
 
-    it("rolls back all RSVP writes when the final statement fails", async () => {
+    it("rolls back all RSVP writes when a later statement fails", async () => {
         const { householdId, guestId } =
             await createRsvpHousehold("Atomic RSVP");
         await env.wedding_rsvp_db.prepare(`
             CREATE TRIGGER fail_atomic_rsvp
-            BEFORE INSERT ON household_acknowledgements
-            WHEN NEW.household_id = ${householdId}
+            BEFORE INSERT ON guest_rsvps
+            WHEN NEW.guest_id = ${guestId}
             BEGIN
                 SELECT RAISE(ABORT, 'forced RSVP failure');
             END;

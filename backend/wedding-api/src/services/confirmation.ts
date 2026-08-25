@@ -158,6 +158,31 @@ export function buildConfirmationEmail(
     details: ConfirmationDetails
 ) {
 
+    const textEvents = [
+        "WEEKEND DETAILS",
+        "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM",
+        "The Public House · 830 Kline St, La Jolla, CA 92037",
+        "",
+        "Wedding Ceremony — Saturday, September 18, 2027 · 4 PM",
+        "Wedding Bowl · 590 Coast S Blvd, La Jolla, CA 92037",
+        "",
+        "Wedding Reception — Saturday, September 18, 2027 · 5–10 PM",
+        "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037",
+        "",
+        "Morning-After Brunch — Sunday, September 19, 2027 · 11 AM–2 PM",
+        "Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037"
+    ].join("\n");
+
+    const htmlEvents = `
+        <section style="margin: 28px 0 34px; padding: 22px; background: #f4f8fa; border: 1px solid #d8e3e8;">
+            <h2 style="margin: 0 0 18px; color: #52656a; font-size: 20px; font-weight: 500;">Weekend Details</h2>
+            <p style="margin: 0 0 14px;"><strong>Welcome Gathering</strong><br>Friday, September 17, 2027 · 7–9 PM<br>The Public House · 830 Kline St, La Jolla, CA 92037</p>
+            <p style="margin: 0 0 14px;"><strong>Wedding Ceremony</strong><br>Saturday, September 18, 2027 · 4 PM<br>Wedding Bowl · 590 Coast S Blvd, La Jolla, CA 92037</p>
+            <p style="margin: 0 0 14px;"><strong>Wedding Reception</strong><br>Saturday, September 18, 2027 · 5–10 PM<br>La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037</p>
+            <p style="margin: 0;"><strong>Morning-After Brunch</strong><br>Sunday, September 19, 2027 · 11 AM–2 PM<br>Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037</p>
+        </section>
+    `;
+
     const textGuests = details.guests
         .map((guest) => [
             `${guest.firstName} ${guest.lastName}`,
@@ -231,6 +256,8 @@ export function buildConfirmationEmail(
             "",
             "Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.",
             "",
+            textEvents,
+            "",
             textGuests,
             "",
             "We can't wait to celebrate with you!",
@@ -250,6 +277,7 @@ export function buildConfirmationEmail(
                         <p>
                             Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.
                         </p>
+                        ${htmlEvents}
                         ${htmlGuests}
                         <p>We can't wait to celebrate with you!</p>
                         <p>With love,<br>Quiana &amp; Scott</p>

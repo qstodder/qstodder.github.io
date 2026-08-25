@@ -99,6 +99,18 @@ describe("RSVP confirmation email", () => {
         expect(email.html).toContain(
             "You may edit your responses until Aug 1st, 2027."
         );
+        expect(email.text).toContain(
+            "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM"
+        );
+        expect(email.text).toContain(
+            "Wedding Bowl · 590 Coast S Blvd, La Jolla, CA 92037"
+        );
+        expect(email.html).toContain(
+            "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037"
+        );
+        expect(email.html).toContain(
+            "Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037"
+        );
         expect(email.text).not.toContain(
             "Here is a copy of your responses"
         );

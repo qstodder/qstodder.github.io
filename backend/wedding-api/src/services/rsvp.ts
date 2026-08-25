@@ -38,11 +38,6 @@ export interface CompleteRsvp {
     contact: ContactInfo;
     guestRsvps: GuestRsvp[];
     guestDietary: GuestDietary[];
-    acknowledgements: {
-        householdId: number;
-        acknowledgeNoChildren: boolean;
-        acknowledgeNoPlusOnes: boolean;
-    };
 }
 
 interface HouseholdRow {
@@ -112,7 +107,7 @@ export async function saveCompleteRsvp(
     if (!input || typeof input !== "object") {
         throw new RsvpValidationError("RSVP information is invalid.");
     }
-    if (!input.contact || !input.acknowledgements) {
+    if (!input.contact) {
         throw new RsvpValidationError("RSVP information is incomplete.");
     }
 
@@ -120,13 +115,6 @@ export async function saveCompleteRsvp(
         input.contact?.householdId,
         "Household"
     );
-    if (requiredId(
-        input.acknowledgements?.householdId,
-        "Acknowledgement household"
-    ) !== householdId) {
-        throw new RsvpValidationError("Household information does not match.");
-    }
-
     const [household, guestResult, restrictionResult] = await Promise.all([
         env.wedding_rsvp_db.prepare(`
             SELECT id, address_needed
@@ -300,16 +288,6 @@ export async function saveCompleteRsvp(
         }
     }
 
-    if (!boolean(
-        input.acknowledgements.acknowledgeNoChildren,
-        "Children acknowledgement"
-    ) || !boolean(
-        input.acknowledgements.acknowledgeNoPlusOnes,
-        "Plus-one acknowledgement"
-    )) {
-        throw new RsvpValidationError("Both acknowledgements are required.");
-    }
-
     const statements: D1PreparedStatement[] = [
         env.wedding_rsvp_db.prepare(`
             UPDATE households SET street = ?1,
@@ -372,17 +350,6 @@ export async function saveCompleteRsvp(
             ));
         }
     }
-
-    statements.push(env.wedding_rsvp_db.prepare(`
-        INSERT INTO household_acknowledgements (
-            household_id, acknowledge_no_children,
-            acknowledge_no_plus_ones, updated_at
-        ) VALUES (?1, 1, 1, CURRENT_TIMESTAMP)
-        ON CONFLICT(household_id) DO UPDATE SET
-            acknowledge_no_children = 1,
-            acknowledge_no_plus_ones = 1,
-            updated_at = CURRENT_TIMESTAMP
-    `).bind(householdId));
 
     await env.wedding_rsvp_db.batch(statements);
 }

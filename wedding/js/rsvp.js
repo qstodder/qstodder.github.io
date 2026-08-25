@@ -110,7 +110,6 @@ function showScreen(screen) {
         welcomeScreen,
         weddingScreen,
         dietaryScreen,
-        acknowledgementsScreen,
         brunchScreen,
         reviewScreen
     ];
@@ -123,12 +122,12 @@ function showScreen(screen) {
         );
     }
 
-    window.scrollTo({
-        top: 0,
-        behavior: window.matchMedia(
-            "(prefers-reduced-motion: reduce)"
-        ).matches ? "auto" : "smooth"
-    });
+    const rsvpPage = document.querySelector(".rsvp-page");
+    const scrollTop = screen === searchScreen || !rsvpPage
+        ? 0
+        : rsvpPage.getBoundingClientRect().top + window.scrollY - 24;
+
+    window.scrollTo({ top: Math.max(0, scrollTop), behavior: "auto" });
 
     const heading = screen.querySelector("h2");
     if (heading) {
@@ -369,6 +368,8 @@ resultsDiv.addEventListener(
 
             searchStatus.textContent = "";
 
+            button.disabled = false;
+
             showScreen(householdScreen);
 
         } catch (error) {
@@ -395,9 +396,15 @@ backToSearchButton.addEventListener(
     "click",
     () => {
 
+        for (const resultButton of resultsDiv.querySelectorAll(".search-result")) {
+            resultButton.disabled = false;
+        }
+
+        searchStatus.textContent = "";
+
         showScreen(searchScreen);
 
-        searchInput.focus();
+        searchInput.focus({ preventScroll: true });
     }
 );
 
@@ -415,7 +422,7 @@ continueToContactButton.addEventListener(
 
         document
             .getElementById("street")
-            .focus();
+            .focus({ preventScroll: true });
     }
 );
 
@@ -429,14 +436,6 @@ backToHouseholdButton.addEventListener(
     () => {
 
         saveContactFormToState();
-
-        if (!state.rsvp.guests.some((guest) => guest.email)) {
-            contactError.textContent =
-                "Please enter a valid email address for at least one household member.";
-            contactError.classList.remove("hidden");
-            guestEmailFields.querySelector("input")?.focus();
-            return;
-        }
 
         showScreen(householdScreen);
     }
@@ -457,6 +456,14 @@ contactForm.addEventListener(
         }
 
         saveContactFormToState();
+
+        if (!state.rsvp.guests.some((guest) => guest.email)) {
+            contactError.textContent =
+                "Please enter a valid email address for at least one household member.";
+            contactError.classList.remove("hidden");
+            guestEmailFields.querySelector("input")?.focus();
+            return;
+        }
 
         /*
          * The next step will replace this log with:
@@ -524,31 +531,6 @@ const dietaryError =
 const backToWeddingButton =
     document.getElementById("back-to-wedding");
 
-const acknowledgementsScreen =
-    document.getElementById(
-        "acknowledgements-screen"
-    );
-
-const acknowledgementsForm =
-    document.getElementById(
-        "acknowledgements-form"
-    );
-
-const acknowledgementsError =
-    document.getElementById(
-        "acknowledgements-error"
-    );
-
-const noChildrenCheckbox =
-    document.getElementById(
-        "acknowledge-no-children"
-    );
-
-const noPlusOnesCheckbox =
-    document.getElementById(
-        "acknowledge-no-plus-ones"
-    );
-
 const backToDietaryButton =
     document.getElementById(
         "back-to-dietary"
@@ -565,11 +547,6 @@ const brunchGuests =
 
 const brunchError =
     document.getElementById("brunch-error");
-
-const backToAcknowledgementsButton =
-    document.getElementById(
-        "back-to-acknowledgements"
-    );
 
 const reviewScreen =
     document.getElementById("review-screen");
@@ -1206,79 +1183,6 @@ dietaryForm.addEventListener(
          * Save before leaving the screen so the review and
          * final API payload use the current selections.
          */
-        populateAcknowledgements();
-        showScreen(acknowledgementsScreen);
-    }
-);
-
-
-/* =========================================================
-   Acknowledgements
-   ========================================================= */
-
-function populateAcknowledgements() {
-
-    const acknowledgements =
-        state.rsvp.acknowledgements ?? {};
-
-    noChildrenCheckbox.checked =
-        acknowledgements.noChildren === true;
-
-    noPlusOnesCheckbox.checked =
-        acknowledgements.noPlusOnes === true;
-
-    acknowledgementsError.textContent = "";
-    acknowledgementsError.classList.add("hidden");
-}
-
-
-function saveAcknowledgements() {
-
-    state.rsvp.acknowledgements = {
-        noChildren:
-            noChildrenCheckbox.checked,
-        noPlusOnes:
-            noPlusOnesCheckbox.checked
-    };
-
-    saveDraft();
-}
-
-
-backToDietaryButton.addEventListener(
-    "click",
-    () => {
-
-        saveAcknowledgements();
-        renderDietaryGuests();
-        showScreen(dietaryScreen);
-    }
-);
-
-
-acknowledgementsForm.addEventListener(
-    "submit",
-    (event) => {
-
-        event.preventDefault();
-
-        acknowledgementsError.textContent = "";
-        acknowledgementsError.classList.add("hidden");
-
-        if (!acknowledgementsForm.reportValidity()) {
-
-            acknowledgementsError.textContent =
-                "Please confirm both acknowledgements " +
-                "before continuing.";
-
-            acknowledgementsError.classList.remove(
-                "hidden"
-            );
-
-            return;
-        }
-
-        saveAcknowledgements();
         renderBrunchGuests();
         showScreen(brunchScreen);
     }
@@ -1401,15 +1305,15 @@ function saveBrunchResponses() {
 }
 
 
-backToAcknowledgementsButton.addEventListener(
+backToDietaryButton.addEventListener(
     "click",
     () => {
 
         brunchError.textContent = "";
         brunchError.classList.add("hidden");
 
-        populateAcknowledgements();
-        showScreen(acknowledgementsScreen);
+        renderDietaryGuests();
+        showScreen(dietaryScreen);
     }
 );
 
@@ -1570,17 +1474,6 @@ function renderRsvpReview() {
             ${guestMarkup}
         </section>
 
-        <section class="review-section">
-            <h3>Acknowledgements</h3>
-
-            <p>
-                ✓ Adults-only celebration acknowledged
-            </p>
-
-            <p>
-                ✓ Named guests only acknowledged
-            </p>
-        </section>
     `;
 
     submitError.textContent = "";
@@ -1641,17 +1534,7 @@ function buildRsvpPayload() {
                     guest.attendance?.wedding === true
                         ? guest.otherDietaryDetails ?? ""
                         : ""
-            })),
-
-        acknowledgements: {
-            householdId: household.id,
-            acknowledgeNoChildren:
-                state.rsvp.acknowledgements
-                    .noChildren,
-            acknowledgeNoPlusOnes:
-                state.rsvp.acknowledgements
-                    .noPlusOnes
-        }
+            }))
     };
 }
 
