@@ -256,9 +256,9 @@ export function buildConfirmationEmail(
             "",
             "Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.",
             "",
-            textEvents,
-            "",
             textGuests,
+            "",
+            textEvents,
             "",
             "We can't wait to celebrate with you!",
             "",
@@ -277,8 +277,8 @@ export function buildConfirmationEmail(
                         <p>
                             Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.
                         </p>
-                        ${htmlEvents}
                         ${htmlGuests}
+                        ${htmlEvents}
                         <p>We can't wait to celebrate with you!</p>
                         <p>With love,<br>Quiana &amp; Scott</p>
                     </main>
