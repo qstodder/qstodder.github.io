@@ -16,8 +16,13 @@ import {
     getAdminEmailPage,
     getAdminGuestsPage,
     getAdminHouseholdPage,
-    getAdminPage
+    getAdminPage,
+    getAdminSeatingPage
 } from "./routes/adminPage";
+import {
+    getAdminSeating,
+    saveAdminSeating
+} from "./routes/adminSeating";
 import { sendAdminEmailBatch } from "./routes/adminEmail";
 import { adminPreflight } from "./lib/adminCors";
 import {
@@ -101,6 +106,13 @@ export default {
             return getAdminEmailPage(request, env);
         }
 
+        if (
+            request.method === "GET" &&
+            /^\/admin\/seating\/?$/.test(url.pathname)
+        ) {
+            return getAdminSeatingPage(request, env);
+        }
+
         const adminAssetMatch = url.pathname.match(
             /^\/admin\/assets\/([^/]+)$/
         );
@@ -131,6 +143,15 @@ export default {
             url.pathname === "/api/admin/guests"
         ) {
             return getAdminGuests(request, env);
+        }
+
+        if (url.pathname === "/api/admin/seating") {
+            if (request.method === "GET") {
+                return getAdminSeating(request, env);
+            }
+            if (request.method === "PUT") {
+                return saveAdminSeating(request, env);
+            }
         }
 
         if (

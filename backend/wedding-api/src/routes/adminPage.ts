@@ -32,6 +32,7 @@ const adminPage = `<!DOCTYPE html>
             <a class="admin-tab is-active" href="/admin/" aria-current="page">Households</a>
             <a class="admin-tab" href="/admin/guests/">Guests</a>
             <a class="admin-tab" href="/admin/email/">Email</a>
+            <a class="admin-tab" href="/admin/seating/">Seating Chart</a>
         </nav>
     </header>
     <main class="admin-main">
@@ -215,6 +216,10 @@ const adminAssets: Record<
     },
     "admin-email.js": {
         url: "https://qstodder.github.io/wedding/js/admin-email.js",
+        contentType: "text/javascript; charset=UTF-8"
+    },
+    "admin-seating.js": {
+        url: "https://qstodder.github.io/wedding/js/admin-seating.js",
         contentType: "text/javascript; charset=UTF-8"
     }
 };
@@ -404,6 +409,7 @@ const adminGuestsPage = `<!DOCTYPE html>
             <a class="admin-tab" href="/admin/">Households</a>
             <a class="admin-tab is-active" href="/admin/guests/" aria-current="page">Guests</a>
             <a class="admin-tab" href="/admin/email/">Email</a>
+            <a class="admin-tab" href="/admin/seating/">Seating Chart</a>
         </nav>
     </header>
     <main class="admin-main">
@@ -497,6 +503,7 @@ const adminEmailPage = `<!DOCTYPE html>
             <a class="admin-tab" href="/admin/">Households</a>
             <a class="admin-tab" href="/admin/guests/">Guests</a>
             <a class="admin-tab is-active" href="/admin/email/" aria-current="page">Email</a>
+            <a class="admin-tab" href="/admin/seating/">Seating Chart</a>
         </nav>
     </header>
     <main class="admin-main">
@@ -550,5 +557,117 @@ export async function getAdminEmailPage(request: Request, env: Env): Promise<Res
         }});
     } catch (error) {
         return Response.json({ error: error instanceof AdminAuthError ? error.message : "Unable to load the email tool." }, { status: error instanceof AdminAuthError ? error.status : 500 });
+    }
+}
+
+const adminSeatingPage = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Seating Chart · Wedding Administration</title>
+    <link rel="stylesheet" href="/admin/assets/variables.css">
+    <link rel="stylesheet" href="/admin/assets/base.css">
+    <link rel="stylesheet" href="/admin/assets/admin.css">
+</head>
+<body>
+    <header class="admin-header admin-header-with-tabs">
+        <div class="admin-header-content">
+            <div>
+                <p class="admin-eyebrow">Quiana &amp; Scott</p>
+                <h1>Seating Chart</h1>
+                <p class="admin-subtitle">Arrange tables, assign guests, and prepare reception materials</p>
+            </div>
+            <div class="admin-identity">
+                <span id="admin-email">Secure access required</span>
+                <button id="refresh-seating" class="secondary-button" type="button">Refresh</button>
+            </div>
+        </div>
+        <nav class="admin-tabs" aria-label="Administration sections">
+            <a class="admin-tab" href="/admin/">Households</a>
+            <a class="admin-tab" href="/admin/guests/">Guests</a>
+            <a class="admin-tab" href="/admin/email/">Email</a>
+            <a class="admin-tab is-active" href="/admin/seating/" aria-current="page">Seating Chart</a>
+        </nav>
+    </header>
+    <main class="admin-main seating-admin-main">
+        <section id="admin-loading" class="admin-message" aria-live="polite">
+            <div class="loading-mark" aria-hidden="true"></div><h2>Loading seating chart</h2>
+        </section>
+        <section id="admin-error" class="admin-message admin-error hidden" role="alert">
+            <h2>Seating chart unavailable</h2><p id="admin-error-message"></p>
+        </section>
+        <div id="seating-content" class="hidden">
+            <section class="admin-panel seating-toolbar-panel">
+                <div class="panel-heading seating-heading">
+                    <div><p class="admin-eyebrow">Reception ballroom</p><h2>Guest seating</h2></div>
+                    <div class="seating-summary" aria-live="polite">
+                        <strong id="seated-count">0 seated</strong>
+                        <span id="unseated-count">0 attending unseated</span>
+                        <span id="save-status">Saved</span>
+                    </div>
+                </div>
+                <div class="seating-toolbar" aria-label="Seating chart actions">
+                    <button id="undo-seating" class="secondary-button" type="button" disabled>Undo</button>
+                    <button id="redo-seating" class="secondary-button" type="button" disabled>Redo</button>
+                    <button id="shuffle-seating" class="secondary-button" type="button">Shuffle attending guests</button>
+                    <button id="add-seating-table" class="secondary-button" type="button">Add table</button>
+                    <button id="export-seating" class="secondary-button" type="button">Export CSV</button>
+                    <button id="print-seating" class="address-save-button" type="button">Print</button>
+                </div>
+                <div class="seating-legend" aria-label="Guest RSVP color legend">
+                    <span class="guest-status guest-status-yes">Attending</span>
+                    <span class="guest-status guest-status-pending">Not responded</span>
+                    <span class="guest-status guest-status-no">Not attending</span>
+                    <span><span aria-hidden="true">🔒</span> Locked</span>
+                </div>
+            </section>
+            <section class="admin-panel ballroom-panel">
+                <p class="ballroom-help">Drag a numbered table to reposition it. Select any seat to assign, remove, lock, or move a guest.</p>
+                <div class="ballroom-scroll">
+                    <div id="ballroom" class="ballroom" aria-label="Reception ballroom seating chart">
+                        <div class="ballroom-stage">Stage</div>
+                        <div class="sweetheart-table">Sweetheart Table</div>
+                        <div class="ballroom-entrance"><span>Entrance</span></div>
+                        <div id="seating-tables"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="admin-panel print-table-list" aria-label="Table-by-table guest list">
+                <div class="panel-heading"><div><p class="admin-eyebrow">Print companion</p><h2>Table lists</h2></div></div>
+                <div id="seating-print-list" class="seating-print-list"></div>
+            </section>
+        </div>
+    </main>
+
+    <dialog id="seat-dialog" class="seat-dialog">
+        <form id="seat-form" method="dialog">
+            <div class="seat-dialog-heading">
+                <div><p class="admin-eyebrow" id="seat-dialog-label">Table 1 · Seat 1</p><h2>Assign guest</h2></div>
+                <button id="close-seat-dialog" class="dialog-close" type="button" aria-label="Close">×</button>
+            </div>
+            <label class="address-field"><span>Guest</span><input id="seat-guest-search" type="search" autocomplete="off" placeholder="Search by guest or household"></label>
+            <div id="seat-guest-options" class="seat-guest-options" role="listbox" aria-label="Available guests"></div>
+            <div class="seat-dialog-actions">
+                <button id="clear-seat" class="danger-button" type="button">Clear seat</button>
+                <button id="toggle-seat-lock" class="secondary-button" type="button">Lock guest</button>
+            </div>
+        </form>
+    </dialog>
+    <script defer src="/admin/assets/admin-seating.js"></script>
+</body>
+</html>`;
+
+export async function getAdminSeatingPage(request: Request, env: Env): Promise<Response> {
+    try {
+        await authenticateAdmin(request, env);
+        return new Response(adminSeatingPage, { headers: {
+            "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store",
+            "Content-Security-Policy": ["default-src 'none'", "script-src 'self'", "style-src 'self' https://fonts.googleapis.com", "font-src https://fonts.gstatic.com", "connect-src 'self'", "base-uri 'none'", "frame-ancestors 'none'", "form-action 'self'"].join("; "),
+            "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"
+        }});
+    } catch (error) {
+        return Response.json({ error: error instanceof AdminAuthError ? error.message : "Unable to load the seating chart." }, { status: error instanceof AdminAuthError ? error.status : 500 });
     }
 }
