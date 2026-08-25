@@ -1,5 +1,31 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap");
 
+@view-transition {
+    navigation: auto;
+}
+
+@keyframes hold-shared-header {
+    from,
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes conceal-loading-header {
+    from,
+    to {
+        opacity: 0;
+    }
+}
+
+::view-transition-old(wedding-header) {
+    animation: hold-shared-header 450ms both;
+}
+
+::view-transition-new(wedding-header) {
+    animation: conceal-loading-header 450ms both;
+}
+
 :root {
     --site-ink: #334d5d;
     --site-blue: #789fb6;
@@ -20,6 +46,26 @@ body {
     max-width: 100%;
     margin: 0;
     overflow-x: hidden;
+}
+
+#header-placeholder {
+    min-height: 672px;
+    background: rgba(255, 255, 255, .82);
+    view-transition-name: wedding-header;
+}
+
+#header-placeholder + .main-stage {
+    visibility: hidden;
+}
+
+#header-placeholder.header-ready,
+#header-placeholder.header-load-failed {
+    min-height: 0;
+}
+
+#header-placeholder.header-ready + .main-stage,
+#header-placeholder.header-load-failed + .main-stage {
+    visibility: visible;
 }
 
 body {
@@ -203,6 +249,10 @@ body {
 }
 
 @media (max-width: 720px) {
+    #header-placeholder {
+        min-height: 480px;
+    }
+
     .site-header {
         padding: 0 20px 27px;
     }

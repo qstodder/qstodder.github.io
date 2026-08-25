@@ -1,18 +1,25 @@
 async function loadHeader() {
+    const placeholder = document.getElementById("header-placeholder");
 
-    const response =
-        await fetch("partials/header.html?v=2", {
-            cache: "no-store"
-        });
+    if (!placeholder) return;
 
-    if (!response.ok) {
-        throw new Error("Unable to load the shared wedding header.");
+    placeholder.setAttribute("aria-busy", "true");
+
+    try {
+        const response = await fetch("partials/header.html?v=3");
+
+        if (!response.ok) {
+            throw new Error("Unable to load the shared wedding header.");
+        }
+
+        placeholder.innerHTML = await response.text();
+        placeholder.classList.add("header-ready");
     }
-
-    const html =
-        await response.text();
-
-    document.getElementById(
-        "header-placeholder"
-    ).innerHTML = html;
+    catch (error) {
+        placeholder.classList.add("header-load-failed");
+        throw error;
+    }
+    finally {
+        placeholder.removeAttribute("aria-busy");
+    }
 }
