@@ -324,7 +324,7 @@ describe("Admin household email", () => {
         expect(animated.html).toContain("@keyframes tide");
         expect(reveal.html).toContain("Open your invitation");
         expect(reveal.html).toContain("/wedding/invitation.html");
-        expect(reveal.html).toContain("max-width:480px");
+        expect(reveal.html).toContain("max-width:520px");
         expect(reveal.html).toContain("Quiana &amp; Scott");
         expect(reveal.html).toContain("Blue Family");
         expect(reveal.html).not.toContain("Dear Blue Family");
