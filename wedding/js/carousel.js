@@ -99,16 +99,29 @@ async function initializeCarousel() {
     }
 
     function waitForPhoto(photo) {
-        if (photo.complete) {
-            return typeof photo.decode === "function"
-                ? photo.decode().catch(() => undefined)
-                : Promise.resolve();
-        }
+        const readiness = typeof photo.decode === "function"
+            ? photo.decode().catch(() => undefined)
+            : new Promise((resolve) => {
+                if (photo.complete) {
+                    resolve();
+                    return;
+                }
 
-        return new Promise((resolve) => {
-            photo.addEventListener("load", resolve, { once: true });
-            photo.addEventListener("error", resolve, { once: true });
-        });
+                const finish = () => resolve();
+
+                photo.addEventListener("load", finish, { once: true });
+                photo.addEventListener("error", finish, { once: true });
+
+                // Close the small race where loading finishes while the
+                // listeners above are being attached.
+                if (photo.complete) resolve();
+            });
+
+        // A slow or unavailable photo must never hold the whole page hostage.
+        return Promise.race([
+            readiness,
+            new Promise((resolve) => window.setTimeout(resolve, 1800))
+        ]);
     }
 
     function warmCarouselCache() {

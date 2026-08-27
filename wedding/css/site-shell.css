@@ -54,22 +54,13 @@ body {
     view-transition-name: wedding-header;
 }
 
-#header-placeholder:not(.header-ready):not(.header-load-failed) .site-header {
-    visibility: hidden;
-}
-
-#header-placeholder + .main-stage {
+#header-placeholder:not(.header-ready):not(.header-load-failed) .carousel-track {
     visibility: hidden;
 }
 
 #header-placeholder.header-ready,
 #header-placeholder.header-load-failed {
     min-height: 0;
-}
-
-#header-placeholder.header-ready + .main-stage,
-#header-placeholder.header-load-failed + .main-stage {
-    visibility: visible;
 }
 
 body {

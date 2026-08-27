@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
+    const headerPlaceholder = document.getElementById("header-placeholder");
+
     try {
 
         await loadHeader();
@@ -8,12 +10,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await initializeCarousel();
 
-        document.getElementById("header-placeholder")?.classList.add("header-ready");
-
     }
     catch (error) {
 
         console.error(error);
+
+    }
+    finally {
+
+        headerPlaceholder?.classList.add("header-ready");
 
     }
 
