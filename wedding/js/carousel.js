@@ -38,6 +38,9 @@ async function initializeCarousel() {
     let resizeTimer = null;
     let timerStart = 0;
     let remaining = restoredState?.remaining ?? INITIAL_DELAY;
+    let visibleEndOffset = 0;
+    let incomingPhotoPromise = Promise.resolve();
+    let nextPhotoPromise = Promise.resolve();
 
     function readCarouselState() {
         try {
@@ -85,7 +88,7 @@ async function initializeCarousel() {
         return PHOTO_PATH + String(index + 1).padStart(2, "0") + ".webp";
     }
 
-    function createPhoto(index) {
+    function createPhoto(index, isVisible = false) {
         const img = document.createElement("img");
 
         img.src = photoUrl(index);
@@ -94,6 +97,8 @@ async function initializeCarousel() {
         img.width = 260;
         img.height = 390;
         img.decoding = "async";
+        img.loading = isVisible ? "eager" : "lazy";
+        img.fetchPriority = isVisible ? "high" : "low";
 
         return img;
     }
@@ -125,11 +130,21 @@ async function initializeCarousel() {
     }
 
     function warmCarouselCache() {
-        for (let index = 0; index < PHOTO_COUNT; index++) {
-            const photo = new Image();
+        const preload = () => {
+            for (let index = 0; index < PHOTO_COUNT; index++) {
+                const photo = new Image();
 
-            photo.decoding = "async";
-            photo.src = photoUrl(index);
+                photo.decoding = "async";
+                photo.fetchPriority = "low";
+                photo.src = photoUrl(index);
+            }
+        };
+
+        if ("requestIdleCallback" in window) {
+            window.requestIdleCallback(preload, { timeout: 1500 });
+        }
+        else {
+            window.setTimeout(preload, 0);
         }
     }
 
@@ -155,30 +170,54 @@ async function initializeCarousel() {
         return size;
     }
 
+    function prepareUpcomingPhotos() {
+        const incomingPhoto = track.children[visibleEndOffset + 1];
+        const nextPhoto = new Image();
+
+        if (incomingPhoto instanceof HTMLImageElement) {
+            incomingPhoto.loading = "eager";
+            incomingPhoto.fetchPriority = "high";
+            incomingPhotoPromise = waitForPhoto(incomingPhoto);
+        }
+        else {
+            incomingPhotoPromise = Promise.resolve();
+        }
+
+        nextPhoto.decoding = "async";
+        nextPhoto.fetchPriority = "high";
+        nextPhoto.src = photoUrl(nextPhotoIndex);
+        nextPhotoPromise = waitForPhoto(nextPhoto);
+    }
+
     function buildCarousel() {
         const fragment = document.createDocumentFragment();
         const size = poolSize();
-        const photos = [];
+        const { photoWidth, gap } = dimensions();
+        const visibleCount = Math.ceil((carousel.clientWidth + gap) / (photoWidth + gap));
+        const bufferBefore = Math.floor((size - visibleCount) / 2);
+        const visiblePhotos = [];
 
         track.innerHTML = "";
         track.style.transition = "none";
         track.style.transform = "translateX(0)";
 
         for (let offset = 0; offset < size; offset++) {
-            const photo = createPhoto((firstPhotoIndex + offset) % PHOTO_COUNT);
+            const isVisible = offset >= bufferBefore && offset < bufferBefore + visibleCount;
+            const photo = createPhoto((firstPhotoIndex + offset) % PHOTO_COUNT, isVisible);
 
-            photos.push(photo);
+            if (isVisible) visiblePhotos.push(photo);
             fragment.appendChild(photo);
         }
 
         track.appendChild(fragment);
         nextPhotoIndex = (firstPhotoIndex + size) % PHOTO_COUNT;
+        visibleEndOffset = bufferBefore + visibleCount - 1;
 
-        const { photoWidth, gap } = dimensions();
         stepWidth = photoWidth + gap;
         isAnimating = false;
+        prepareUpcomingPhotos();
 
-        return photos;
+        return visiblePhotos;
     }
 
     function scheduleNextSlide(delay = PAUSE_TIME) {
@@ -192,10 +231,18 @@ async function initializeCarousel() {
         saveCarouselState();
     }
 
-    function advanceCarousel() {
+    async function advanceCarousel() {
         if (isPaused || isAnimating || document.hidden) return;
 
         isAnimating = true;
+
+        await Promise.all([incomingPhotoPromise, nextPhotoPromise]);
+
+        if (isPaused || document.hidden) {
+            isAnimating = false;
+            return;
+        }
+
         track.style.transition = `transform ${SLIDE_TIME}ms ease-in-out`;
         track.style.transform = `translateX(-${stepWidth}px)`;
     }
@@ -216,6 +263,7 @@ async function initializeCarousel() {
         nextPhotoIndex = (nextPhotoIndex + 1) % PHOTO_COUNT;
         track.style.transform = "translateX(0)";
         isAnimating = false;
+        prepareUpcomingPhotos();
 
         scheduleNextSlide();
     }
