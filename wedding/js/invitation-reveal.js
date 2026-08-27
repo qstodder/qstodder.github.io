@@ -2,10 +2,14 @@ const opening = document.querySelector("#opening");
 const button = document.querySelector("#open-invitation");
 const invitation = document.querySelector("#invitation");
 const letter = document.querySelector(".letter");
+const flap = document.querySelector(".envelope-flap");
 
 button.addEventListener("click", () => {
     if (opening.classList.contains("is-open")) return;
     letter.style.transitionDelay = "0.8s";
+    flap.addEventListener("transitionend", (event) => {
+        if (event.propertyName === "transform") opening.classList.add("is-flipped");
+    }, { once: true });
     opening.classList.add("is-open");
     button.setAttribute("aria-expanded", "true");
     window.setTimeout(() => opening.classList.add("is-departing"), 1100);
