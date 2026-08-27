@@ -6,6 +6,7 @@ const elements = {
     adminEmail: document.querySelector("#admin-email"),
     refresh: document.querySelector("#refresh-seating"),
     tables: document.querySelector("#seating-tables"),
+    fixtures: document.querySelector("#seating-fixtures"),
     ballroom: document.querySelector("#ballroom"),
     seatedCount: document.querySelector("#seated-count"),
     unseatedCount: document.querySelector("#unseated-count"),
@@ -13,6 +14,8 @@ const elements = {
     undo: document.querySelector("#undo-seating"),
     redo: document.querySelector("#redo-seating"),
     shuffle: document.querySelector("#shuffle-seating"),
+    clearUnlocked: document.querySelector("#clear-unlocked-seating"),
+    clearAll: document.querySelector("#clear-all-seating"),
     addTable: document.querySelector("#add-seating-table"),
     export: document.querySelector("#export-seating"),
     print: document.querySelector("#print-seating"),
@@ -30,7 +33,8 @@ const elements = {
     options: document.querySelector("#seat-guest-options"),
     clearSeat: document.querySelector("#clear-seat"),
     toggleLock: document.querySelector("#toggle-seat-lock"),
-    confirmSeat: document.querySelector("#confirm-seat")
+    confirmSeat: document.querySelector("#confirm-seat"),
+    selectionMenu: document.querySelector("#selection-menu")
 };
 
 let state = null;
@@ -73,7 +77,8 @@ function compareText(left, right) {
 function snapshot() {
     return JSON.stringify({
         tables: state.tables,
-        assignments: state.assignments
+        assignments: state.assignments,
+        fixtures: state.fixtures
     });
 }
 
@@ -81,6 +86,7 @@ function restore(serialized) {
     const value = JSON.parse(serialized);
     state.tables = value.tables;
     state.assignments = value.assignments;
+    state.fixtures = value.fixtures;
 }
 
 function registerChange(previous = snapshot()) {
@@ -170,6 +176,15 @@ function renderTables() {
         }).join("");
 }
 
+function renderFixtures() {
+    elements.fixtures.innerHTML = state.fixtures.map((fixture) => `
+        <div class="ballroom-fixture" data-fixture-id="${escapeAttribute(fixture.id)}"
+            style="left:${fixture.positionX}%;top:${fixture.positionY}%;width:${fixture.width}%;height:${fixture.height}%"
+            role="button" tabindex="0" aria-label="Drag ${escapeAttribute(fixture.label)}">
+            ${escapeHtml(fixture.label)}
+        </div>`).join("");
+}
+
 function renderUnseatedGuests() {
     const seatedIds = new Set(state.assignments.map((assignment) => assignment.guestId));
     const guests = state.guests
@@ -216,7 +231,7 @@ function renderSummary() {
 }
 
 function render() {
-    selectedGuestIds = new Set([...selectedGuestIds].filter((guestId) => !isGuestLocked(guestId)));
+    renderFixtures();
     renderTables();
     renderUnseatedGuests();
     renderPrintList();
@@ -250,7 +265,8 @@ async function saveState() {
             body: JSON.stringify({
                 version: state.version,
                 tables: state.tables,
-                assignments: state.assignments
+                assignments: state.assignments,
+                fixtures: state.fixtures
             })
         });
         const result = await response.json();
@@ -607,6 +623,67 @@ function moveGuestsToUnseated(guestIds) {
     return true;
 }
 
+function clearUnlockedSeats() {
+    const count = state.assignments.filter((assignment) => !assignment.locked).length;
+    if (!count) {
+        window.alert("There are no unlocked assignments to clear.");
+        return;
+    }
+    if (!window.confirm(`Clear ${count} unlocked seat ${count === 1 ? "assignment" : "assignments"}?`)) return;
+    change(() => {
+        state.assignments = state.assignments.filter((assignment) => assignment.locked);
+    });
+    selectedGuestIds.clear();
+    syncSelectionClasses();
+}
+
+function clearAllSeats() {
+    if (!state.assignments.length) {
+        window.alert("The seating chart is already empty.");
+        return;
+    }
+    if (!window.confirm(`Clear all ${state.assignments.length} seat assignments, including locked guests?`)) return;
+    change(() => { state.assignments = []; });
+    selectedGuestIds.clear();
+    syncSelectionClasses();
+}
+
+function applySelectionAction(action) {
+    const selected = new Set(selectedGuestIds);
+    if (!selected.size) return;
+    if (action === "clear" && !window.confirm(`Clear ${selected.size} selected guests from their seats?`)) return;
+    change(() => {
+        if (action === "clear") {
+            state.assignments = state.assignments.filter((assignment) => !selected.has(assignment.guestId));
+            return;
+        }
+        state.assignments.forEach((assignment) => {
+            if (selected.has(assignment.guestId)) assignment.locked = action === "lock";
+        });
+    });
+    selectedGuestIds.clear();
+    syncSelectionClasses();
+    hideSelectionMenu();
+}
+
+function showSelectionMenu(event) {
+    const guestElement = event.target.closest(".selectable-guest");
+    if (!guestElement) return;
+    event.preventDefault();
+    const guestId = Number(guestElement.dataset.guestId);
+    if (!selectedGuestIds.has(guestId)) selectedGuestIds = new Set([guestId]);
+    syncSelectionClasses();
+    elements.selectionMenu.classList.remove("hidden");
+    const menuRect = elements.selectionMenu.getBoundingClientRect();
+    elements.selectionMenu.style.left = `${Math.min(event.clientX, window.innerWidth - menuRect.width - 8)}px`;
+    elements.selectionMenu.style.top = `${Math.min(event.clientY, window.innerHeight - menuRect.height - 8)}px`;
+    elements.selectionMenu.querySelector("button")?.focus();
+}
+
+function hideSelectionMenu() {
+    elements.selectionMenu.classList.add("hidden");
+}
+
 function clearDropTarget() {
     activeDropTarget?.classList.remove("guest-drop-target", "guest-drop-invalid");
     activeDropTarget = null;
@@ -637,7 +714,7 @@ function dragDestinationAt(clientX, clientY, guestCount) {
 function startGuestDrag(event, sourceElement) {
     if (event.button !== 0) return;
     const guestId = Number(sourceElement.dataset.guestId);
-    if (!guestId || isGuestLocked(guestId)) return;
+    if (!guestId) return;
     if (event.altKey) {
         event.preventDefault();
         if (selectedGuestIds.has(guestId)) selectedGuestIds.delete(guestId);
@@ -647,6 +724,7 @@ function startGuestDrag(event, sourceElement) {
         window.setTimeout(() => { suppressSeatClick = false; }, 0);
         return;
     }
+    if (isGuestLocked(guestId)) return;
     if (!selectedGuestIds.has(guestId)) {
         selectedGuestIds = new Set([guestId]);
         syncSelectionClasses();
@@ -704,7 +782,7 @@ function startGuestDrag(event, sourceElement) {
 }
 
 function startBoxSelection(event) {
-    if (event.button !== 0 || event.target.closest(".selectable-guest, .table-core")) return;
+    if (event.button !== 0 || event.target.closest(".selectable-guest, .table-core, .ballroom-fixture")) return;
     const insideSelectionArea = event.target.closest("#ballroom, #unseated-list");
     if (!insideSelectionArea) return;
     const startX = event.clientX;
@@ -735,7 +813,7 @@ function startBoxSelection(event) {
         document.querySelectorAll(".selectable-guest").forEach((candidate) => {
             const guestId = Number(candidate.dataset.guestId);
             const rect = candidate.getBoundingClientRect();
-            if (!isGuestLocked(guestId) && rect.right >= left && rect.left <= right &&
+            if (rect.right >= left && rect.left <= right &&
                 rect.bottom >= top && rect.top <= bottom) {
                 selectedGuestIds.add(guestId);
             }
@@ -751,6 +829,38 @@ function startBoxSelection(event) {
     document.addEventListener("pointermove", onMove);
     document.addEventListener("pointerup", onEnd);
     document.addEventListener("pointercancel", onEnd);
+}
+
+function startFixtureDrag(event, fixtureElement) {
+    if (event.button !== 0) return;
+    const fixture = state.fixtures.find((item) => item.id === fixtureElement.dataset.fixtureId);
+    if (!fixture) return;
+    const previous = snapshot();
+    const roomRect = elements.ballroom.getBoundingClientRect();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const originX = fixture.positionX;
+    const originY = fixture.positionY;
+    let moved = false;
+    fixtureElement.setPointerCapture(event.pointerId);
+    const onMove = (moveEvent) => {
+        const deltaX = ((moveEvent.clientX - startX) / roomRect.width) * 100;
+        const deltaY = ((moveEvent.clientY - startY) / roomRect.height) * 100;
+        fixture.positionX = Math.max(fixture.width / 2, Math.min(100 - fixture.width / 2, originX + deltaX));
+        fixture.positionY = Math.max(fixture.height / 2, Math.min(100 - fixture.height / 2, originY + deltaY));
+        fixtureElement.style.left = `${fixture.positionX}%`;
+        fixtureElement.style.top = `${fixture.positionY}%`;
+        moved ||= Math.abs(deltaX) > .1 || Math.abs(deltaY) > .1;
+    };
+    const onEnd = () => {
+        fixtureElement.removeEventListener("pointermove", onMove);
+        fixtureElement.removeEventListener("pointerup", onEnd);
+        fixtureElement.removeEventListener("pointercancel", onEnd);
+        if (moved) registerChange(previous);
+    };
+    fixtureElement.addEventListener("pointermove", onMove);
+    fixtureElement.addEventListener("pointerup", onEnd);
+    fixtureElement.addEventListener("pointercancel", onEnd);
 }
 
 function toggleUnseatedPanel() {
@@ -852,6 +962,10 @@ elements.tables.addEventListener("pointerdown", (event) => {
     const core = event.target.closest(".table-core");
     if (core) startDrag(event, core.closest(".seating-table"));
 });
+elements.fixtures.addEventListener("pointerdown", (event) => {
+    const fixture = event.target.closest(".ballroom-fixture");
+    if (fixture) startFixtureDrag(event, fixture);
+});
 elements.unseatedList.addEventListener("pointerdown", (event) => {
     const guest = event.target.closest(".unseated-guest[data-guest-id]");
     if (guest) startGuestDrag(event, guest);
@@ -871,17 +985,36 @@ elements.search.addEventListener("input", () => {
 });
 elements.closeDialog.addEventListener("click", closeSeatDialog);
 elements.dialog.addEventListener("cancel", () => { activeSeat = null; });
+elements.dialog.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.target.closest("button")) {
+        event.preventDefault();
+        closeSeatDialog();
+    }
+});
 elements.clearSeat.addEventListener("click", clearActiveSeat);
 elements.toggleLock.addEventListener("click", toggleActiveLock);
 elements.confirmSeat.addEventListener("click", closeSeatDialog);
 elements.undo.addEventListener("click", undo);
 elements.redo.addEventListener("click", redo);
 elements.shuffle.addEventListener("click", shuffleGuests);
+elements.clearUnlocked.addEventListener("click", clearUnlockedSeats);
+elements.clearAll.addEventListener("click", clearAllSeats);
 elements.addTable.addEventListener("click", addTable);
 elements.export.addEventListener("click", exportCsv);
 elements.print.addEventListener("click", () => window.print());
 elements.collapseUnseated.addEventListener("click", toggleUnseatedPanel);
 elements.unseatedResize.addEventListener("pointerdown", startPanelResize);
+document.addEventListener("contextmenu", showSelectionMenu);
+elements.selectionMenu.addEventListener("click", (event) => {
+    const action = event.target.closest("[data-selection-action]")?.dataset.selectionAction;
+    if (action) applySelectionAction(action);
+});
+document.addEventListener("pointerdown", (event) => {
+    if (!event.target.closest("#selection-menu")) hideSelectionMenu();
+});
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") hideSelectionMenu();
+});
 elements.refresh.addEventListener("click", () => {
     if (elements.saveStatus.dataset.state !== "saved" &&
         !window.confirm("Reload the last saved seating chart and discard unsaved changes?")) return;

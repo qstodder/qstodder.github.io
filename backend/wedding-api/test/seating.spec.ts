@@ -22,6 +22,10 @@ describe("Admin seating chart", () => {
         expect(response.status).toBe(200);
         expect(result.version).toBe(0);
         expect(result.tables).toHaveLength(12);
+        expect(result.fixtures).toEqual(expect.arrayContaining([
+            expect.objectContaining({ id: "sweetheart", label: "Sweetheart Table" }),
+            expect.objectContaining({ id: "dj", label: "DJ" })
+        ]));
         expect(result.tables[0]).toMatchObject({
             id: "table-1",
             tableNumber: 1,
@@ -38,10 +42,12 @@ describe("Admin seating chart", () => {
         const initial = await initialResponse.json<any>();
         const guest = initial.guests[0];
         initial.tables[0].positionX = 24.5;
+        initial.fixtures.find((fixture: any) => fixture.id === "sweetheart").positionX = 55;
 
         const response = await saveAdminSeating(request("PUT", {
             version: initial.version,
             tables: initial.tables,
+            fixtures: initial.fixtures,
             assignments: [{
                 guestId: guest.id,
                 tableId: initial.tables[0].id,
@@ -57,6 +63,7 @@ describe("Admin seating chart", () => {
         const savedResponse = await getAdminSeating(request(), env);
         const saved = await savedResponse.json<any>();
         expect(saved.tables[0].positionX).toBe(24.5);
+        expect(saved.fixtures.find((fixture: any) => fixture.id === "sweetheart").positionX).toBe(55);
         expect(saved.assignments).toEqual([{
             guestId: guest.id,
             tableId: initial.tables[0].id,

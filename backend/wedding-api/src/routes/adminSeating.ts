@@ -18,10 +18,20 @@ interface SeatingAssignmentInput {
     locked: boolean;
 }
 
+interface SeatingFixtureInput {
+    id: string;
+    label: string;
+    positionX: number;
+    positionY: number;
+    width: number;
+    height: number;
+}
+
 interface SeatingSaveInput {
     version: number;
     tables: SeatingTableInput[];
     assignments: SeatingAssignmentInput[];
+    fixtures: SeatingFixtureInput[] | null;
 }
 
 function chunks<T>(items: T[], size: number): T[][] {
@@ -129,13 +139,44 @@ function validateSaveInput(value: unknown): SeatingSaveInput {
         occupiedSeats.add(seatKey);
         return { guestId, tableId, seatNumber, locked: assignment.locked === true };
     });
-    return { version, tables, assignments };
+    let fixtures: SeatingFixtureInput[] | null = null;
+    if (input.fixtures !== undefined) {
+        if (!Array.isArray(input.fixtures) || input.fixtures.length !== 2) {
+            throw new SeatingValidationError("The sweetheart and DJ tables are required.");
+        }
+        const fixtureIds = new Set<string>();
+        fixtures = input.fixtures.map((raw) => {
+            if (!raw || typeof raw !== "object") {
+                throw new SeatingValidationError("A ballroom fixture is invalid.");
+            }
+            const fixture = raw as Record<string, unknown>;
+            const id = String(fixture.id ?? "").trim();
+            const label = String(fixture.label ?? "").trim();
+            const positionX = finiteNumber(fixture.positionX, "Fixture position");
+            const positionY = finiteNumber(fixture.positionY, "Fixture position");
+            const width = finiteNumber(fixture.width, "Fixture width");
+            const height = finiteNumber(fixture.height, "Fixture height");
+            if (!/^[A-Za-z0-9_-]{1,80}$/.test(id) || fixtureIds.has(id) || !label) {
+                throw new SeatingValidationError("Every fixture must have a unique ID and label.");
+            }
+            if (positionX < 0 || positionX > 100 || positionY < 0 || positionY > 100 ||
+                width < 3 || width > 30 || height < 2 || height > 15) {
+                throw new SeatingValidationError("Ballroom fixtures must remain inside the ballroom.");
+            }
+            fixtureIds.add(id);
+            return { id, label, positionX, positionY, width, height };
+        });
+        if (!fixtureIds.has("sweetheart") || !fixtureIds.has("dj")) {
+            throw new SeatingValidationError("The sweetheart and DJ tables are required.");
+        }
+    }
+    return { version, tables, assignments, fixtures };
 }
 
 export async function getAdminSeating(request: Request, env: Env): Promise<Response> {
     try {
         const admin = await authenticateAdmin(request, env);
-        const [layout, tableResult, assignmentResult, guestResult, dietaryResult] =
+        const [layout, tableResult, fixtureResult, assignmentResult, guestResult, dietaryResult] =
             await Promise.all([
                 env.wedding_rsvp_db.prepare(
                     "SELECT version, updated_at FROM seating_layout WHERE id = 1"
@@ -143,6 +184,10 @@ export async function getAdminSeating(request: Request, env: Env): Promise<Respo
                 env.wedding_rsvp_db.prepare(`
                     SELECT id, table_number, position_x, position_y, seat_count, rotation
                     FROM seating_tables ORDER BY table_number
+                `).all<any>(),
+                env.wedding_rsvp_db.prepare(`
+                    SELECT id, label, position_x, position_y, width, height
+                    FROM seating_fixtures ORDER BY id
                 `).all<any>(),
                 env.wedding_rsvp_db.prepare(`
                     SELECT guest_id, table_id, seat_number, is_locked
@@ -185,6 +230,14 @@ export async function getAdminSeating(request: Request, env: Env): Promise<Respo
                 positionY: table.position_y,
                 seatCount: table.seat_count,
                 rotation: table.rotation
+            })),
+            fixtures: fixtureResult.results.map((fixture) => ({
+                id: fixture.id,
+                label: fixture.label,
+                positionX: fixture.position_x,
+                positionY: fixture.position_y,
+                width: fixture.width,
+                height: fixture.height
             })),
             assignments: assignmentResult.results.map((assignment) => ({
                 guestId: assignment.guest_id,
@@ -286,6 +339,17 @@ export async function saveAdminSeating(request: Request, env: Env): Promise<Resp
                 FROM rows WHERE ${guarded}
             `).bind(...values, token);
         });
+        const fixtureStatements = input.fixtures ? [
+            env.wedding_rsvp_db.prepare(`DELETE FROM seating_fixtures WHERE ${guarded}`).bind(token),
+            ...input.fixtures.map((fixture) => env.wedding_rsvp_db.prepare(`
+                INSERT INTO seating_fixtures (
+                    id, label, position_x, position_y, width, height
+                ) SELECT ?, ?, ?, ?, ?, ? WHERE ${guarded}
+            `).bind(
+                fixture.id, fixture.label, fixture.positionX, fixture.positionY,
+                fixture.width, fixture.height, token
+            ))
+        ] : [];
         const statements = [
             env.wedding_rsvp_db.prepare(`
                 UPDATE seating_layout
@@ -294,6 +358,7 @@ export async function saveAdminSeating(request: Request, env: Env): Promise<Resp
             `).bind(token, input.version),
             env.wedding_rsvp_db.prepare(`DELETE FROM seating_assignments WHERE ${guarded}`).bind(token),
             env.wedding_rsvp_db.prepare(`DELETE FROM seating_tables WHERE ${guarded}`).bind(token),
+            ...fixtureStatements,
             ...tableInsertStatements,
             ...assignmentInsertStatements
         ];

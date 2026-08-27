@@ -1424,14 +1424,10 @@ tbody th {
     text-transform: uppercase;
 }
 
-.sweetheart-table {
+.ballroom-fixture {
     position: absolute;
-    z-index: 2;
-    top: 12%;
-    left: 43%;
+    z-index: 4;
     display: grid;
-    width: 14%;
-    height: 4.5%;
     place-items: center;
     color: #344f5e;
     background: #e1e9d1;
@@ -1441,7 +1437,13 @@ tbody th {
     font-weight: 700;
     letter-spacing: .05em;
     text-transform: uppercase;
+    cursor: grab;
+    touch-action: none;
+    transform: translate(-50%, -50%);
+    user-select: none;
 }
+.ballroom-fixture:active { cursor: grabbing; }
+.ballroom-fixture[data-fixture-id="dj"] { color: #fff; background: #6d7f8a; border-color: #465e6b; }
 
 .ballroom-entrance {
     position: absolute;
@@ -1585,6 +1587,38 @@ tbody th {
 .guest-option-status.status-no { background: #c75f58; }
 .guest-options-empty { padding: 1rem; color: var(--color-text-light); text-align: center; }
 .seat-dialog-actions { justify-content: space-between; gap: .75rem; margin-top: 1rem; }
+.seat-dialog .seat-dialog-button {
+    color: var(--color-deep-ocean);
+    background: #fff;
+    border-color: rgba(36, 55, 70, .35);
+}
+.seat-dialog .seat-dialog-button:hover,
+.seat-dialog .seat-dialog-button:focus-visible { background: #eef4f6; }
+
+.selection-menu {
+    position: fixed;
+    z-index: 11000;
+    min-width: 205px;
+    padding: .35rem;
+    background: #fff;
+    border: 1px solid #aebfc7;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(30, 49, 59, .25);
+}
+.selection-menu button {
+    display: block;
+    width: 100%;
+    padding: .65rem .75rem;
+    color: var(--color-text);
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    font: 700 .78rem var(--font-ui);
+    text-align: left;
+    cursor: pointer;
+}
+.selection-menu button:hover,
+.selection-menu button:focus-visible { background: #eef4f6; outline: 0; }
 
 .seating-print-list {
     display: grid;

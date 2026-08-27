@@ -612,6 +612,8 @@ const adminSeatingPage = `<!DOCTYPE html>
                     <button id="undo-seating" class="secondary-button" type="button" disabled>Undo</button>
                     <button id="redo-seating" class="secondary-button" type="button" disabled>Redo</button>
                     <button id="shuffle-seating" class="secondary-button" type="button">Shuffle attending + undetermined</button>
+                    <button id="clear-unlocked-seating" class="secondary-button" type="button">Clear unlocked</button>
+                    <button id="clear-all-seating" class="danger-button" type="button">Clear all</button>
                     <button id="add-seating-table" class="secondary-button" type="button">Add table</button>
                     <button id="export-seating" class="secondary-button" type="button">Export CSV</button>
                     <button id="print-seating" class="address-save-button" type="button">Print</button>
@@ -639,7 +641,7 @@ const adminSeatingPage = `<!DOCTYPE html>
                     <div class="ballroom-scroll">
                         <div id="ballroom" class="ballroom" aria-label="Reception ballroom seating chart">
                             <div class="ballroom-stage">Stage</div>
-                            <div class="sweetheart-table">Sweetheart Table</div>
+                            <div id="seating-fixtures"></div>
                             <div class="ballroom-entrance"><span>Entrance</span></div>
                             <div id="seating-tables"></div>
                         </div>
@@ -663,11 +665,16 @@ const adminSeatingPage = `<!DOCTYPE html>
             <div id="seat-guest-options" class="seat-guest-options" role="listbox" aria-label="Available guests"></div>
             <div class="seat-dialog-actions">
                 <button id="clear-seat" class="danger-button" type="button">Clear seat</button>
-                <button id="toggle-seat-lock" class="secondary-button" type="button">Lock guest</button>
-                <button id="confirm-seat" class="secondary-button" type="button">Enter</button>
+                <button id="toggle-seat-lock" class="secondary-button seat-dialog-button" type="button">Lock guest</button>
+                <button id="confirm-seat" class="secondary-button seat-dialog-button" type="button">Enter</button>
             </div>
         </form>
     </dialog>
+    <div id="selection-menu" class="selection-menu hidden" role="menu" aria-label="Selected guest actions">
+        <button type="button" role="menuitem" data-selection-action="lock">Lock selected</button>
+        <button type="button" role="menuitem" data-selection-action="unlock">Unlock selected</button>
+        <button type="button" role="menuitem" data-selection-action="clear">Clear selected from seats</button>
+    </div>
     <script defer src="/admin/assets/admin-seating.js"></script>
 </body>
 </html>`;
