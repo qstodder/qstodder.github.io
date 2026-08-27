@@ -116,4 +116,41 @@ describe("Admin seating chart", () => {
             error: "A seat cannot contain more than one guest."
         });
     });
+
+    it("saves a full 120-seat chart without exceeding D1 batch limits", async () => {
+        const household = await env.wedding_rsvp_db.prepare(
+            "SELECT id FROM households ORDER BY id LIMIT 1"
+        ).first<{ id: number }>();
+        await env.wedding_rsvp_db.prepare(`
+            WITH RECURSIVE sequence(number) AS (
+                SELECT 1 UNION ALL SELECT number + 1 FROM sequence WHERE number < 120
+            )
+            INSERT INTO guests (household_id, first_name, last_name)
+            SELECT ?, 'Capacity ' || number, 'Guest' FROM sequence
+        `).bind(household!.id).run();
+
+        const currentResponse = await getAdminSeating(request(), env);
+        const current = await currentResponse.json<any>();
+        const assignments = current.tables.flatMap((table: any) =>
+            Array.from({ length: table.seatCount }, (_, index) => ({
+                tableId: table.id,
+                seatNumber: index + 1
+            }))
+        ).slice(0, 120).map((seat: any, index: number) => ({
+            guestId: current.guests[index].id,
+            ...seat,
+            locked: false
+        }));
+
+        const response = await saveAdminSeating(request("PUT", {
+            version: current.version,
+            tables: current.tables,
+            assignments
+        }), env);
+
+        expect(response.status).toBe(200);
+        const savedResponse = await getAdminSeating(request(), env);
+        const saved = await savedResponse.json<any>();
+        expect(saved.assignments).toHaveLength(120);
+    });
 });

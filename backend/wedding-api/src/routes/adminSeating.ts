@@ -24,9 +24,20 @@ interface SeatingSaveInput {
     assignments: SeatingAssignmentInput[];
 }
 
+function chunks<T>(items: T[], size: number): T[][] {
+    const result: T[][] = [];
+    for (let index = 0; index < items.length; index += size) {
+        result.push(items.slice(index, index + size));
+    }
+    return result;
+}
+
 class SeatingValidationError extends Error {}
 
 function responseError(request: Request, error: unknown): Response {
+    if (!(error instanceof AdminAuthError) && !(error instanceof SeatingValidationError)) {
+        console.error("Admin seating request failed", error);
+    }
     const status = error instanceof AdminAuthError
         ? error.status
         : error instanceof SeatingValidationError
@@ -220,14 +231,21 @@ export async function saveAdminSeating(request: Request, env: Env): Promise<Resp
 
         const guestIds = input.assignments.map((item) => item.guestId);
         if (guestIds.length) {
-            const placeholders = guestIds.map(() => "?").join(",");
-            const result = await env.wedding_rsvp_db.prepare(`
-                SELECT COUNT(*) AS count
-                FROM guests g JOIN households h ON h.id = g.household_id
-                WHERE g.id IN (${placeholders})
-                    AND g.archived_at IS NULL AND h.archived_at IS NULL
-            `).bind(...guestIds).first<{ count: number }>();
-            if (Number(result?.count ?? 0) !== guestIds.length) {
+            const guestChecks = await env.wedding_rsvp_db.batch(
+                chunks(guestIds, 80).map((ids) => {
+                    const placeholders = ids.map(() => "?").join(",");
+                    return env.wedding_rsvp_db.prepare(`
+                        SELECT COUNT(*) AS count
+                        FROM guests g JOIN households h ON h.id = g.household_id
+                        WHERE g.id IN (${placeholders})
+                            AND g.archived_at IS NULL AND h.archived_at IS NULL
+                    `).bind(...ids);
+                })
+            );
+            const activeGuestCount = guestChecks.reduce((total, result) =>
+                total + Number((result.results[0] as { count?: number } | undefined)?.count ?? 0), 0
+            );
+            if (activeGuestCount !== guestIds.length) {
                 throw new SeatingValidationError("An assigned guest is unavailable.");
             }
         }
@@ -236,6 +254,38 @@ export async function saveAdminSeating(request: Request, env: Env): Promise<Resp
         const guarded = `EXISTS (
             SELECT 1 FROM seating_layout WHERE id = 1 AND save_token = ?
         )`;
+        const tableInsertStatements = chunks(input.tables, 10).map((tables) => {
+            const rows = tables.map(() => "(?, ?, ?, ?, ?, ?)").join(", ");
+            const values = tables.flatMap((table) => [
+                table.id, table.tableNumber, table.positionX, table.positionY,
+                table.seatCount, table.rotation
+            ]);
+            return env.wedding_rsvp_db.prepare(`
+                WITH rows (
+                    id, table_number, position_x, position_y, seat_count, rotation
+                ) AS (VALUES ${rows})
+                INSERT INTO seating_tables (
+                    id, table_number, position_x, position_y, seat_count, rotation
+                )
+                SELECT id, table_number, position_x, position_y, seat_count, rotation
+                FROM rows WHERE ${guarded}
+            `).bind(...values, token);
+        });
+        const assignmentInsertStatements = chunks(input.assignments, 20).map((assignments) => {
+            const rows = assignments.map(() => "(?, ?, ?, ?)").join(", ");
+            const values = assignments.flatMap((assignment) => [
+                assignment.guestId, assignment.tableId, assignment.seatNumber,
+                assignment.locked ? 1 : 0
+            ]);
+            return env.wedding_rsvp_db.prepare(`
+                WITH rows (guest_id, table_id, seat_number, is_locked) AS (VALUES ${rows})
+                INSERT INTO seating_assignments (
+                    guest_id, table_id, seat_number, is_locked
+                )
+                SELECT guest_id, table_id, seat_number, is_locked
+                FROM rows WHERE ${guarded}
+            `).bind(...values, token);
+        });
         const statements = [
             env.wedding_rsvp_db.prepare(`
                 UPDATE seating_layout
@@ -244,22 +294,8 @@ export async function saveAdminSeating(request: Request, env: Env): Promise<Resp
             `).bind(token, input.version),
             env.wedding_rsvp_db.prepare(`DELETE FROM seating_assignments WHERE ${guarded}`).bind(token),
             env.wedding_rsvp_db.prepare(`DELETE FROM seating_tables WHERE ${guarded}`).bind(token),
-            ...input.tables.map((table) => env.wedding_rsvp_db.prepare(`
-                INSERT INTO seating_tables (
-                    id, table_number, position_x, position_y, seat_count, rotation
-                ) SELECT ?, ?, ?, ?, ?, ? WHERE ${guarded}
-            `).bind(
-                table.id, table.tableNumber, table.positionX, table.positionY,
-                table.seatCount, table.rotation, token
-            )),
-            ...input.assignments.map((assignment) => env.wedding_rsvp_db.prepare(`
-                INSERT INTO seating_assignments (
-                    guest_id, table_id, seat_number, is_locked
-                ) SELECT ?, ?, ?, ? WHERE ${guarded}
-            `).bind(
-                assignment.guestId, assignment.tableId, assignment.seatNumber,
-                assignment.locked ? 1 : 0, token
-            ))
+            ...tableInsertStatements,
+            ...assignmentInsertStatements
         ];
 
         const results = await env.wedding_rsvp_db.batch(statements);
