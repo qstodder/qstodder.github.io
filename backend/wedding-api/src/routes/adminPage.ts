@@ -611,7 +611,7 @@ const adminSeatingPage = `<!DOCTYPE html>
                 <div class="seating-toolbar" aria-label="Seating chart actions">
                     <button id="undo-seating" class="secondary-button" type="button" disabled>Undo</button>
                     <button id="redo-seating" class="secondary-button" type="button" disabled>Redo</button>
-                    <button id="shuffle-seating" class="secondary-button" type="button">Shuffle attending guests</button>
+                    <button id="shuffle-seating" class="secondary-button" type="button">Shuffle attending + undetermined</button>
                     <button id="add-seating-table" class="secondary-button" type="button">Add table</button>
                     <button id="export-seating" class="secondary-button" type="button">Export CSV</button>
                     <button id="print-seating" class="address-save-button" type="button">Print</button>
@@ -623,16 +623,28 @@ const adminSeatingPage = `<!DOCTYPE html>
                     <span><span aria-hidden="true">🔒</span> Locked</span>
                 </div>
             </section>
-            <section class="admin-panel ballroom-panel">
-                <p class="ballroom-help">Drag a numbered table to reposition it. Select any seat to assign, remove, lock, or move a guest.</p>
-                <div class="ballroom-scroll">
-                    <div id="ballroom" class="ballroom" aria-label="Reception ballroom seating chart">
-                        <div class="ballroom-stage">Stage</div>
-                        <div class="sweetheart-table">Sweetheart Table</div>
-                        <div class="ballroom-entrance"><span>Entrance</span></div>
-                        <div id="seating-tables"></div>
+            <section id="seating-workspace" class="seating-workspace">
+                <aside id="unseated-panel" class="admin-panel unseated-panel" aria-label="Unseated guests">
+                    <div class="unseated-panel-heading">
+                        <div><p class="admin-eyebrow">Quick reference</p><h2>Unseated</h2></div>
+                        <button id="collapse-unseated" class="unseated-collapse" type="button" aria-expanded="true" aria-label="Collapse unseated guests">‹</button>
                     </div>
-                </div>
+                    <p id="unseated-panel-count" class="unseated-panel-count">0 guests</p>
+                    <p class="unseated-panel-help">Drag a guest to a seat. Option-click or draw a box to select several.</p>
+                    <div id="unseated-list" class="unseated-list" aria-live="polite"></div>
+                    <div id="unseated-resize" class="unseated-resize" role="separator" aria-orientation="vertical" aria-label="Resize unseated guest panel" tabindex="0"></div>
+                </aside>
+                <section class="admin-panel ballroom-panel">
+                    <p class="ballroom-help">Drag tables to reposition them. Drag guests between seats, or select several and drag them onto a table.</p>
+                    <div class="ballroom-scroll">
+                        <div id="ballroom" class="ballroom" aria-label="Reception ballroom seating chart">
+                            <div class="ballroom-stage">Stage</div>
+                            <div class="sweetheart-table">Sweetheart Table</div>
+                            <div class="ballroom-entrance"><span>Entrance</span></div>
+                            <div id="seating-tables"></div>
+                        </div>
+                    </div>
+                </section>
             </section>
             <section class="admin-panel print-table-list" aria-label="Table-by-table guest list">
                 <div class="panel-heading"><div><p class="admin-eyebrow">Print companion</p><h2>Table lists</h2></div></div>
@@ -652,6 +664,7 @@ const adminSeatingPage = `<!DOCTYPE html>
             <div class="seat-dialog-actions">
                 <button id="clear-seat" class="danger-button" type="button">Clear seat</button>
                 <button id="toggle-seat-lock" class="secondary-button" type="button">Lock guest</button>
+                <button id="confirm-seat" class="secondary-button" type="button">Enter</button>
             </div>
         </form>
     </dialog>
@@ -664,7 +677,7 @@ export async function getAdminSeatingPage(request: Request, env: Env): Promise<R
         await authenticateAdmin(request, env);
         return new Response(adminSeatingPage, { headers: {
             "Content-Type": "text/html; charset=UTF-8", "Cache-Control": "no-store",
-            "Content-Security-Policy": ["default-src 'none'", "script-src 'self'", "style-src 'self' https://fonts.googleapis.com", "font-src https://fonts.gstatic.com", "connect-src 'self'", "base-uri 'none'", "frame-ancestors 'none'", "form-action 'self'"].join("; "),
+            "Content-Security-Policy": ["default-src 'none'", "script-src 'self'", "style-src 'self' https://fonts.googleapis.com", "style-src-attr 'unsafe-inline'", "font-src https://fonts.gstatic.com", "connect-src 'self'", "base-uri 'none'", "frame-ancestors 'none'", "form-action 'self'"].join("; "),
             "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff"
         }});
     } catch (error) {

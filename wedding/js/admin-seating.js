@@ -17,13 +17,20 @@ const elements = {
     export: document.querySelector("#export-seating"),
     print: document.querySelector("#print-seating"),
     printList: document.querySelector("#seating-print-list"),
+    workspace: document.querySelector("#seating-workspace"),
+    unseatedPanel: document.querySelector("#unseated-panel"),
+    unseatedList: document.querySelector("#unseated-list"),
+    unseatedPanelCount: document.querySelector("#unseated-panel-count"),
+    collapseUnseated: document.querySelector("#collapse-unseated"),
+    unseatedResize: document.querySelector("#unseated-resize"),
     dialog: document.querySelector("#seat-dialog"),
     dialogLabel: document.querySelector("#seat-dialog-label"),
     closeDialog: document.querySelector("#close-seat-dialog"),
     search: document.querySelector("#seat-guest-search"),
     options: document.querySelector("#seat-guest-options"),
     clearSeat: document.querySelector("#clear-seat"),
-    toggleLock: document.querySelector("#toggle-seat-lock")
+    toggleLock: document.querySelector("#toggle-seat-lock"),
+    confirmSeat: document.querySelector("#confirm-seat")
 };
 
 let state = null;
@@ -33,6 +40,9 @@ let future = [];
 let revision = 0;
 let saveTimer = null;
 let saving = false;
+let selectedGuestIds = new Set();
+let suppressSeatClick = false;
+let activeDropTarget = null;
 
 function escapeHtml(value) {
     const element = document.createElement("div");
@@ -98,6 +108,18 @@ function guestById(id) {
     return state.guests.find((guest) => guest.id === id) ?? null;
 }
 
+function isEligibleGuest(guest) {
+    return guest?.rsvpStatus === "yes" || guest?.rsvpStatus === "pending";
+}
+
+function assignmentForGuest(guestId) {
+    return state.assignments.find((assignment) => assignment.guestId === guestId) ?? null;
+}
+
+function isGuestLocked(guestId) {
+    return assignmentForGuest(guestId)?.locked === true;
+}
+
 function statusLabel(status) {
     return status === "yes"
         ? "Attending"
@@ -129,8 +151,9 @@ function renderTables() {
                     ? `${guestName(guest)} · ${guest.householdName} · ${statusLabel(guest.rsvpStatus)}`
                     : `Table ${table.tableNumber}, empty seat ${seatNumber}`;
                 return `
-                    <button class="seating-seat seat-status-${status} ${guest ? "" : "seating-seat-empty"}"
+                    <button class="seating-seat seat-status-${status} ${guest ? "selectable-guest" : "seating-seat-empty"} ${guest && selectedGuestIds.has(guest.id) ? "is-selected" : ""}"
                         type="button" data-table-id="${escapeAttribute(table.id)}" data-seat-number="${seatNumber}"
+                        ${guest ? `data-guest-id="${guest.id}"` : ""}
                         style="left:${position.left}%;top:${position.top}%" title="${escapeAttribute(title)}">
                         ${escapeHtml(label)}${assignment?.locked ? '<span class="seat-lock" aria-label="Locked">🔒</span>' : ""}
                     </button>`;
@@ -145,6 +168,27 @@ function renderTables() {
                     ${seats}
                 </div>`;
         }).join("");
+}
+
+function renderUnseatedGuests() {
+    const seatedIds = new Set(state.assignments.map((assignment) => assignment.guestId));
+    const guests = state.guests
+        .filter((guest) => isEligibleGuest(guest) && !seatedIds.has(guest.id))
+        .sort((left, right) =>
+            compareText(left.householdName, right.householdName) ||
+            compareText(left.lastName, right.lastName) ||
+            compareText(left.firstName, right.firstName)
+        );
+    elements.unseatedPanelCount.textContent = `${guests.length} ${guests.length === 1 ? "guest" : "guests"}`;
+    elements.unseatedList.innerHTML = guests.length
+        ? guests.map((guest) => `
+            <button class="unseated-guest selectable-guest ${selectedGuestIds.has(guest.id) ? "is-selected" : ""}"
+                type="button" data-guest-id="${guest.id}" title="${escapeAttribute(`${guestName(guest)} · ${guest.householdName} · ${statusLabel(guest.rsvpStatus)}`)}">
+                <span class="unseated-guest-status status-${guest.rsvpStatus}" aria-hidden="true"></span>
+                <span class="unseated-guest-name">${escapeHtml(guestName(guest))}</span>
+                <span class="unseated-guest-household">${escapeHtml(guest.householdName)}</span>
+            </button>`).join("")
+        : '<p class="unseated-empty">Every attending or undecided guest has a seat.</p>';
 }
 
 function renderPrintList() {
@@ -162,16 +206,19 @@ function renderPrintList() {
 
 function renderSummary() {
     const seatedIds = new Set(state.assignments.map((item) => item.guestId));
-    const attending = state.guests.filter((guest) => guest.rsvpStatus === "yes");
-    const attendingUnseated = attending.filter((guest) => !seatedIds.has(guest.id));
+    const eligibleUnseated = state.guests.filter((guest) =>
+        isEligibleGuest(guest) && !seatedIds.has(guest.id)
+    );
     elements.seatedCount.textContent = `${state.assignments.length} seated`;
-    elements.unseatedCount.textContent = `${attendingUnseated.length} attending unseated`;
+    elements.unseatedCount.textContent = `${eligibleUnseated.length} eligible unseated`;
     elements.undo.disabled = history.length === 0;
     elements.redo.disabled = future.length === 0;
 }
 
 function render() {
+    selectedGuestIds = new Set([...selectedGuestIds].filter((guestId) => !isGuestLocked(guestId)));
     renderTables();
+    renderUnseatedGuests();
     renderPrintList();
     renderSummary();
 }
@@ -360,12 +407,14 @@ function redo() {
 }
 
 function shuffleGuests() {
-    const attending = state.guests.filter((guest) => guest.rsvpStatus === "yes");
-    if (!attending.length) {
-        window.alert("No guests have RSVP’d yes to the wedding yet.");
+    const eligibleGuests = state.guests.filter((guest) =>
+        guest.rsvpStatus === "yes" || guest.rsvpStatus === "pending"
+    );
+    if (!eligibleGuests.length) {
+        window.alert("There are no attending or not-yet-responded guests to shuffle.");
         return;
     }
-    if (!window.confirm("Shuffle every unlocked attending guest into the available seats? Locked guests will remain in place.")) return;
+    if (!window.confirm("Shuffle every unlocked attending and not-yet-responded guest into the available seats? Declined guests will be excluded, and locked guests will remain in place.")) return;
     change(() => {
         const locked = state.assignments.filter((assignment) => assignment.locked);
         const lockedGuestIds = new Set(locked.map((assignment) => assignment.guestId));
@@ -377,13 +426,13 @@ function shuffleGuests() {
                 seatNumber: index + 1
             })))
             .filter((seat) => !occupied.has(`${seat.tableId}:${seat.seatNumber}`));
-        const guests = attending.filter((guest) => !lockedGuestIds.has(guest.id));
+        const guests = eligibleGuests.filter((guest) => !lockedGuestIds.has(guest.id));
         for (let index = guests.length - 1; index > 0; index -= 1) {
             const randomIndex = Math.floor(Math.random() * (index + 1));
             [guests[index], guests[randomIndex]] = [guests[randomIndex], guests[index]];
         }
         if (guests.length > seats.length) {
-            window.alert(`${guests.length - seats.length} attending guests could not be seated. Add another table and shuffle again.`);
+            window.alert(`${guests.length - seats.length} eligible guests could not be seated. Add another table and shuffle again.`);
         }
         state.assignments = [
             ...locked,
@@ -461,6 +510,277 @@ function exportCsv() {
     URL.revokeObjectURL(link.href);
 }
 
+function syncSelectionClasses() {
+    document.querySelectorAll(".selectable-guest").forEach((element) => {
+        element.classList.toggle(
+            "is-selected",
+            selectedGuestIds.has(Number(element.dataset.guestId))
+        );
+    });
+}
+
+function moveGuestsToSeat(guestIds, tableId, seatNumber) {
+    const guestId = guestIds[0];
+    const source = assignmentForGuest(guestId);
+    const target = assignmentAt(tableId, seatNumber);
+    if (source?.locked) return false;
+    if (target?.locked && target.guestId !== guestId) {
+        window.alert("That seat is locked. Unlock its guest before replacing them.");
+        return false;
+    }
+    if (source?.tableId === tableId && source.seatNumber === seatNumber) return false;
+    change(() => {
+        state.assignments = state.assignments.filter((assignment) =>
+            assignment.guestId !== guestId && assignment.guestId !== target?.guestId
+        );
+        state.assignments.push({ guestId, tableId, seatNumber, locked: false });
+        if (source && target) {
+            state.assignments.push({
+                guestId: target.guestId,
+                tableId: source.tableId,
+                seatNumber: source.seatNumber,
+                locked: false
+            });
+        }
+    });
+    return true;
+}
+
+function moveGuestsToTable(guestIds, tableId) {
+    const table = state.tables.find((item) => item.id === tableId);
+    if (!table) return false;
+    const uniqueGuestIds = [...new Set(guestIds)].filter((guestId) => !isGuestLocked(guestId));
+    const selectedSet = new Set(uniqueGuestIds);
+    const assignmentsWithoutSelected = state.assignments.filter((assignment) =>
+        !selectedSet.has(assignment.guestId)
+    );
+    const destination = assignmentsWithoutSelected.filter((assignment) => assignment.tableId === tableId);
+    const lockedSeatCount = destination.filter((assignment) => assignment.locked).length;
+    if (uniqueGuestIds.length > table.seatCount - lockedSeatCount) {
+        window.alert(`Table ${table.tableNumber} does not have enough unlocked seats for this group.`);
+        return false;
+    }
+
+    const occupiedSeats = new Set(destination.map((assignment) => assignment.seatNumber));
+    const openSeats = Array.from({ length: table.seatCount }, (_, index) => index + 1)
+        .filter((seatNumber) => !occupiedSeats.has(seatNumber));
+    const displacementCount = Math.max(0, uniqueGuestIds.length - openSeats.length);
+    const displacedIds = new Set(
+        destination
+            .filter((assignment) => !assignment.locked)
+            .sort((left, right) => right.seatNumber - left.seatNumber)
+            .slice(0, displacementCount)
+            .map((assignment) => assignment.guestId)
+    );
+
+    change(() => {
+        state.assignments = assignmentsWithoutSelected.filter((assignment) =>
+            !displacedIds.has(assignment.guestId)
+        );
+        const nowOccupied = new Set(
+            state.assignments
+                .filter((assignment) => assignment.tableId === tableId)
+                .map((assignment) => assignment.seatNumber)
+        );
+        const availableSeats = Array.from({ length: table.seatCount }, (_, index) => index + 1)
+            .filter((candidate) => !nowOccupied.has(candidate));
+        uniqueGuestIds.forEach((guestId, index) => {
+            state.assignments.push({
+                guestId,
+                tableId,
+                seatNumber: availableSeats[index],
+                locked: false
+            });
+        });
+    });
+    return true;
+}
+
+function moveGuestsToUnseated(guestIds) {
+    const movableIds = new Set(guestIds.filter((guestId) => !isGuestLocked(guestId)));
+    if (!movableIds.size) return false;
+    change(() => {
+        state.assignments = state.assignments.filter((assignment) =>
+            !movableIds.has(assignment.guestId)
+        );
+    });
+    return true;
+}
+
+function clearDropTarget() {
+    activeDropTarget?.classList.remove("guest-drop-target", "guest-drop-invalid");
+    activeDropTarget = null;
+}
+
+function setDropTarget(element, invalid = false) {
+    if (activeDropTarget === element) {
+        activeDropTarget?.classList.toggle("guest-drop-invalid", invalid);
+        return;
+    }
+    clearDropTarget();
+    activeDropTarget = element;
+    activeDropTarget?.classList.add("guest-drop-target");
+    activeDropTarget?.classList.toggle("guest-drop-invalid", invalid);
+}
+
+function dragDestinationAt(clientX, clientY, guestCount) {
+    const target = document.elementFromPoint(clientX, clientY);
+    const seat = target?.closest(".seating-seat");
+    const table = target?.closest(".seating-table");
+    const panel = target?.closest("#unseated-panel");
+    if (guestCount === 1 && seat) return { type: "seat", element: seat };
+    if (table) return { type: "table", element: table };
+    if (panel) return { type: "unseated", element: elements.unseatedPanel };
+    return null;
+}
+
+function startGuestDrag(event, sourceElement) {
+    if (event.button !== 0) return;
+    const guestId = Number(sourceElement.dataset.guestId);
+    if (!guestId || isGuestLocked(guestId)) return;
+    if (event.altKey) {
+        event.preventDefault();
+        if (selectedGuestIds.has(guestId)) selectedGuestIds.delete(guestId);
+        else selectedGuestIds.add(guestId);
+        syncSelectionClasses();
+        suppressSeatClick = true;
+        window.setTimeout(() => { suppressSeatClick = false; }, 0);
+        return;
+    }
+    if (!selectedGuestIds.has(guestId)) {
+        selectedGuestIds = new Set([guestId]);
+        syncSelectionClasses();
+    }
+    const draggedIds = [...selectedGuestIds].filter((id) => !isGuestLocked(id));
+    const startX = event.clientX;
+    const startY = event.clientY;
+    let dragging = false;
+    let preview = null;
+    sourceElement.setPointerCapture(event.pointerId);
+
+    const onMove = (moveEvent) => {
+        if (!dragging && Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY) < 5) return;
+        if (!dragging) {
+            dragging = true;
+            preview = document.createElement("div");
+            preview.className = "guest-drag-preview";
+            preview.textContent = draggedIds.length === 1
+                ? guestName(guestById(draggedIds[0]))
+                : `${draggedIds.length} guests`;
+            document.body.append(preview);
+        }
+        preview.style.left = `${moveEvent.clientX}px`;
+        preview.style.top = `${moveEvent.clientY}px`;
+        const destination = dragDestinationAt(moveEvent.clientX, moveEvent.clientY, draggedIds.length);
+        setDropTarget(destination?.element ?? null);
+    };
+    const onEnd = (upEvent) => {
+        sourceElement.removeEventListener("pointermove", onMove);
+        sourceElement.removeEventListener("pointerup", onEnd);
+        sourceElement.removeEventListener("pointercancel", onEnd);
+        preview?.remove();
+        clearDropTarget();
+        if (!dragging) return;
+        const destination = dragDestinationAt(upEvent.clientX, upEvent.clientY, draggedIds.length);
+        if (destination?.type === "seat") {
+            moveGuestsToSeat(
+                draggedIds,
+                destination.element.dataset.tableId,
+                Number(destination.element.dataset.seatNumber)
+            );
+        } else if (destination?.type === "table") {
+            moveGuestsToTable(draggedIds, destination.element.dataset.tableId);
+        } else if (destination?.type === "unseated") {
+            moveGuestsToUnseated(draggedIds);
+        }
+        selectedGuestIds.clear();
+        syncSelectionClasses();
+        suppressSeatClick = true;
+        window.setTimeout(() => { suppressSeatClick = false; }, 0);
+    };
+    sourceElement.addEventListener("pointermove", onMove);
+    sourceElement.addEventListener("pointerup", onEnd);
+    sourceElement.addEventListener("pointercancel", onEnd);
+}
+
+function startBoxSelection(event) {
+    if (event.button !== 0 || event.target.closest(".selectable-guest, .table-core")) return;
+    const insideSelectionArea = event.target.closest("#ballroom, #unseated-list");
+    if (!insideSelectionArea) return;
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startingSelection = event.altKey ? new Set(selectedGuestIds) : new Set();
+    if (!event.altKey) {
+        selectedGuestIds.clear();
+        syncSelectionClasses();
+    }
+    let box = null;
+
+    const onMove = (moveEvent) => {
+        if (!box && Math.hypot(moveEvent.clientX - startX, moveEvent.clientY - startY) < 4) return;
+        if (!box) {
+            box = document.createElement("div");
+            box.className = "guest-selection-box";
+            document.body.append(box);
+        }
+        const left = Math.min(startX, moveEvent.clientX);
+        const top = Math.min(startY, moveEvent.clientY);
+        const right = Math.max(startX, moveEvent.clientX);
+        const bottom = Math.max(startY, moveEvent.clientY);
+        box.style.left = `${left}px`;
+        box.style.top = `${top}px`;
+        box.style.width = `${right - left}px`;
+        box.style.height = `${bottom - top}px`;
+        selectedGuestIds = new Set(startingSelection);
+        document.querySelectorAll(".selectable-guest").forEach((candidate) => {
+            const guestId = Number(candidate.dataset.guestId);
+            const rect = candidate.getBoundingClientRect();
+            if (!isGuestLocked(guestId) && rect.right >= left && rect.left <= right &&
+                rect.bottom >= top && rect.top <= bottom) {
+                selectedGuestIds.add(guestId);
+            }
+        });
+        syncSelectionClasses();
+    };
+    const onEnd = () => {
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onEnd);
+        document.removeEventListener("pointercancel", onEnd);
+        box?.remove();
+    };
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onEnd);
+    document.addEventListener("pointercancel", onEnd);
+}
+
+function toggleUnseatedPanel() {
+    const collapsed = elements.workspace.classList.toggle("is-panel-collapsed");
+    elements.collapseUnseated.setAttribute("aria-expanded", String(!collapsed));
+    elements.collapseUnseated.setAttribute("aria-label", collapsed ? "Expand unseated guests" : "Collapse unseated guests");
+    localStorage.setItem("wedding-seating-panel-collapsed", String(collapsed));
+}
+
+function startPanelResize(event) {
+    if (event.button !== 0 || elements.workspace.classList.contains("is-panel-collapsed")) return;
+    const startX = event.clientX;
+    const startWidth = elements.unseatedPanel.getBoundingClientRect().width;
+    elements.unseatedResize.setPointerCapture(event.pointerId);
+    const onMove = (moveEvent) => {
+        const width = Math.max(230, Math.min(520, startWidth + moveEvent.clientX - startX));
+        elements.workspace.style.setProperty("--unseated-width", `${width}px`);
+    };
+    const onEnd = () => {
+        elements.unseatedResize.removeEventListener("pointermove", onMove);
+        elements.unseatedResize.removeEventListener("pointerup", onEnd);
+        elements.unseatedResize.removeEventListener("pointercancel", onEnd);
+        const width = Math.round(elements.unseatedPanel.getBoundingClientRect().width);
+        localStorage.setItem("wedding-seating-panel-width", String(width));
+    };
+    elements.unseatedResize.addEventListener("pointermove", onMove);
+    elements.unseatedResize.addEventListener("pointerup", onEnd);
+    elements.unseatedResize.addEventListener("pointercancel", onEnd);
+}
+
 function startDrag(event, tableElement) {
     if (event.target.closest(".table-delete")) return;
     const tableId = tableElement.dataset.tableId;
@@ -520,15 +840,24 @@ async function loadSeating() {
 }
 
 elements.tables.addEventListener("click", (event) => {
+    if (suppressSeatClick) return;
     const deleteButton = event.target.closest("[data-delete-table]");
     if (deleteButton) return deleteTable(deleteButton.dataset.deleteTable);
     const seat = event.target.closest(".seating-seat");
     if (seat) openSeatDialog(seat.dataset.tableId, Number(seat.dataset.seatNumber));
 });
 elements.tables.addEventListener("pointerdown", (event) => {
+    const guest = event.target.closest(".seating-seat[data-guest-id]");
+    if (guest) return startGuestDrag(event, guest);
     const core = event.target.closest(".table-core");
     if (core) startDrag(event, core.closest(".seating-table"));
 });
+elements.unseatedList.addEventListener("pointerdown", (event) => {
+    const guest = event.target.closest(".unseated-guest[data-guest-id]");
+    if (guest) startGuestDrag(event, guest);
+});
+elements.ballroom.addEventListener("pointerdown", startBoxSelection);
+elements.unseatedList.addEventListener("pointerdown", startBoxSelection);
 elements.options.addEventListener("click", (event) => {
     const option = event.target.closest("[data-guest-id]");
     if (option) assignGuest(Number(option.dataset.guestId));
@@ -544,16 +873,29 @@ elements.closeDialog.addEventListener("click", closeSeatDialog);
 elements.dialog.addEventListener("cancel", () => { activeSeat = null; });
 elements.clearSeat.addEventListener("click", clearActiveSeat);
 elements.toggleLock.addEventListener("click", toggleActiveLock);
+elements.confirmSeat.addEventListener("click", closeSeatDialog);
 elements.undo.addEventListener("click", undo);
 elements.redo.addEventListener("click", redo);
 elements.shuffle.addEventListener("click", shuffleGuests);
 elements.addTable.addEventListener("click", addTable);
 elements.export.addEventListener("click", exportCsv);
 elements.print.addEventListener("click", () => window.print());
+elements.collapseUnseated.addEventListener("click", toggleUnseatedPanel);
+elements.unseatedResize.addEventListener("pointerdown", startPanelResize);
 elements.refresh.addEventListener("click", () => {
     if (elements.saveStatus.dataset.state !== "saved" &&
         !window.confirm("Reload the last saved seating chart and discard unsaved changes?")) return;
     loadSeating();
 });
+
+const savedPanelWidth = Number(localStorage.getItem("wedding-seating-panel-width"));
+if (Number.isFinite(savedPanelWidth) && savedPanelWidth >= 230 && savedPanelWidth <= 520) {
+    elements.workspace.style.setProperty("--unseated-width", `${savedPanelWidth}px`);
+}
+if (localStorage.getItem("wedding-seating-panel-collapsed") === "true") {
+    elements.workspace.classList.add("is-panel-collapsed");
+    elements.collapseUnseated.setAttribute("aria-expanded", "false");
+    elements.collapseUnseated.setAttribute("aria-label", "Expand unseated guests");
+}
 
 loadSeating();
