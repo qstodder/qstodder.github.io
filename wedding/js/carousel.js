@@ -7,7 +7,7 @@
  * two middle photos at every viewport width.
  **************************************************************************/
 
-function initializeCarousel() {
+async function initializeCarousel() {
 
     const PHOTO_COUNT = 12;
     const PHOTO_PATH = "assets/photos/carousel/";
@@ -98,6 +98,28 @@ function initializeCarousel() {
         return img;
     }
 
+    function waitForPhoto(photo) {
+        if (photo.complete) {
+            return typeof photo.decode === "function"
+                ? photo.decode().catch(() => undefined)
+                : Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+            photo.addEventListener("load", resolve, { once: true });
+            photo.addEventListener("error", resolve, { once: true });
+        });
+    }
+
+    function warmCarouselCache() {
+        for (let index = 0; index < PHOTO_COUNT; index++) {
+            const photo = new Image();
+
+            photo.decoding = "async";
+            photo.src = photoUrl(index);
+        }
+    }
+
     function dimensions() {
         const styles = getComputedStyle(carousel);
         const photoWidth = parseFloat(styles.getPropertyValue("--carousel-photo-width"));
@@ -123,13 +145,17 @@ function initializeCarousel() {
     function buildCarousel() {
         const fragment = document.createDocumentFragment();
         const size = poolSize();
+        const photos = [];
 
         track.innerHTML = "";
         track.style.transition = "none";
         track.style.transform = "translateX(0)";
 
         for (let offset = 0; offset < size; offset++) {
-            fragment.appendChild(createPhoto((firstPhotoIndex + offset) % PHOTO_COUNT));
+            const photo = createPhoto((firstPhotoIndex + offset) % PHOTO_COUNT);
+
+            photos.push(photo);
+            fragment.appendChild(photo);
         }
 
         track.appendChild(fragment);
@@ -138,6 +164,8 @@ function initializeCarousel() {
         const { photoWidth, gap } = dimensions();
         stepWidth = photoWidth + gap;
         isAnimating = false;
+
+        return photos;
     }
 
     function scheduleNextSlide(delay = PAUSE_TIME) {
@@ -216,6 +244,9 @@ function initializeCarousel() {
 
     window.addEventListener("pagehide", saveCarouselState);
 
-    buildCarousel();
+    const initialPhotos = buildCarousel();
+
+    await Promise.all(initialPhotos.map(waitForPhoto));
+    warmCarouselCache();
     scheduleNextSlide(remaining);
 }

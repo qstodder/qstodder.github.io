@@ -6,7 +6,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         initializeNavigation();
 
-        initializeCarousel();
+        await initializeCarousel();
+
+        document.getElementById("header-placeholder")?.classList.add("header-ready");
 
     }
     catch (error) {

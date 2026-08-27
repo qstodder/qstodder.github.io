@@ -19,11 +19,11 @@
 }
 
 ::view-transition-old(wedding-header) {
-    animation: hold-shared-header 450ms both;
+    animation: hold-shared-header 700ms both;
 }
 
 ::view-transition-new(wedding-header) {
-    animation: conceal-loading-header 450ms both;
+    animation: conceal-loading-header 700ms both;
 }
 
 :root {
@@ -52,6 +52,10 @@ body {
     min-height: 672px;
     background: rgba(255, 255, 255, .82);
     view-transition-name: wedding-header;
+}
+
+#header-placeholder:not(.header-ready):not(.header-load-failed) .site-header {
+    visibility: hidden;
 }
 
 #header-placeholder + .main-stage {
