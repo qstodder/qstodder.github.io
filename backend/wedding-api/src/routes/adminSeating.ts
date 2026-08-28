@@ -194,7 +194,9 @@ export async function getAdminSeating(request: Request, env: Env): Promise<Respo
                     FROM seating_assignments ORDER BY table_id, seat_number
                 `).all<any>(),
                 env.wedding_rsvp_db.prepare(`
-                    SELECT g.id, g.first_name, g.last_name, h.household_name,
+                    SELECT g.id, g.first_name, g.last_name, g.household_id,
+                           g.generation, g.social_group, h.household_name,
+                           h.couple_side, h.relationship_type, h.family_side,
                            gr.attending_wedding, gr.updated_at AS rsvp_updated_at
                     FROM guests g
                     JOIN households h ON h.id = g.household_id
@@ -251,7 +253,15 @@ export async function getAdminSeating(request: Request, env: Env): Promise<Respo
                     id: guest.id,
                     firstName: guest.first_name,
                     lastName: guest.last_name,
+                    householdId: guest.household_id,
                     householdName: guest.household_name,
+                    generation: guest.generation,
+                    socialGroup: guest.social_group,
+                    classifications: {
+                        coupleSide: guest.couple_side,
+                        relationshipType: guest.relationship_type,
+                        familySide: guest.family_side
+                    },
                     rsvpStatus: !guest.rsvp_updated_at
                         ? "pending"
                         : guest.attending_wedding ? "yes" : "no",

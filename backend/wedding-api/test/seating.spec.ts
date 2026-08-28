@@ -33,6 +33,10 @@ describe("Admin seating chart", () => {
         });
         expect(result.guests.length).toBeGreaterThan(0);
         expect(result.guests[0]).toHaveProperty("householdName");
+        expect(result.guests[0]).toHaveProperty("householdId");
+        expect(result.guests[0]).toHaveProperty("generation");
+        expect(result.guests[0]).toHaveProperty("socialGroup");
+        expect(result.guests[0]).toHaveProperty("classifications");
         expect(result.guests[0]).toHaveProperty("rsvpStatus");
         expect(result.guests[0]).toHaveProperty("dietaryRestrictions");
     });

@@ -605,13 +605,15 @@ const adminSeatingPage = `<!DOCTYPE html>
                     <div class="seating-summary" aria-live="polite">
                         <strong id="seated-count">0 seated</strong>
                         <span id="unseated-count">0 attending unseated</span>
+                        <span id="compatibility-score">Compatibility —</span>
                         <span id="save-status">Saved</span>
                     </div>
                 </div>
                 <div class="seating-toolbar" aria-label="Seating chart actions">
                     <button id="undo-seating" class="secondary-button" type="button" disabled>Undo</button>
                     <button id="redo-seating" class="secondary-button" type="button" disabled>Redo</button>
-                    <button id="shuffle-seating" class="secondary-button" type="button">Shuffle attending + undetermined</button>
+                    <button id="shuffle-seating" class="address-save-button" type="button">Smart shuffle</button>
+                    <button id="random-shuffle-seating" class="secondary-button" type="button">Random shuffle</button>
                     <button id="clear-unlocked-seating" class="secondary-button" type="button">Clear unlocked</button>
                     <button id="clear-all-seating" class="danger-button" type="button">Clear all</button>
                     <button id="add-seating-table" class="secondary-button" type="button">Add table</button>

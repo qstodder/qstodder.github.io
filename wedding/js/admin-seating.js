@@ -14,6 +14,8 @@ const elements = {
     undo: document.querySelector("#undo-seating"),
     redo: document.querySelector("#redo-seating"),
     shuffle: document.querySelector("#shuffle-seating"),
+    randomShuffle: document.querySelector("#random-shuffle-seating"),
+    compatibilityScore: document.querySelector("#compatibility-score"),
     clearUnlocked: document.querySelector("#clear-unlocked-seating"),
     clearAll: document.querySelector("#clear-all-seating"),
     addTable: document.querySelector("#add-seating-table"),
@@ -126,6 +128,92 @@ function isGuestLocked(guestId) {
     return assignmentForGuest(guestId)?.locked === true;
 }
 
+const COMPATIBILITY_WEIGHTS = Object.freeze({
+    generationMatch: 55,
+    generationMismatch: -35,
+    socialGroupMatch: 35,
+    sameCoupleSide: 12,
+    matchingGroupAcrossSides: 10,
+    relationshipTypeMatch: 7,
+    familySideMatch: 6,
+    householdMatch: 8
+});
+
+function socialGroupParts(group) {
+    const match = String(group ?? "").match(/^([QS])_(.+)$/);
+    return match ? { side: match[1], group: match[2] } : null;
+}
+
+function compatibilityBetween(left, right) {
+    let score = 0;
+    if (left.generation && right.generation) {
+        score += left.generation === right.generation
+            ? COMPATIBILITY_WEIGHTS.generationMatch
+            : COMPATIBILITY_WEIGHTS.generationMismatch;
+    }
+
+    const leftGroup = socialGroupParts(left.socialGroup);
+    const rightGroup = socialGroupParts(right.socialGroup);
+    if (left.socialGroup && left.socialGroup === right.socialGroup) {
+        score += COMPATIBILITY_WEIGHTS.socialGroupMatch;
+    } else if (leftGroup && rightGroup) {
+        if (leftGroup.side === rightGroup.side) {
+            score += COMPATIBILITY_WEIGHTS.sameCoupleSide;
+        } else if (leftGroup.group === rightGroup.group) {
+            score += COMPATIBILITY_WEIGHTS.matchingGroupAcrossSides;
+        }
+    }
+
+    const leftClassifications = left.classifications ?? {};
+    const rightClassifications = right.classifications ?? {};
+    if (leftClassifications.relationshipType &&
+        leftClassifications.relationshipType === rightClassifications.relationshipType) {
+        score += COMPATIBILITY_WEIGHTS.relationshipTypeMatch;
+    }
+    if (leftClassifications.familySide &&
+        leftClassifications.familySide === rightClassifications.familySide) {
+        score += COMPATIBILITY_WEIGHTS.familySideMatch;
+    }
+    if (leftClassifications.coupleSide &&
+        leftClassifications.coupleSide === rightClassifications.coupleSide) {
+        score += COMPATIBILITY_WEIGHTS.sameCoupleSide / 3;
+    }
+    if (left.householdId && left.householdId === right.householdId) {
+        score += COMPATIBILITY_WEIGHTS.householdMatch;
+    }
+    return Math.max(0, Math.min(100, score));
+}
+
+function compatibilityForAssignments(assignments) {
+    const guestsByTable = new Map();
+    for (const assignment of assignments) {
+        const guest = guestById(assignment.guestId);
+        if (!guest) continue;
+        const guests = guestsByTable.get(assignment.tableId) ?? [];
+        guests.push(guest);
+        guestsByTable.set(assignment.tableId, guests);
+    }
+    let total = 0;
+    let pairs = 0;
+    for (const guests of guestsByTable.values()) {
+        for (let left = 0; left < guests.length; left += 1) {
+            for (let right = left + 1; right < guests.length; right += 1) {
+                total += compatibilityBetween(guests[left], guests[right]);
+                pairs += 1;
+            }
+        }
+    }
+    return pairs ? Math.round(total / pairs) : null;
+}
+
+function scoreLabel(score) {
+    if (score === null) return "Compatibility —";
+    if (score >= 80) return `Compatibility ${score} · Excellent`;
+    if (score >= 65) return `Compatibility ${score} · Strong`;
+    if (score >= 50) return `Compatibility ${score} · Mixed`;
+    return `Compatibility ${score} · Low`;
+}
+
 function statusLabel(status) {
     return status === "yes"
         ? "Attending"
@@ -226,6 +314,9 @@ function renderSummary() {
     );
     elements.seatedCount.textContent = `${state.assignments.length} seated`;
     elements.unseatedCount.textContent = `${eligibleUnseated.length} eligible unseated`;
+    elements.compatibilityScore.textContent = scoreLabel(
+        compatibilityForAssignments(state.assignments)
+    );
     elements.undo.disabled = history.length === 0;
     elements.redo.disabled = future.length === 0;
 }
@@ -422,7 +513,85 @@ function redo() {
     scheduleSave();
 }
 
-function shuffleGuests() {
+function availableShuffleData(eligibleGuests) {
+    const locked = state.assignments.filter((assignment) => assignment.locked);
+    const lockedGuestIds = new Set(locked.map((assignment) => assignment.guestId));
+    const occupied = new Set(locked.map((assignment) =>
+        `${assignment.tableId}:${assignment.seatNumber}`
+    ));
+    const seats = [...state.tables]
+        .sort((a, b) => a.tableNumber - b.tableNumber)
+        .flatMap((table) => Array.from({ length: table.seatCount }, (_, index) => ({
+            tableId: table.id,
+            seatNumber: index + 1
+        })))
+        .filter((seat) => !occupied.has(`${seat.tableId}:${seat.seatNumber}`));
+    return {
+        locked,
+        seats,
+        guests: eligibleGuests.filter((guest) => !lockedGuestIds.has(guest.id))
+    };
+}
+
+function shuffled(items) {
+    const result = [...items];
+    for (let index = result.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [result[index], result[randomIndex]] = [result[randomIndex], result[index]];
+    }
+    return result;
+}
+
+function buildSmartCandidate(locked, seats, guests) {
+    const openSeatsByTable = new Map();
+    for (const seat of seats) {
+        const openSeats = openSeatsByTable.get(seat.tableId) ?? [];
+        openSeats.push(seat);
+        openSeatsByTable.set(seat.tableId, openSeats);
+    }
+    const guestsByTable = new Map(state.tables.map((table) => [table.id, []]));
+    for (const assignment of locked) {
+        const guest = guestById(assignment.guestId);
+        if (guest) guestsByTable.get(assignment.tableId)?.push(guest);
+    }
+
+    const groupCounts = new Map();
+    for (const guest of guests) {
+        if (guest.socialGroup) {
+            groupCounts.set(guest.socialGroup, (groupCounts.get(guest.socialGroup) ?? 0) + 1);
+        }
+    }
+    const orderedGuests = shuffled(guests).sort((left, right) =>
+        (groupCounts.get(right.socialGroup) ?? 0) - (groupCounts.get(left.socialGroup) ?? 0)
+    );
+    const assignments = [...locked];
+    for (const guest of orderedGuests) {
+        const choices = [...openSeatsByTable.entries()]
+            .filter(([, openSeats]) => openSeats.length)
+            .map(([tableId, openSeats]) => {
+                const tableGuests = guestsByTable.get(tableId) ?? [];
+                const compatibility = tableGuests.length
+                    ? tableGuests.reduce((sum, seated) =>
+                        sum + compatibilityBetween(guest, seated), 0) / tableGuests.length
+                    : 32;
+                return { tableId, openSeats, score: compatibility + Math.random() * 5 };
+            })
+            .sort((left, right) => right.score - left.score);
+        if (!choices.length) break;
+        const choice = choices[0];
+        const seat = choice.openSeats.shift();
+        guestsByTable.get(choice.tableId)?.push(guest);
+        assignments.push({
+            guestId: guest.id,
+            tableId: choice.tableId,
+            seatNumber: seat.seatNumber,
+            locked: false
+        });
+    }
+    return assignments;
+}
+
+function smartShuffleGuests() {
     const eligibleGuests = state.guests.filter((guest) =>
         guest.rsvpStatus === "yes" || guest.rsvpStatus === "pending"
     );
@@ -430,29 +599,42 @@ function shuffleGuests() {
         window.alert("There are no attending or not-yet-responded guests to shuffle.");
         return;
     }
-    if (!window.confirm("Shuffle every unlocked attending and not-yet-responded guest into the available seats? Declined guests will be excluded, and locked guests will remain in place.")) return;
+    if (!window.confirm("Smart shuffle every unlocked attending and not-yet-responded guest? Generation and social groups will be prioritized, while locked guests remain in place.")) return;
     change(() => {
-        const locked = state.assignments.filter((assignment) => assignment.locked);
-        const lockedGuestIds = new Set(locked.map((assignment) => assignment.guestId));
-        const occupied = new Set(locked.map((assignment) => `${assignment.tableId}:${assignment.seatNumber}`));
-        const seats = [...state.tables]
-            .sort((a, b) => a.tableNumber - b.tableNumber)
-            .flatMap((table) => Array.from({ length: table.seatCount }, (_, index) => ({
-                tableId: table.id,
-                seatNumber: index + 1
-            })))
-            .filter((seat) => !occupied.has(`${seat.tableId}:${seat.seatNumber}`));
-        const guests = eligibleGuests.filter((guest) => !lockedGuestIds.has(guest.id));
-        for (let index = guests.length - 1; index > 0; index -= 1) {
-            const randomIndex = Math.floor(Math.random() * (index + 1));
-            [guests[index], guests[randomIndex]] = [guests[randomIndex], guests[index]];
+        const { locked, seats, guests } = availableShuffleData(eligibleGuests);
+        if (guests.length > seats.length) {
+            window.alert(`${guests.length - seats.length} eligible guests could not be seated. Add another table and shuffle again.`);
         }
+        let bestAssignments = locked;
+        let bestScore = -1;
+        const guestsToSeat = guests.slice(0, seats.length);
+        for (let attempt = 0; attempt < 300; attempt += 1) {
+            const candidate = buildSmartCandidate(locked, seats, guestsToSeat);
+            const score = compatibilityForAssignments(candidate) ?? 0;
+            if (score > bestScore) {
+                bestScore = score;
+                bestAssignments = candidate;
+            }
+        }
+        state.assignments = bestAssignments;
+    });
+}
+
+function randomShuffleGuests() {
+    const eligibleGuests = state.guests.filter((guest) => isEligibleGuest(guest));
+    if (!eligibleGuests.length) {
+        window.alert("There are no attending or not-yet-responded guests to shuffle.");
+        return;
+    }
+    if (!window.confirm("Randomly shuffle every unlocked eligible guest? Locked guests will remain in place.")) return;
+    change(() => {
+        const { locked, seats, guests } = availableShuffleData(eligibleGuests);
         if (guests.length > seats.length) {
             window.alert(`${guests.length - seats.length} eligible guests could not be seated. Add another table and shuffle again.`);
         }
         state.assignments = [
             ...locked,
-            ...guests.slice(0, seats.length).map((guest, index) => ({
+            ...shuffled(guests).slice(0, seats.length).map((guest, index) => ({
                 guestId: guest.id,
                 tableId: seats[index].tableId,
                 seatNumber: seats[index].seatNumber,
@@ -996,7 +1178,8 @@ elements.toggleLock.addEventListener("click", toggleActiveLock);
 elements.confirmSeat.addEventListener("click", closeSeatDialog);
 elements.undo.addEventListener("click", undo);
 elements.redo.addEventListener("click", redo);
-elements.shuffle.addEventListener("click", shuffleGuests);
+elements.shuffle.addEventListener("click", smartShuffleGuests);
+elements.randomShuffle.addEventListener("click", randomShuffleGuests);
 elements.clearUnlocked.addEventListener("click", clearUnlockedSeats);
 elements.clearAll.addEventListener("click", clearAllSeats);
 elements.addTable.addEventListener("click", addTable);
