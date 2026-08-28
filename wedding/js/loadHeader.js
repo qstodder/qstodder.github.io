@@ -13,6 +13,7 @@ async function loadHeader() {
         }
 
         placeholder.innerHTML = await response.text();
+        placeholder.classList.add("header-ready");
     }
     catch (error) {
         placeholder.classList.add("header-load-failed");

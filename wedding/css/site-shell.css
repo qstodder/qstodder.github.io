@@ -19,11 +19,11 @@
 }
 
 ::view-transition-old(wedding-header) {
-    animation: hold-shared-header 700ms both;
+    animation: hold-shared-header 450ms both;
 }
 
 ::view-transition-new(wedding-header) {
-    animation: conceal-loading-header 700ms both;
+    animation: conceal-loading-header 450ms both;
 }
 
 :root {
@@ -54,13 +54,18 @@ body {
     view-transition-name: wedding-header;
 }
 
-#header-placeholder:not(.header-ready):not(.header-load-failed) .carousel-track {
+#header-placeholder + .main-stage {
     visibility: hidden;
 }
 
 #header-placeholder.header-ready,
 #header-placeholder.header-load-failed {
     min-height: 0;
+}
+
+#header-placeholder.header-ready + .main-stage,
+#header-placeholder.header-load-failed + .main-stage {
+    visibility: visible;
 }
 
 body {
