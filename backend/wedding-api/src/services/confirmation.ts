@@ -8,9 +8,11 @@ interface ConfirmationGuest {
     lastName: string;
     invitedToWelcome: boolean;
     invitedToWedding: boolean;
+    invitedToReception: boolean;
     invitedToBrunch: boolean;
     attendingWelcome: boolean;
     attendingWedding: boolean;
+    attendingReception: boolean;
     attendingBrunch: boolean;
     dietaryRestrictions: string[];
 }
@@ -44,6 +46,14 @@ function attendanceText(
     return attending
         ? "Attending"
         : "Not attending";
+}
+
+function receptionInvitation(guest: ConfirmationGuest): boolean {
+    return guest.invitedToReception ?? guest.invitedToWedding;
+}
+
+function receptionAttendance(guest: ConfirmationGuest): boolean {
+    return guest.attendingReception ?? guest.attendingWedding;
 }
 
 async function getConfirmationDetails(
@@ -80,9 +90,11 @@ async function getConfirmationDetails(
                     g.email,
                     g.is_invited_to_welcome,
                     g.is_invited_to_wedding,
+                    g.is_invited_to_reception,
                     g.is_invited_to_brunch,
                     gr.attending_welcome,
                     gr.attending_wedding,
+                    gr.attending_reception,
                     gr.attending_brunch
                 FROM guests g
                 LEFT JOIN guest_rsvps gr
@@ -131,12 +143,16 @@ async function getConfirmationDetails(
                 Boolean(guest.is_invited_to_welcome),
             invitedToWedding:
                 Boolean(guest.is_invited_to_wedding),
+            invitedToReception:
+                Boolean(guest.is_invited_to_reception),
             invitedToBrunch:
                 Boolean(guest.is_invited_to_brunch),
             attendingWelcome:
                 Boolean(guest.attending_welcome),
             attendingWedding:
                 Boolean(guest.attending_wedding),
+            attendingReception:
+                Boolean(guest.attending_reception),
             attendingBrunch:
                 Boolean(guest.attending_brunch),
             dietaryRestrictions:
@@ -190,16 +206,20 @@ export function buildConfirmationEmail(
                 guest.invitedToWelcome,
                 guest.attendingWelcome
             )}`,
-            `  Wedding: ${attendanceText(
+            `  Ceremony: ${attendanceText(
                 guest.invitedToWedding,
                 guest.attendingWedding
+            )}`,
+            `  Reception: ${attendanceText(
+                receptionInvitation(guest),
+                receptionAttendance(guest)
             )}`,
             `  Morning-After Brunch: ${attendanceText(
                 guest.invitedToBrunch,
                 guest.attendingBrunch
             )}`,
             `  Dietary restrictions: ${
-                guest.attendingWedding
+                receptionAttendance(guest)
                     ? guest.dietaryRestrictions.join(", ") || "None"
                     : "Not applicable"
             }`
@@ -221,10 +241,17 @@ export function buildConfirmationEmail(
                     )}
                 </p>
                 <p style="margin: 4px 0;">
-                    <strong>Wedding:</strong>
+                    <strong>Ceremony:</strong>
                     ${attendanceText(
                         guest.invitedToWedding,
                         guest.attendingWedding
+                    )}
+                </p>
+                <p style="margin: 4px 0;">
+                    <strong>Reception:</strong>
+                    ${attendanceText(
+                        receptionInvitation(guest),
+                        receptionAttendance(guest)
                     )}
                 </p>
                 <p style="margin: 4px 0;">
@@ -237,7 +264,7 @@ export function buildConfirmationEmail(
                 <p style="margin: 4px 0;">
                     <strong>Dietary restrictions:</strong>
                     ${escapeHtml(
-                        guest.attendingWedding
+                        receptionAttendance(guest)
                             ? guest.dietaryRestrictions.join(", ") || "None"
                             : "Not applicable"
                     )}

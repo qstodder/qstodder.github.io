@@ -16,6 +16,11 @@ const elements = {
     shuffle: document.querySelector("#shuffle-seating"),
     randomShuffle: document.querySelector("#random-shuffle-seating"),
     compatibilityScore: document.querySelector("#compatibility-score"),
+    editWeights: document.querySelector("#edit-compatibility-weights"),
+    weightsDialog: document.querySelector("#weights-dialog"),
+    weightsForm: document.querySelector("#weights-form"),
+    closeWeights: document.querySelector("#close-weights-dialog"),
+    resetWeights: document.querySelector("#reset-compatibility-weights"),
     clearUnlocked: document.querySelector("#clear-unlocked-seating"),
     clearAll: document.querySelector("#clear-all-seating"),
     addTable: document.querySelector("#add-seating-table"),
@@ -128,9 +133,9 @@ function isGuestLocked(guestId) {
     return assignmentForGuest(guestId)?.locked === true;
 }
 
-const COMPATIBILITY_WEIGHTS = Object.freeze({
+const DEFAULT_COMPATIBILITY_WEIGHTS = Object.freeze({
     generationMatch: 55,
-    generationMismatch: -35,
+    generationMismatch: 35,
     socialGroupMatch: 35,
     sameCoupleSide: 12,
     matchingGroupAcrossSides: 10,
@@ -138,6 +143,13 @@ const COMPATIBILITY_WEIGHTS = Object.freeze({
     familySideMatch: 6,
     householdMatch: 8
 });
+let compatibilityWeights = (() => {
+    try {
+        return { ...DEFAULT_COMPATIBILITY_WEIGHTS, ...JSON.parse(localStorage.getItem("wedding-seating-compatibility-weights") ?? "{}") };
+    } catch {
+        return { ...DEFAULT_COMPATIBILITY_WEIGHTS };
+    }
+})();
 
 function socialGroupParts(group) {
     const match = String(group ?? "").match(/^([QS])_(.+)$/);
@@ -148,19 +160,19 @@ function compatibilityBetween(left, right) {
     let score = 0;
     if (left.generation && right.generation) {
         score += left.generation === right.generation
-            ? COMPATIBILITY_WEIGHTS.generationMatch
-            : COMPATIBILITY_WEIGHTS.generationMismatch;
+            ? compatibilityWeights.generationMatch
+            : -compatibilityWeights.generationMismatch;
     }
 
     const leftGroup = socialGroupParts(left.socialGroup);
     const rightGroup = socialGroupParts(right.socialGroup);
     if (left.socialGroup && left.socialGroup === right.socialGroup) {
-        score += COMPATIBILITY_WEIGHTS.socialGroupMatch;
+        score += compatibilityWeights.socialGroupMatch;
     } else if (leftGroup && rightGroup) {
         if (leftGroup.side === rightGroup.side) {
-            score += COMPATIBILITY_WEIGHTS.sameCoupleSide;
+            score += compatibilityWeights.sameCoupleSide;
         } else if (leftGroup.group === rightGroup.group) {
-            score += COMPATIBILITY_WEIGHTS.matchingGroupAcrossSides;
+            score += compatibilityWeights.matchingGroupAcrossSides;
         }
     }
 
@@ -168,18 +180,18 @@ function compatibilityBetween(left, right) {
     const rightClassifications = right.classifications ?? {};
     if (leftClassifications.relationshipType &&
         leftClassifications.relationshipType === rightClassifications.relationshipType) {
-        score += COMPATIBILITY_WEIGHTS.relationshipTypeMatch;
+        score += compatibilityWeights.relationshipTypeMatch;
     }
     if (leftClassifications.familySide &&
         leftClassifications.familySide === rightClassifications.familySide) {
-        score += COMPATIBILITY_WEIGHTS.familySideMatch;
+        score += compatibilityWeights.familySideMatch;
     }
     if (leftClassifications.coupleSide &&
         leftClassifications.coupleSide === rightClassifications.coupleSide) {
-        score += COMPATIBILITY_WEIGHTS.sameCoupleSide / 3;
+        score += compatibilityWeights.sameCoupleSide / 3;
     }
     if (left.householdId && left.householdId === right.householdId) {
-        score += COMPATIBILITY_WEIGHTS.householdMatch;
+        score += compatibilityWeights.householdMatch;
     }
     return Math.max(0, Math.min(100, score));
 }
@@ -212,6 +224,34 @@ function scoreLabel(score) {
     if (score >= 65) return `Compatibility ${score} · Strong`;
     if (score >= 50) return `Compatibility ${score} · Mixed`;
     return `Compatibility ${score} · Low`;
+}
+
+function fillWeightsForm(weights = compatibilityWeights) {
+    for (const [name, value] of Object.entries(weights)) {
+        if (elements.weightsForm.elements[name]) {
+            elements.weightsForm.elements[name].value = value;
+        }
+    }
+}
+
+function openWeightsDialog() {
+    fillWeightsForm();
+    elements.weightsDialog.showModal();
+}
+
+function saveWeights(event) {
+    event.preventDefault();
+    if (!elements.weightsForm.reportValidity()) return;
+    const data = new FormData(elements.weightsForm);
+    compatibilityWeights = Object.fromEntries(
+        Object.keys(DEFAULT_COMPATIBILITY_WEIGHTS).map((name) => [name, Number(data.get(name))])
+    );
+    localStorage.setItem(
+        "wedding-seating-compatibility-weights",
+        JSON.stringify(compatibilityWeights)
+    );
+    elements.weightsDialog.close();
+    renderSummary();
 }
 
 function statusLabel(status) {
@@ -1180,6 +1220,10 @@ elements.undo.addEventListener("click", undo);
 elements.redo.addEventListener("click", redo);
 elements.shuffle.addEventListener("click", smartShuffleGuests);
 elements.randomShuffle.addEventListener("click", randomShuffleGuests);
+elements.editWeights.addEventListener("click", openWeightsDialog);
+elements.closeWeights.addEventListener("click", () => elements.weightsDialog.close());
+elements.resetWeights.addEventListener("click", () => fillWeightsForm(DEFAULT_COMPATIBILITY_WEIGHTS));
+elements.weightsForm.addEventListener("submit", saveWeights);
 elements.clearUnlocked.addEventListener("click", clearUnlockedSeats);
 elements.clearAll.addEventListener("click", clearAllSeats);
 elements.addTable.addEventListener("click", addTable);

@@ -477,8 +477,10 @@ describe("Admin household detail editing", () => {
                 firstName: "Sanne",
                 lastName: "de Jansen",
                 householdId,
-                invitations: { welcome: true, wedding: true, brunch: false },
-                rsvp: { welcome: true, wedding: true, brunch: false },
+                generation: "XM",
+                socialGroup: "Q_C",
+                invitations: { welcome: true, wedding: true, reception: true, brunch: false },
+                rsvp: { welcome: true, wedding: true, reception: true, brunch: false },
                 dietaryRestrictionIds: [1],
                 dietaryNotes: null
             }),
@@ -486,6 +488,15 @@ describe("Admin household detail editing", () => {
             guestId
         );
         expect(updateResponse.status, await updateResponse.clone().text()).toBe(200);
+
+        const storedGuest = await env.wedding_rsvp_db.prepare(
+            "SELECT generation, social_group, is_invited_to_reception FROM guests WHERE id = ?1"
+        ).bind(guestId).first();
+        expect(storedGuest).toEqual({
+            generation: "XM",
+            social_group: "Q_C",
+            is_invited_to_reception: 1
+        });
 
         const archiveResponse = await archiveAdminGuest(
             adminRequest(`/api/admin/guests/${guestId}`, "DELETE"),
@@ -612,6 +623,7 @@ describe("Public RSVP persistence", () => {
                 guestId,
                 attendingWelcome: true,
                 attendingWedding: true,
+                attendingReception: true,
                 attendingBrunch: false
             }],
             guestDietary: [{
@@ -660,6 +672,10 @@ describe("Public RSVP persistence", () => {
             { restriction_id: 1, notes: null },
             { restriction_id: 4, notes: "Allergic to walnuts" }
         ]);
+        const reception = await env.wedding_rsvp_db.prepare(
+            "SELECT attending_reception FROM guest_rsvps WHERE guest_id = ?1"
+        ).bind(guestId).first();
+        expect(reception).toEqual({ attending_reception: 1 });
     });
 
     it("rejects guest responses from another household", async () => {

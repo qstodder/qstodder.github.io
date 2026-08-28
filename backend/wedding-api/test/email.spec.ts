@@ -27,9 +27,11 @@ const confirmation: ConfirmationDetails = {
             lastName: "Stodder",
             invitedToWelcome: true,
             invitedToWedding: true,
+            invitedToReception: true,
             invitedToBrunch: true,
             attendingWelcome: true,
             attendingWedding: true,
+            attendingReception: true,
             attendingBrunch: false,
             dietaryRestrictions: [
                 "Vegetarian",
@@ -87,6 +89,7 @@ describe("RSVP confirmation email", () => {
         expect(email.text).toContain(
             "Morning-After Brunch: Not attending"
         );
+        expect(email.text).toContain("Reception: Attending");
         expect(email.text).toContain(
             "Vegetarian, Other: nut allergy"
         );

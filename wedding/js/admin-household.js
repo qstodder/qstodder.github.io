@@ -118,18 +118,22 @@ function renderGuest(guest) {
                 <label class="address-field"><span>First name</span><input name="firstName" value="${escapeAttribute(guest.firstName)}" maxlength="100" required></label>
                 <label class="address-field"><span>Last name</span><input name="lastName" value="${escapeAttribute(guest.lastName)}" maxlength="100"></label>
                 <label class="address-field"><span>Email</span><input name="email" type="email" value="${escapeAttribute(guest.email ?? "")}" maxlength="254" autocomplete="email"></label>
+                <label class="address-field"><span>Generation</span><select name="generation"><option value="">Not set</option><option value="Y" ${guest.generation === "Y" ? "selected" : ""}>Y</option><option value="XM" ${guest.generation === "XM" ? "selected" : ""}>XM</option></select></label>
+                <label class="address-field"><span>Social group</span><select name="socialGroup"><option value="">Not set</option>${["Q_FM", "Q_FD", "Q_A", "Q_B", "Q_C", "Q_D", "S_FM", "S_FD", "S_A", "S_B", "S_C", "S_D"].map((group) => `<option value="${group}" ${guest.socialGroup === group ? "selected" : ""}>${group}</option>`).join("")}</select></label>
                 <label class="address-field detail-field-wide"><span>Household</span><select name="householdId">${householdOptions}</select></label>
             </div>
             <fieldset class="guest-fieldset"><legend>Invited to</legend><div class="guest-options">
                 ${invitationCheckbox("inviteWelcome", "Welcome gathering", guest.invitations.welcome)}
-                ${invitationCheckbox("inviteWedding", "Wedding", guest.invitations.wedding)}
+                ${invitationCheckbox("inviteWedding", "Ceremony", guest.invitations.wedding)}
+                ${invitationCheckbox("inviteReception", "Reception", guest.invitations.reception)}
                 ${invitationCheckbox("inviteBrunch", "Morning-after brunch", guest.invitations.brunch)}
             </div></fieldset>
             <fieldset class="guest-fieldset"><legend>RSVP response</legend><div class="detail-form-grid guest-rsvp-grid">
                 ${rsvpSelect("rsvpWelcome", "Welcome", guest.rsvp?.welcome, Boolean(guest.rsvp))}
-                ${rsvpSelect("rsvpWedding", "Wedding", guest.rsvp?.wedding, Boolean(guest.rsvp))}
+                ${rsvpSelect("rsvpWedding", "Ceremony", guest.rsvp?.wedding, Boolean(guest.rsvp))}
+                ${rsvpSelect("rsvpReception", "Reception", guest.rsvp?.reception, Boolean(guest.rsvp))}
                 ${rsvpSelect("rsvpBrunch", "Brunch", guest.rsvp?.brunch, Boolean(guest.rsvp))}
-            </div><p class="field-help">Choose “Not recorded” for all three to clear this guest’s RSVP.</p></fieldset>
+            </div><p class="field-help">Choose “Not recorded” for all four to clear this guest’s RSVP.</p></fieldset>
             <fieldset class="guest-fieldset"><legend>Dietary preferences</legend><div class="guest-options">${restrictionOptions}</div>
                 <label class="address-field"><span>Additional dietary details</span><textarea name="dietaryNotes" rows="2" maxlength="1000">${escapeHtml(guest.dietaryNotes ?? "")}</textarea></label>
             </fieldset>
@@ -152,11 +156,11 @@ function renderGuests() {
 
 function guestPayload(form) {
     const formData = new FormData(form);
-    const rsvpValues = ["rsvpWelcome", "rsvpWedding", "rsvpBrunch"]
+    const rsvpValues = ["rsvpWelcome", "rsvpWedding", "rsvpReception", "rsvpBrunch"]
         .map((name) => formData.get(name));
     const hasRsvp = rsvpValues.some((answer) => answer !== "none");
     if (hasRsvp && rsvpValues.some((answer) => answer === "none")) {
-        throw new Error("Record all three RSVP answers, or set all three to Not recorded.");
+        throw new Error("Record all four RSVP answers, or set all four to Not recorded.");
     }
     const dietaryRestrictionIds = formData
         .getAll("dietaryRestrictionIds")
@@ -178,14 +182,18 @@ function guestPayload(form) {
         lastName: formData.get("lastName"),
         email: formData.get("email"),
         householdId: Number(formData.get("householdId")),
+        generation: formData.get("generation"),
+        socialGroup: formData.get("socialGroup"),
         invitations: {
             welcome: formData.has("inviteWelcome"),
             wedding: formData.has("inviteWedding"),
+            reception: formData.has("inviteReception"),
             brunch: formData.has("inviteBrunch")
         },
         rsvp: hasRsvp ? {
             welcome: formData.get("rsvpWelcome") === "yes",
             wedding: formData.get("rsvpWedding") === "yes",
+            reception: formData.get("rsvpReception") === "yes",
             brunch: formData.get("rsvpBrunch") === "yes"
         } : null,
         dietaryRestrictionIds,

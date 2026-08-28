@@ -614,6 +614,7 @@ const adminSeatingPage = `<!DOCTYPE html>
                     <button id="redo-seating" class="secondary-button" type="button" disabled>Redo</button>
                     <button id="shuffle-seating" class="address-save-button" type="button">Smart shuffle</button>
                     <button id="random-shuffle-seating" class="secondary-button" type="button">Random shuffle</button>
+                    <button id="edit-compatibility-weights" class="secondary-button" type="button">Edit weights</button>
                     <button id="clear-unlocked-seating" class="secondary-button" type="button">Clear unlocked</button>
                     <button id="clear-all-seating" class="danger-button" type="button">Clear all</button>
                     <button id="add-seating-table" class="secondary-button" type="button">Add table</button>
@@ -670,6 +671,26 @@ const adminSeatingPage = `<!DOCTYPE html>
                 <button id="toggle-seat-lock" class="secondary-button seat-dialog-button" type="button">Lock guest</button>
                 <button id="confirm-seat" class="secondary-button seat-dialog-button" type="button">Enter</button>
             </div>
+        </form>
+    </dialog>
+    <dialog id="weights-dialog" class="seat-dialog">
+        <form id="weights-form">
+            <div class="seat-dialog-heading">
+                <div><p class="admin-eyebrow">Smart shuffle</p><h2>Edit compatibility weights</h2></div>
+                <button id="close-weights-dialog" class="dialog-close" type="button" aria-label="Close">×</button>
+            </div>
+            <p class="field-help">Higher numbers have more influence. A generation mismatch is entered as a penalty.</p>
+            <div class="detail-form-grid">
+                <label class="address-field"><span>Generation match</span><input name="generationMatch" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Generation mismatch penalty</span><input name="generationMismatch" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Exact social group</span><input name="socialGroupMatch" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Same Quiana/Scott side</span><input name="sameCoupleSide" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Matching cross-side group</span><input name="matchingGroupAcrossSides" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Relationship type</span><input name="relationshipTypeMatch" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Family side</span><input name="familySideMatch" type="number" min="0" max="100" required></label>
+                <label class="address-field"><span>Same household</span><input name="householdMatch" type="number" min="0" max="100" required></label>
+            </div>
+            <div class="seat-dialog-actions"><button id="reset-compatibility-weights" class="secondary-button" type="button">Reset defaults</button><button class="address-save-button" type="submit">Apply weights</button></div>
         </form>
     </dialog>
     <div id="selection-menu" class="selection-menu hidden" role="menu" aria-label="Selected guest actions">

@@ -25,6 +25,7 @@ export interface GuestRsvp {
     guestId: number;
     attendingWelcome: boolean;
     attendingWedding: boolean;
+    attendingReception: boolean;
     attendingBrunch: boolean;
 }
 
@@ -49,6 +50,7 @@ interface GuestRow {
     id: number;
     is_invited_to_welcome: number;
     is_invited_to_wedding: number;
+    is_invited_to_reception: number;
     is_invited_to_brunch: number;
 }
 
@@ -123,7 +125,8 @@ export async function saveCompleteRsvp(
         `).bind(householdId).first<HouseholdRow>(),
         env.wedding_rsvp_db.prepare(`
             SELECT id, is_invited_to_welcome,
-                is_invited_to_wedding, is_invited_to_brunch
+                is_invited_to_wedding, is_invited_to_reception,
+                is_invited_to_brunch
             FROM guests
             WHERE household_id = ?1 AND archived_at IS NULL
             ORDER BY id
@@ -250,12 +253,17 @@ export async function saveCompleteRsvp(
             response.attendingWedding,
             "Wedding response"
         );
+        response.attendingReception = boolean(
+            response.attendingReception ?? response.attendingWedding,
+            "Reception response"
+        );
         response.attendingBrunch = boolean(
             response.attendingBrunch,
             "Brunch response"
         );
         if ((response.attendingWelcome && !guest.is_invited_to_welcome) ||
             (response.attendingWedding && !guest.is_invited_to_wedding) ||
+            (response.attendingReception && !guest.is_invited_to_reception) ||
             (response.attendingBrunch && !guest.is_invited_to_brunch)) {
             throw new RsvpValidationError(
                 "An attendance response does not match the invitation."
@@ -267,7 +275,7 @@ export async function saveCompleteRsvp(
             dietaryResponse.restrictionIds,
             "Dietary restrictions"
         );
-        if (!response.attendingWedding &&
+        if (!response.attendingReception &&
             dietaryResponse.restrictionIds.length > 0) {
             throw new RsvpValidationError(
                 "Dietary selections are only accepted for wedding attendees."
@@ -317,17 +325,19 @@ export async function saveCompleteRsvp(
         statements.push(env.wedding_rsvp_db.prepare(`
             INSERT INTO guest_rsvps (
                 guest_id, attending_welcome, attending_wedding,
-                attending_brunch, updated_at
-            ) VALUES (?1, ?2, ?3, ?4, CURRENT_TIMESTAMP)
+                attending_reception, attending_brunch, updated_at
+            ) VALUES (?1, ?2, ?3, ?4, ?5, CURRENT_TIMESTAMP)
             ON CONFLICT(guest_id) DO UPDATE SET
                 attending_welcome = excluded.attending_welcome,
                 attending_wedding = excluded.attending_wedding,
+                attending_reception = excluded.attending_reception,
                 attending_brunch = excluded.attending_brunch,
                 updated_at = CURRENT_TIMESTAMP
         `).bind(
             guest.id,
             response.attendingWelcome ? 1 : 0,
             response.attendingWedding ? 1 : 0,
+            response.attendingReception ? 1 : 0,
             response.attendingBrunch ? 1 : 0
         ));
 

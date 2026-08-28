@@ -74,10 +74,12 @@ export async function getRsvpRoute(
                     g.email,
                     g.is_invited_to_welcome,
                     g.is_invited_to_wedding,
+                    g.is_invited_to_reception,
                     g.is_invited_to_brunch,
 
                     gr.attending_welcome,
                     gr.attending_wedding,
+                    gr.attending_reception,
                     gr.attending_brunch
 
                 FROM guests g
@@ -211,6 +213,10 @@ export async function getRsvpRoute(
                         Boolean(
                             guest.is_invited_to_wedding
                         ),
+                    isInvitedToReception:
+                        Boolean(
+                            guest.is_invited_to_reception
+                        ),
 
                     isInvitedToBrunch:
                         Boolean(
@@ -227,6 +233,10 @@ export async function getRsvpRoute(
                         wedding:
                             attendanceValue(
                                 guest.attending_wedding
+                            ),
+                        reception:
+                            attendanceValue(
+                                guest.attending_reception
                             ),
 
                         brunch:

@@ -197,7 +197,7 @@ export async function getAdminSeating(request: Request, env: Env): Promise<Respo
                     SELECT g.id, g.first_name, g.last_name, g.household_id,
                            g.generation, g.social_group, h.household_name,
                            h.couple_side, h.relationship_type, h.family_side,
-                           gr.attending_wedding, gr.updated_at AS rsvp_updated_at
+                           gr.attending_reception, gr.updated_at AS rsvp_updated_at
                     FROM guests g
                     JOIN households h ON h.id = g.household_id
                     LEFT JOIN guest_rsvps gr ON gr.guest_id = g.id
@@ -264,7 +264,7 @@ export async function getAdminSeating(request: Request, env: Env): Promise<Respo
                     },
                     rsvpStatus: !guest.rsvp_updated_at
                         ? "pending"
-                        : guest.attending_wedding ? "yes" : "no",
+                        : guest.attending_reception ? "yes" : "no",
                     dietaryRestrictions: dietary
                         .filter((item) => item.name !== "Other")
                         .map((item) => item.name),

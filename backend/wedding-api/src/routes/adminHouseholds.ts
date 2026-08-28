@@ -30,11 +30,15 @@ interface GuestRow {
     first_name: string;
     last_name: string;
     email: string | null;
+    generation: string | null;
+    social_group: string | null;
     is_invited_to_welcome: number;
     is_invited_to_wedding: number;
+    is_invited_to_reception: number;
     is_invited_to_brunch: number;
     attending_welcome: number | null;
     attending_wedding: number | null;
+    attending_reception: number | null;
     attending_brunch: number | null;
     rsvp_updated_at: string | null;
 }
@@ -227,11 +231,14 @@ export async function getAdminHousehold(
             await Promise.all([
                 env.wedding_rsvp_db.prepare(`
                     SELECT g.id, g.household_id, g.first_name, g.last_name, g.email,
+                        g.generation, g.social_group,
                         g.is_invited_to_welcome,
                         g.is_invited_to_wedding,
+                        g.is_invited_to_reception,
                         g.is_invited_to_brunch,
                         gr.attending_welcome,
                         gr.attending_wedding,
+                        gr.attending_reception,
                         gr.attending_brunch,
                         gr.updated_at AS rsvp_updated_at
                     FROM guests g
@@ -278,14 +285,18 @@ export async function getAdminHousehold(
                     firstName: guest.first_name,
                     lastName: guest.last_name,
                     email: guest.email,
+                    generation: guest.generation,
+                    socialGroup: guest.social_group,
                     invitations: {
                         welcome: Boolean(guest.is_invited_to_welcome),
                         wedding: Boolean(guest.is_invited_to_wedding),
+                        reception: Boolean(guest.is_invited_to_reception),
                         brunch: Boolean(guest.is_invited_to_brunch)
                     },
                     rsvp: guest.rsvp_updated_at ? {
                         welcome: Boolean(guest.attending_welcome),
                         wedding: Boolean(guest.attending_wedding),
+                        reception: Boolean(guest.attending_reception),
                         brunch: Boolean(guest.attending_brunch),
                         updatedAt: guest.rsvp_updated_at
                     } : null,
@@ -472,8 +483,17 @@ function guestFields(input: Record<string, unknown>) {
         lastName: text(input.lastName, "Last name", 100) ?? "",
         email: normalizeGuestEmail(input.email, "Guest email"),
         householdId: Number(input.householdId),
+        generation: classificationChoice(input.generation, "Generation", ["Y", "XM"]),
+        socialGroup: classificationChoice(input.socialGroup, "Social group", [
+            "Q_FM", "Q_FD", "Q_A", "Q_B", "Q_C", "Q_D",
+            "S_FM", "S_FD", "S_A", "S_B", "S_C", "S_D"
+        ]),
         welcome: boolean(invitations?.welcome, "Welcome invitation"),
         wedding: boolean(invitations?.wedding, "Wedding invitation"),
+        reception: boolean(
+            invitations?.reception ?? invitations?.wedding,
+            "Reception invitation"
+        ),
         brunch: boolean(invitations?.brunch, "Brunch invitation")
     };
 }
@@ -494,6 +514,7 @@ export async function createAdminGuest(
                 invitations: input.invitations ?? {
                     welcome: true,
                     wedding: true,
+                    reception: true,
                     brunch: true
                 }
             });
@@ -512,13 +533,15 @@ export async function createAdminGuest(
             INSERT INTO guests (
                 household_id, first_name, last_name, email,
                 is_invited_to_welcome, is_invited_to_wedding,
-                is_invited_to_brunch
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+                is_invited_to_reception, is_invited_to_brunch,
+                generation, social_group
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
         `).bind(
             householdId, guest.firstName, guest.lastName, guest.email,
             guest.welcome ? 1 : 0,
             guest.wedding ? 1 : 0,
-            guest.brunch ? 1 : 0
+            guest.reception ? 1 : 0, guest.brunch ? 1 : 0,
+            guest.generation, guest.socialGroup
         ).run();
         await syncHouseholdEmailStatement(env.wedding_rsvp_db, householdId).run();
         return json(request, {
@@ -560,6 +583,7 @@ export async function updateAdminGuest(
             if (rsvp) {
                 boolean(rsvp.welcome, "Welcome RSVP");
                 boolean(rsvp.wedding, "Wedding RSVP");
+                boolean(rsvp.reception ?? rsvp.wedding, "Reception RSVP");
                 boolean(rsvp.brunch, "Brunch RSVP");
             }
         } catch (error) {
@@ -583,27 +607,32 @@ export async function updateAdminGuest(
             env.wedding_rsvp_db.prepare(`
                 UPDATE guests SET household_id = ?1, first_name = ?2,
                     last_name = ?3, email = ?4, is_invited_to_welcome = ?5,
-                    is_invited_to_wedding = ?6, is_invited_to_brunch = ?7
-                WHERE id = ?8 AND archived_at IS NULL
+                    is_invited_to_wedding = ?6, is_invited_to_reception = ?7,
+                    is_invited_to_brunch = ?8, generation = ?9, social_group = ?10
+                WHERE id = ?11 AND archived_at IS NULL
             `).bind(
                 guest.householdId, guest.firstName, guest.lastName, guest.email,
                 guest.welcome ? 1 : 0, guest.wedding ? 1 : 0,
-                guest.brunch ? 1 : 0, guestId
+                guest.reception ? 1 : 0, guest.brunch ? 1 : 0,
+                guest.generation, guest.socialGroup, guestId
             ),
             rsvp
                 ? env.wedding_rsvp_db.prepare(`
                     INSERT INTO guest_rsvps (
                         guest_id, attending_welcome, attending_wedding,
-                        attending_brunch, updated_at
-                    ) VALUES (?1, ?2, ?3, ?4, CURRENT_TIMESTAMP)
+                        attending_reception, attending_brunch, updated_at
+                    ) VALUES (?1, ?2, ?3, ?4, ?5, CURRENT_TIMESTAMP)
                     ON CONFLICT(guest_id) DO UPDATE SET
                         attending_welcome = excluded.attending_welcome,
                         attending_wedding = excluded.attending_wedding,
+                        attending_reception = excluded.attending_reception,
                         attending_brunch = excluded.attending_brunch,
                         updated_at = CURRENT_TIMESTAMP
                 `).bind(
                     guestId, rsvp.welcome ? 1 : 0,
-                    rsvp.wedding ? 1 : 0, rsvp.brunch ? 1 : 0
+                    rsvp.wedding ? 1 : 0,
+                    (rsvp.reception ?? rsvp.wedding) ? 1 : 0,
+                    rsvp.brunch ? 1 : 0
                 )
                 : env.wedding_rsvp_db.prepare(
                     "DELETE FROM guest_rsvps WHERE guest_id = ?1"
