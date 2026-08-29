@@ -1,16 +1,8 @@
-const paymentOptions = document.querySelectorAll(".payment-options");
-const dialog = document.getElementById("payment-dialog");
-const dialogTitle = document.getElementById("payment-dialog-title");
-const dialogFund = document.getElementById("payment-dialog-fund");
-const dialogCopy = document.getElementById("payment-dialog-copy");
-const dialogIcon = document.getElementById("payment-dialog-icon");
-const dialogActions = document.getElementById("payment-dialog-actions");
-
-const methods = {
+const registryMethods = {
     venmo: {
         name: "Venmo",
         logo: '<span class="payment-logo venmo" aria-hidden="true">V</span>',
-        copy: ({ emoji }) => `
+        copy: () => `
             <p>You’ll be taken to Quiana’s Venmo profile at <strong>@quiana-stodder</strong>.</p>
             <p>Please indicate which fund you’re contributing to!</p>
         `,
@@ -28,42 +20,47 @@ const methods = {
     }
 };
 
-const buttonMarkup = Object.entries(methods).map(([key, method]) => `
+const registryButtonMarkup = Object.entries(registryMethods).map(([key, method]) => `
     <button class="payment-button" type="button" data-method="${key}" aria-label="${method.name} payment information">
         ${method.logo}
     </button>
 `).join("");
 
-for (const container of paymentOptions) {
-    container.innerHTML = buttonMarkup;
+function closeRegistryDialog() {
+    document.getElementById("payment-dialog")?.close();
 }
 
-function closeDialog() {
-    dialog.close();
-}
-
-function openDialog(button) {
+function openRegistryDialog(button) {
     const card = button.closest(".fund-card");
-    const method = methods[button.dataset.method];
-    const fund = {
-        name: card.dataset.fundName,
-        emoji: card.dataset.emoji
-    };
+    const method = registryMethods[button.dataset.method];
+    const dialog = document.getElementById("payment-dialog");
+    if (!card || !method || !dialog) return;
 
-    dialogFund.textContent = fund.name;
-    dialogTitle.textContent = method.name;
-    dialogIcon.innerHTML = method.logo;
-    dialogCopy.innerHTML = method.copy(fund);
-    dialogActions.innerHTML = `${method.action}<button class="dialog-action secondary" type="button" data-close-dialog>Close</button>`;
+    document.getElementById("payment-dialog-fund").textContent = card.dataset.fundName;
+    document.getElementById("payment-dialog-title").textContent = method.name;
+    document.getElementById("payment-dialog-icon").innerHTML = method.logo;
+    document.getElementById("payment-dialog-copy").innerHTML = method.copy();
+    document.getElementById("payment-dialog-actions").innerHTML =
+        `${method.action}<button class="dialog-action secondary" type="button" data-close-dialog>Close</button>`;
     dialog.showModal();
 }
 
-document.addEventListener("click", (event) => {
-    const paymentButton = event.target.closest(".payment-button");
-    if (paymentButton) openDialog(paymentButton);
-    if (event.target.closest(".dialog-close, [data-close-dialog]")) closeDialog();
-});
+window.initializeRegistryPage = function initializeRegistryPage() {
+    document.querySelectorAll(".payment-options").forEach((container) => {
+        container.innerHTML = registryButtonMarkup;
+    });
+};
 
-dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) closeDialog();
-});
+if (!window.registryNavigationBound) {
+    window.registryNavigationBound = true;
+    document.addEventListener("click", (event) => {
+        const paymentButton = event.target.closest(".payment-button");
+        if (paymentButton) openRegistryDialog(paymentButton);
+        if (event.target.closest(".dialog-close, [data-close-dialog]")) {
+            closeRegistryDialog();
+        }
+        if (event.target.id === "payment-dialog") closeRegistryDialog();
+    });
+}
+
+window.initializeRegistryPage();
