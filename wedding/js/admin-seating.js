@@ -29,6 +29,7 @@ const elements = {
     printList: document.querySelector("#seating-print-list"),
     workspace: document.querySelector("#seating-workspace"),
     unseatedPanel: document.querySelector("#unseated-panel"),
+    unseatedSearch: document.querySelector("#unseated-search"),
     unseatedList: document.querySelector("#unseated-list"),
     unseatedPanelCount: document.querySelector("#unseated-panel-count"),
     collapseUnseated: document.querySelector("#collapse-unseated"),
@@ -315,14 +316,22 @@ function renderFixtures() {
 
 function renderUnseatedGuests() {
     const seatedIds = new Set(state.assignments.map((assignment) => assignment.guestId));
-    const guests = state.guests
+    const unseatedGuests = state.guests
         .filter((guest) => isEligibleGuest(guest) && !seatedIds.has(guest.id))
         .sort((left, right) =>
             compareText(left.householdName, right.householdName) ||
             compareText(left.lastName, right.lastName) ||
             compareText(left.firstName, right.firstName)
         );
-    elements.unseatedPanelCount.textContent = `${guests.length} ${guests.length === 1 ? "guest" : "guests"}`;
+    const query = elements.unseatedSearch.value.trim().toLocaleLowerCase();
+    const guests = query
+        ? unseatedGuests.filter((guest) =>
+            `${guestName(guest)} ${guest.householdName}`.toLocaleLowerCase().includes(query)
+        )
+        : unseatedGuests;
+    elements.unseatedPanelCount.textContent = query
+        ? `${guests.length} of ${unseatedGuests.length} guests`
+        : `${guests.length} ${guests.length === 1 ? "guest" : "guests"}`;
     elements.unseatedList.innerHTML = guests.length
         ? guests.map((guest) => `
             <button class="unseated-guest selectable-guest ${selectedGuestIds.has(guest.id) ? "is-selected" : ""}"
@@ -331,7 +340,10 @@ function renderUnseatedGuests() {
                 <span class="unseated-guest-name">${escapeHtml(guestName(guest))}</span>
                 <span class="unseated-guest-household">${escapeHtml(guest.householdName)}</span>
             </button>`).join("")
-        : '<p class="unseated-empty">Every attending or undecided guest has a seat.</p>';
+        : `<p class="unseated-empty">${query
+            ? "No unseated guests match your search."
+            : "Every attending or undecided guest has a seat."
+        }</p>`;
 }
 
 function renderPrintList() {
@@ -1192,6 +1204,7 @@ elements.unseatedList.addEventListener("pointerdown", (event) => {
     const guest = event.target.closest(".unseated-guest[data-guest-id]");
     if (guest) startGuestDrag(event, guest);
 });
+elements.unseatedSearch.addEventListener("input", renderUnseatedGuests);
 elements.ballroom.addEventListener("pointerdown", startBoxSelection);
 elements.unseatedList.addEventListener("pointerdown", startBoxSelection);
 elements.options.addEventListener("click", (event) => {

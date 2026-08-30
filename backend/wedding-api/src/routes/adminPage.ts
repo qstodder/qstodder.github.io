@@ -634,6 +634,8 @@ const adminSeatingPage = `<!DOCTYPE html>
                         <div><p class="admin-eyebrow">Quick reference</p><h2>Unseated</h2></div>
                         <button id="collapse-unseated" class="unseated-collapse" type="button" aria-expanded="true" aria-label="Collapse unseated guests">‹</button>
                     </div>
+                    <label class="unseated-search-label" for="unseated-search">Search unseated guests</label>
+                    <input id="unseated-search" class="unseated-search" type="search" autocomplete="off" placeholder="Search guest or household">
                     <p id="unseated-panel-count" class="unseated-panel-count">0 guests</p>
                     <p class="unseated-panel-help">Drag a guest to a seat. Option-click or draw a box to select several.</p>
                     <div id="unseated-list" class="unseated-list" aria-live="polite"></div>

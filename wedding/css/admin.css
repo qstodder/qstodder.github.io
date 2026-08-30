@@ -1292,6 +1292,8 @@ tbody th {
 }
 .seating-workspace.is-panel-collapsed .unseated-collapse { transform: rotate(180deg); }
 .seating-workspace.is-panel-collapsed .unseated-panel-heading > div,
+.seating-workspace.is-panel-collapsed .unseated-search-label,
+.seating-workspace.is-panel-collapsed .unseated-search,
 .seating-workspace.is-panel-collapsed .unseated-panel-count,
 .seating-workspace.is-panel-collapsed .unseated-panel-help,
 .seating-workspace.is-panel-collapsed .unseated-list,
@@ -1302,13 +1304,32 @@ tbody th {
     color: var(--color-deep-ocean);
     font: 700 .85rem var(--font-ui);
 }
+.unseated-search-label {
+    display: block;
+    margin: .85rem 0 .3rem;
+    color: var(--color-text-light);
+    font: 700 .7rem var(--font-ui);
+}
+.unseated-search {
+    width: 100%;
+    padding: .55rem .65rem;
+    color: var(--color-text);
+    background: #fff;
+    border: 1px solid #b9cbd3;
+    border-radius: 7px;
+    font: .78rem var(--font-ui);
+}
+.unseated-search:focus {
+    border-color: #5e879d;
+    outline: 3px solid rgba(94, 135, 157, .18);
+}
 .unseated-panel-help {
     margin: 0 0 .75rem;
     color: var(--color-text-light);
     font: .72rem/1.4 var(--font-ui);
 }
 .unseated-list {
-    height: calc(100% - 125px);
+    height: calc(100% - 196px);
     min-height: 220px;
     overflow-y: auto;
     border: 1px solid #cfdae0;
