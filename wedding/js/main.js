@@ -10,10 +10,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (
             window.location.pathname.endsWith("/rsvp.html") &&
-            window.location.hash === "#search-screen"
+            window.location.hash === "#rsvp-form"
         ) {
             requestAnimationFrame(() => requestAnimationFrame(() => {
-                document.getElementById("search-screen")?.scrollIntoView({
+                document.getElementById("rsvp-form")?.scrollIntoView({
                     block: "start",
                     behavior: "instant"
                 });

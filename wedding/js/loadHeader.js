@@ -6,7 +6,7 @@ async function loadHeader() {
     placeholder.setAttribute("aria-busy", "true");
 
     try {
-        const response = await fetch("partials/header.html?v=3");
+        const response = await fetch("partials/header.html?v=4");
 
         if (!response.ok) {
             throw new Error("Unable to load the shared wedding header.");

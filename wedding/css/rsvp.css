@@ -49,10 +49,6 @@
     box-shadow: 0 18px 50px rgba(36, 55, 70, .1);
 }
 
-#search-screen {
-    margin-bottom: 40vh;
-}
-
 .rsvp-screen.hidden,
 .hidden {
     display: none !important;
