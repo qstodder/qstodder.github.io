@@ -4,6 +4,22 @@ import {
     authenticateAdmin
 } from "../lib/adminAuth";
 
+const dashboardCardsDialog = `<dialog id="dashboard-cards-dialog" class="seat-dialog dashboard-cards-dialog">
+    <form id="dashboard-cards-form">
+        <div class="seat-dialog-heading">
+            <div><p class="admin-eyebrow">Dashboard</p><h2>Customize summary cards</h2></div>
+            <button id="close-dashboard-cards-dialog" class="dialog-close" type="button" aria-label="Close">×</button>
+        </div>
+        <p class="field-help">Choose which totals appear, rename them, and arrange their order.</p>
+        <div id="dashboard-card-editor" class="dashboard-card-editor"></div>
+        <p id="dashboard-cards-error" class="form-status" role="alert"></p>
+        <div class="seat-dialog-actions">
+            <button id="add-dashboard-card" class="secondary-button" type="button">Add card</button>
+            <button class="address-save-button" type="submit">Save cards</button>
+        </div>
+    </form>
+</dialog>`;
+
 const adminPage = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,32 +63,9 @@ const adminPage = `<!DOCTYPE html>
             <a id="admin-login-link" class="primary-link" href="/admin/">Sign in again</a>
         </section>
         <div id="admin-content" class="hidden">
-            <section class="summary-grid" aria-label="RSVP summary">
-                <article class="summary-card summary-card-alert">
-                    <span class="summary-label">Addresses needed</span>
-                    <strong id="missing-addresses">0</strong>
-                    <span>Require mailing address</span>
-                </article>
-                <article class="summary-card summary-card-alert">
-                    <span class="summary-label">Email needed</span>
-                    <strong id="missing-emails">0</strong>
-                    <span>Missing household email</span>
-                </article>
-                <article class="summary-card">
-                    <span class="summary-label">Households</span>
-                    <strong id="total-households">0</strong>
-                    <span id="submitted-households">0 submitted</span>
-                </article>
-                <article class="summary-card">
-                    <span class="summary-label">Guests</span>
-                    <strong id="total-guests">0</strong>
-                    <span>Total invited</span>
-                </article>
-                <article class="summary-card">
-                    <span class="summary-label">Wedding yes</span>
-                    <strong id="wedding-attending">0</strong>
-                    <span>Current responses</span>
-                </article>
+            <section class="dashboard-summary-section">
+                <div class="dashboard-summary-heading"><p id="dashboard-card-filter-status" aria-live="polite"></p><div><button id="clear-dashboard-card-filter" class="secondary-button hidden" type="button">Clear card filter</button> <button id="customize-dashboard-cards" class="secondary-button" type="button">Customize cards</button></div></div>
+                <div id="dashboard-cards" class="summary-grid" aria-label="Household summary"></div>
             </section>
             <section class="admin-panel">
                 <div class="panel-heading">
@@ -140,6 +133,8 @@ const adminPage = `<!DOCTYPE html>
             <p id="generated-at" class="generated-at"></p>
         </div>
     </main>
+    ${dashboardCardsDialog}
+    <script defer src="/admin/assets/admin-dashboard-cards.js"></script>
     <script defer src="/admin/assets/admin.js"></script>
 </body>
 </html>`;
@@ -205,6 +200,10 @@ const adminAssets: Record<
     "admin.js": {
         url: "https://qstodder.github.io/wedding/js/admin.js",
         contentType: "text/javascript; charset=UTF-8"
+    },
+    "admin-dashboard-cards.js": {
+        url: "https://qstodder.github.io/wedding/js/admin-dashboard-cards.js",
+        contentType: "application/javascript; charset=UTF-8"
     },
     "admin-household.js": {
         url: "https://qstodder.github.io/wedding/js/admin-household.js",
@@ -420,6 +419,10 @@ const adminGuestsPage = `<!DOCTYPE html>
             <h2>Guest list unavailable</h2><p id="admin-error-message"></p>
         </section>
         <div id="guest-content" class="hidden">
+            <section class="dashboard-summary-section">
+                <div class="dashboard-summary-heading"><p id="dashboard-card-filter-status" aria-live="polite"></p><div><button id="clear-dashboard-card-filter" class="secondary-button hidden" type="button">Clear card filter</button> <button id="customize-dashboard-cards" class="secondary-button" type="button">Customize cards</button></div></div>
+                <div id="dashboard-cards" class="summary-grid" aria-label="Guest summary"></div>
+            </section>
             <section class="admin-panel">
                 <div class="panel-heading">
                     <div><p class="admin-eyebrow">Guest directory</p><h2>All active guests</h2></div>
@@ -433,8 +436,8 @@ const adminGuestsPage = `<!DOCTYPE html>
                     <div class="filter-field"><label for="guest-relationship-filter">Friend / Family</label><select id="guest-relationship-filter"><option value="all">Either relationship</option><option value="friend">Friend</option><option value="family">Family</option><option value="unassigned">Unassigned</option></select></div>
                     <div class="filter-field"><label for="guest-family-side-filter">Family side</label><select id="guest-family-side-filter"><option value="all">Either family side</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option><option value="unassigned">Unassigned</option></select></div>
                     <div class="filter-field"><label for="guest-dietary-filter">Dietary</label><select id="guest-dietary-filter"><option value="all">All dietary responses</option><option value="none">No restrictions</option></select></div>
-                    <div class="filter-field"><label for="guest-invitation-filter">Invited to</label><select id="guest-invitation-filter"><option value="all">Any event</option><option value="welcome">Welcome gathering</option><option value="wedding">Wedding</option><option value="brunch">Brunch</option></select></div>
-                    <div class="filter-field"><label for="guest-rsvp-filter">RSVP</label><select id="guest-rsvp-filter"><option value="all">All responses</option><option value="pending">Not recorded</option><option value="responded">Response recorded</option><option value="weddingYes">Wedding: attending</option><option value="weddingNo">Wedding: not attending</option></select></div>
+                    <div class="filter-field"><label for="guest-invitation-filter">Invited to</label><select id="guest-invitation-filter"><option value="all">Any event</option><option value="welcome">Welcome gathering</option><option value="wedding">Ceremony</option><option value="reception">Reception</option><option value="brunch">Brunch</option></select></div>
+                    <div class="filter-field"><label for="guest-rsvp-filter">RSVP</label><select id="guest-rsvp-filter"><option value="all">All responses</option><option value="pending">Not recorded</option><option value="responded">Response recorded</option><option value="weddingYes">Ceremony: attending</option><option value="weddingNo">Ceremony: not attending</option><option value="receptionYes">Reception: attending</option><option value="receptionNo">Reception: not attending</option></select></div>
                     <div class="filter-field"><label for="guest-sort">Sort</label><select id="guest-sort"><option value="lastNameAsc">Last name A–Z</option><option value="firstNameAsc">First name A–Z</option><option value="householdAsc">Household A–Z</option><option value="coupleSideAsc">Scott / Quiana</option><option value="relationshipAsc">Friend / Family</option><option value="familySideAsc">Family side</option><option value="dietaryAsc">Dietary A–Z</option><option value="weddingYesFirst">Wedding attending first</option></select></div>
                 </div>
                 <div class="table-scroll">
@@ -450,6 +453,8 @@ const adminGuestsPage = `<!DOCTYPE html>
             <p id="guest-generated-at" class="generated-at"></p>
         </div>
     </main>
+    ${dashboardCardsDialog}
+    <script defer src="/admin/assets/admin-dashboard-cards.js"></script>
     <script defer src="/admin/assets/admin-guests.js"></script>
 </body>
 </html>`;

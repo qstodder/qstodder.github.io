@@ -5,6 +5,7 @@ import {
 } from "../lib/adminAuth";
 import { withAdminCors } from "../lib/adminCors";
 import { uniqueGuestEmails } from "../services/guestEmails";
+import { getDashboardCards } from "./adminDashboardCards";
 
 interface AdminHouseholdRow {
     id: number;
@@ -22,6 +23,7 @@ interface AdminHouseholdRow {
     responded_guest_count: number;
     attending_welcome: number;
     attending_wedding: number;
+    attending_reception: number;
     attending_brunch: number;
     submitted_at: string | null;
     guest_names: string | null;
@@ -37,6 +39,9 @@ interface AdminGuestRow {
     household_key: string;
     household_name: string;
     household_email: string | null;
+    household_street: string | null;
+    household_address_needed: number;
+    household_submitted_at: string | null;
     first_name: string;
     last_name: string;
     email: string | null;
@@ -45,9 +50,11 @@ interface AdminGuestRow {
     family_side: string | null;
     is_invited_to_welcome: number;
     is_invited_to_wedding: number;
+    is_invited_to_reception: number;
     is_invited_to_brunch: number;
     attending_welcome: number | null;
     attending_wedding: number | null;
+    attending_reception: number | null;
     attending_brunch: number | null;
     rsvp_updated_at: string | null;
 }
@@ -100,6 +107,8 @@ export async function getAdminData(
                             AS attending_welcome,
                         SUM(COALESCE(gr.attending_wedding, 0))
                             AS attending_wedding,
+                        SUM(COALESCE(gr.attending_reception, 0))
+                            AS attending_reception,
                         SUM(COALESCE(gr.attending_brunch, 0))
                             AS attending_brunch,
                         ha.updated_at AS submitted_at,
@@ -131,6 +140,7 @@ export async function getAdminData(
                         LOWER(h.household_name)
                 `)
                 .all<AdminHouseholdRow>();
+        const dashboardCards = await getDashboardCards(env, "households");
 
         const households = result.results.map((row) => {
             const emails = uniqueGuestEmails(
@@ -185,6 +195,7 @@ export async function getAdminData(
                 attendance: {
                     welcome: row.attending_welcome,
                     wedding: row.attending_wedding,
+                    reception: row.attending_reception,
                     brunch: row.attending_brunch
                 },
                 classifications: {
@@ -239,6 +250,7 @@ export async function getAdminData(
                     email: admin.email
                 },
                 summary,
+                dashboardCards,
                 households,
                 generatedAt:
                     new Date().toISOString()
@@ -280,6 +292,8 @@ export async function getAdminGuests(
                         h.household_key,
                         h.household_name,
                         h.email AS household_email,
+                        h.street AS household_street,
+                        h.address_needed AS household_address_needed,
                         g.first_name,
                         g.last_name,
                         g.email,
@@ -288,14 +302,18 @@ export async function getAdminGuests(
                         h.family_side,
                         g.is_invited_to_welcome,
                         g.is_invited_to_wedding,
+                        g.is_invited_to_reception,
                         g.is_invited_to_brunch,
                         gr.attending_welcome,
                         gr.attending_wedding,
+                        gr.attending_reception,
                         gr.attending_brunch,
+                        ha.updated_at AS household_submitted_at,
                         gr.updated_at AS rsvp_updated_at
                     FROM guests g
                     JOIN households h ON h.id = g.household_id
                     LEFT JOIN guest_rsvps gr ON gr.guest_id = g.id
+                    LEFT JOIN household_acknowledgements ha ON ha.household_id = h.id
                     WHERE g.archived_at IS NULL
                         AND h.archived_at IS NULL
                     ORDER BY LOWER(g.last_name), LOWER(g.first_name)
@@ -321,6 +339,7 @@ export async function getAdminGuests(
                     ORDER BY display_order
                 `).all()
             ]);
+        const dashboardCards = await getDashboardCards(env, "guests");
 
         const dietaryByGuest = new Map<
             number,
@@ -343,7 +362,11 @@ export async function getAdminGuests(
                     id: guest.household_id,
                     householdKey: guest.household_key,
                     householdName: guest.household_name,
-                    email: guest.household_email
+                    email: guest.household_email,
+                    missingEmail: !guest.household_email,
+                    missingAddress: Boolean(guest.household_address_needed) &&
+                        !guest.household_street?.trim(),
+                    rsvpStatus: guest.household_submitted_at ? "submitted" : "pending"
                 },
                 classifications: {
                     coupleSide: guest.couple_side,
@@ -353,11 +376,13 @@ export async function getAdminGuests(
                 invitations: {
                     welcome: Boolean(guest.is_invited_to_welcome),
                     wedding: Boolean(guest.is_invited_to_wedding),
+                    reception: Boolean(guest.is_invited_to_reception),
                     brunch: Boolean(guest.is_invited_to_brunch)
                 },
                 rsvp: guest.rsvp_updated_at ? {
                     welcome: Boolean(guest.attending_welcome),
                     wedding: Boolean(guest.attending_wedding),
+                    reception: Boolean(guest.attending_reception),
                     brunch: Boolean(guest.attending_brunch),
                     updatedAt: guest.rsvp_updated_at
                 } : null,
@@ -375,6 +400,7 @@ export async function getAdminGuests(
                 admin: { email: admin.email },
                 guests,
                 dietaryRestrictions: restrictionResult.results,
+                dashboardCards,
                 generatedAt: new Date().toISOString()
             })
         );

@@ -23,6 +23,7 @@ const elements = {
 
 let guestData = null;
 let visibleGuests = [];
+let dashboardCards = null;
 
 function escapeHtml(value) {
     const element = document.createElement("div");
@@ -52,7 +53,8 @@ function dietaryText(guest) {
 function eventLabels(values) {
     return [
         values.welcome ? "Welcome" : null,
-        values.wedding ? "Wedding" : null,
+        values.wedding ? "Ceremony" : null,
+        values.reception ? "Reception" : null,
         values.brunch ? "Brunch" : null
     ].filter(Boolean);
 }
@@ -63,7 +65,8 @@ function rsvpText(guest) {
     }
     return [
         `Welcome: ${guest.rsvp.welcome ? "Yes" : "No"}`,
-        `Wedding: ${guest.rsvp.wedding ? "Yes" : "No"}`,
+        `Ceremony: ${guest.rsvp.wedding ? "Yes" : "No"}`,
+        `Reception: ${guest.rsvp.reception ? "Yes" : "No"}`,
         `Brunch: ${guest.rsvp.brunch ? "Yes" : "No"}`
     ].join("; ");
 }
@@ -75,6 +78,18 @@ const classificationLabels = {
     family: "Family",
     "moms-side": "Mom's side",
     "dads-side": "Dad's side"
+};
+
+const guestDashboardMetrics = {
+    all: { label: "Guests", description: "All guest rows", matches: () => true },
+    missingAddress: { label: "Address needed", description: "Guests in households needing an address", tone: "alert", matches: (row) => row.household.missingAddress },
+    missingEmail: { label: "Email needed", description: "Guests in households missing email", tone: "alert", matches: (row) => row.household.missingEmail },
+    submitted: { label: "RSVP submitted", description: "Guests in submitted households", matches: (row) => row.household.rsvpStatus === "submitted" },
+    pending: { label: "RSVP not submitted", description: "Guests without a submitted household RSVP", matches: (row) => row.household.rsvpStatus !== "submitted" },
+    welcomeAttending: { label: "Welcome gathering", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.welcome) },
+    ceremonyAttending: { label: "Ceremony", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.wedding) },
+    receptionAttending: { label: "Reception", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.reception) },
+    brunchAttending: { label: "Brunch", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.brunch) }
 };
 
 function classificationTags(guest) {
@@ -149,7 +164,9 @@ function filteredAndSortedGuests() {
             (rsvp === "pending" && !guest.rsvp) ||
             (rsvp === "responded" && Boolean(guest.rsvp)) ||
             (rsvp === "weddingYes" && guest.rsvp?.wedding) ||
-            (rsvp === "weddingNo" && guest.rsvp && !guest.rsvp.wedding);
+            (rsvp === "weddingNo" && guest.rsvp && !guest.rsvp.wedding) ||
+            (rsvp === "receptionYes" && guest.rsvp?.reception) ||
+            (rsvp === "receptionNo" && guest.rsvp && !guest.rsvp.reception);
 
         return (
             (!search || searchable.includes(search)) &&
@@ -166,7 +183,8 @@ function filteredAndSortedGuests() {
                 guest.classifications.familySide,
                 familySide
             ) &&
-            dietaryMatches && invitationMatches && rsvpMatches
+            dietaryMatches && invitationMatches && rsvpMatches &&
+            (!dashboardCards || dashboardCards.matches(guest))
         );
     });
 
@@ -265,9 +283,9 @@ function exportGuests() {
     const headings = [
         "First Name", "Last Name", "Household", "Household Key",
         "Guest Email", "Household Email", "Scott / Quiana", "Friend / Family", "Family Side",
-        "Invited: Welcome", "Invited: Wedding",
+        "Invited: Welcome", "Invited: Ceremony", "Invited: Reception",
         "Invited: Brunch", "RSVP Recorded", "Attending: Welcome",
-        "Attending: Wedding", "Attending: Brunch",
+        "Attending: Ceremony", "Attending: Reception", "Attending: Brunch",
         "Dietary Restrictions", "Dietary Details"
     ];
     const rows = visibleGuests.map((guest) => [
@@ -278,10 +296,12 @@ function exportGuests() {
         classificationLabels[guest.classifications.familySide] ?? "",
         guest.invitations.welcome ? "Yes" : "No",
         guest.invitations.wedding ? "Yes" : "No",
+        guest.invitations.reception ? "Yes" : "No",
         guest.invitations.brunch ? "Yes" : "No",
         guest.rsvp ? "Yes" : "No",
         guest.rsvp ? (guest.rsvp.welcome ? "Yes" : "No") : "",
         guest.rsvp ? (guest.rsvp.wedding ? "Yes" : "No") : "",
+        guest.rsvp ? (guest.rsvp.reception ? "Yes" : "No") : "",
         guest.rsvp ? (guest.rsvp.brunch ? "Yes" : "No") : "",
         guest.dietaryRestrictions.map((item) => item.name).join("; "),
         guest.dietaryRestrictions.map((item) => item.notes).filter(Boolean).join("; ")
@@ -307,6 +327,16 @@ async function loadGuests() {
         guestData = result;
         elements.adminEmail.textContent = result.admin.email;
         populateFilters();
+        if (!dashboardCards) {
+            dashboardCards = window.initializeDashboardCards({
+                page: "guests", cards: result.dashboardCards,
+                metrics: guestDashboardMetrics,
+                getRows: () => guestData.guests,
+                onFilterChanged: renderGuests
+            });
+        } else {
+            dashboardCards.render();
+        }
         renderGuests();
         elements.generatedAt.textContent =
             `Last refreshed ${new Date(result.generatedAt).toLocaleString()}`;

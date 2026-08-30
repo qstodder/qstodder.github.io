@@ -31,16 +31,11 @@ const elements = {
     rows: document.querySelector("#household-rows"),
     emptyResults: document.querySelector("#empty-results"),
     resultsCount: document.querySelector("#results-count"),
-    generatedAt: document.querySelector("#generated-at"),
-    missingAddresses: document.querySelector("#missing-addresses"),
-    missingEmails: document.querySelector("#missing-emails"),
-    totalHouseholds: document.querySelector("#total-households"),
-    submittedHouseholds: document.querySelector("#submitted-households"),
-    totalGuests: document.querySelector("#total-guests"),
-    weddingAttending: document.querySelector("#wedding-attending")
+    generatedAt: document.querySelector("#generated-at")
 };
 
 let dashboardData = null;
+let dashboardCards = null;
 let editingHouseholdId = null;
 let savingHouseholdId = null;
 
@@ -189,20 +184,18 @@ function renderEmailCell(household) {
         : `<a href="mailto:${escapeAttribute(household.email)}">${escapeHtml(household.email)}</a>`;
 }
 
-function renderSummary(summary) {
-    elements.missingAddresses.textContent =
-        summary.missingAddresses;
-    elements.missingEmails.textContent =
-        summary.missingEmails;
-    elements.totalHouseholds.textContent =
-        summary.households;
-    elements.submittedHouseholds.textContent =
-        `${summary.submittedHouseholds} submitted`;
-    elements.totalGuests.textContent =
-        summary.guests;
-    elements.weddingAttending.textContent =
-        summary.attendingWedding;
-}
+const householdDashboardMetrics = {
+    all: { label: "Households", description: "All household rows", matches: () => true },
+    missingAddress: { label: "Addresses needed", description: "Require mailing address", tone: "alert", matches: (row) => row.missingAddress },
+    missingEmail: { label: "Email needed", description: "Missing household email", tone: "alert", matches: (row) => row.missingEmail },
+    submitted: { label: "RSVP submitted", description: "Submitted households", matches: (row) => row.rsvpStatus === "submitted" },
+    pending: { label: "RSVP not started", description: "Households not started", matches: (row) => row.rsvpStatus === "pending" },
+    inProgress: { label: "RSVP in progress", description: "Households in progress", matches: (row) => row.rsvpStatus === "inProgress" },
+    welcomeAttending: { label: "Welcome gathering", description: "Households attending", matches: (row) => row.attendance.welcome > 0 },
+    ceremonyAttending: { label: "Ceremony", description: "Households attending", matches: (row) => row.attendance.wedding > 0 },
+    receptionAttending: { label: "Reception", description: "Households attending", matches: (row) => row.attendance.reception > 0 },
+    brunchAttending: { label: "Brunch", description: "Households attending", matches: (row) => row.attendance.brunch > 0 }
+};
 
 function filteredHouseholds() {
     const search =
@@ -220,6 +213,7 @@ function filteredHouseholds() {
         ].join(" ").toLowerCase();
 
         return (
+            (!dashboardCards || dashboardCards.matches(household)) &&
             (!search || searchable.includes(search)) &&
             (delivery === "all" ||
                 household.deliveryStatus === delivery) &&
@@ -503,7 +497,16 @@ async function loadDashboard() {
         }
 
         dashboardData = result;
-        renderSummary(result.summary);
+        if (!dashboardCards) {
+            dashboardCards = window.initializeDashboardCards({
+                page: "households", cards: result.dashboardCards,
+                metrics: householdDashboardMetrics,
+                getRows: () => dashboardData.households,
+                onFilterChanged: renderHouseholds
+            });
+        } else {
+            dashboardCards.render();
+        }
         renderHouseholds();
 
         elements.adminEmail.textContent =

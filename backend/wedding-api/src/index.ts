@@ -35,6 +35,7 @@ import {
     updateAdminHousehold
 } from "./routes/adminHouseholds";
 import { handleWeddingSiteRequest } from "./routes/weddingSite";
+import { saveAdminDashboardCards } from "./routes/adminDashboardCards";
 
 export default {
 
@@ -143,6 +144,13 @@ export default {
             url.pathname === "/api/admin/guests"
         ) {
             return getAdminGuests(request, env);
+        }
+
+        if (
+            request.method === "PUT" &&
+            url.pathname === "/api/admin/dashboard-cards"
+        ) {
+            return saveAdminDashboardCards(request, env);
         }
 
         if (url.pathname === "/api/admin/seating") {

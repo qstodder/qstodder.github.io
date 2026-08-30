@@ -26,6 +26,10 @@ import {
 } from "../src/routes/adminHouseholds";
 import { getAdminGuests } from "../src/routes/admin";
 import {
+    getDashboardCards,
+    saveAdminDashboardCards
+} from "../src/routes/adminDashboardCards";
+import {
     CompleteRsvp,
     RsvpValidationError,
     saveCompleteRsvp
@@ -513,6 +517,33 @@ describe("Admin household detail editing", () => {
 });
 
 describe("Admin guest directory", () => {
+
+    it("saves separate guest dashboard card configuration", async () => {
+        const original = await getDashboardCards(env, "guests");
+        const cards = [
+            { metric: "all", label: "Everyone", tone: "default" },
+            { metric: "receptionAttending", label: "Reception yes", tone: "alert" }
+        ];
+        const response = await saveAdminDashboardCards(
+            new Request("http://localhost:8787/api/admin/dashboard-cards", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ page: "guests", cards })
+            }),
+            env
+        );
+        expect(response.status).toBe(200);
+        expect((await response.json<any>()).cards).toEqual(cards);
+
+        await saveAdminDashboardCards(
+            new Request("http://localhost:8787/api/admin/dashboard-cards", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ page: "guests", cards: original })
+            }),
+            env
+        );
+    });
 
     it("returns active guests with household, RSVP, and dietary data", async () => {
 
