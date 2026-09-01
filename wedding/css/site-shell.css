@@ -248,41 +248,7 @@ body {
     content: "";
 }
 
-@media (max-width: 720px) {
-    #header-placeholder {
-        min-height: 480px;
-    }
-
-    .site-header {
-        padding: 0 20px 27px;
-    }
-
-    .photo-carousel {
-        --carousel-gap: 8px;
-    }
-
-    .carousel-photo {
-        height: 280px;
-    }
-
-    .site-masthead {
-        margin: 27px auto 0;
-    }
-
-    .site-masthead h1 {
-        font-size: clamp(2rem, 10vw, 3rem);
-    }
-
-    .site-masthead p {
-        flex-direction: column;
-        gap: 2px;
-        font-size: 1.05rem;
-    }
-
-    .header-detail-divider {
-        display: none;
-    }
-
+@media (max-width: 740px) {
     .menu-toggle {
         position: absolute;
         z-index: 20;
@@ -347,6 +313,42 @@ body {
 
     .site-nav a:last-child {
         border-bottom: 0;
+    }
+}
+
+@media (max-width: 720px) {
+    #header-placeholder {
+        min-height: 480px;
+    }
+
+    .site-header {
+        padding: 0 20px 27px;
+    }
+
+    .photo-carousel {
+        --carousel-gap: 8px;
+    }
+
+    .carousel-photo {
+        height: 280px;
+    }
+
+    .site-masthead {
+        margin: 27px auto 0;
+    }
+
+    .site-masthead h1 {
+        font-size: clamp(2rem, 10vw, 3rem);
+    }
+
+    .site-masthead p {
+        flex-direction: column;
+        gap: 2px;
+        font-size: 1.05rem;
+    }
+
+    .header-detail-divider {
+        display: none;
     }
 
     .main-stage {
