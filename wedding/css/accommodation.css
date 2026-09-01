@@ -105,3 +105,10 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 520px) {
+    .accommodation-page .page-intro h2 {
+        font-size: clamp(1.35rem, 7vw, 2.3rem);
+        letter-spacing: .025em;
+    }
+}

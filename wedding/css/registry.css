@@ -14,20 +14,6 @@ body {
     background: #fff;
 }
 
-.registry-page {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    margin: 0;
-    padding: 72px 28px 100px;
-    border-top: 4px double #b8d2df;
-    background-color: #f8fbfc;
-    background-image:
-        linear-gradient(rgba(111, 158, 182, .085) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(111, 158, 182, .085) 1px, transparent 1px);
-    background-size: 32px 32px;
-}
-
 .registry-card {
     width: min(1240px, 100%);
     max-width: 100%;
@@ -261,7 +247,6 @@ body {
 }
 
 @media (max-width: 860px) {
-    .registry-page { padding: 38px 14px 60px; }
     .registry-card { padding: 54px 28px 64px; }
     .fund-grid { grid-template-columns: 1fr; }
     .fund-card { display: grid; grid-template-columns: minmax(220px, 42%) 1fr; }
