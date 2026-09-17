@@ -110,6 +110,14 @@ const adminPage = `<!DOCTYPE html>
                             <option value="pending">Not started</option>
                         </select>
                     </div>
+                    <div class="filter-field">
+                        <label for="std-filter">STD</label>
+                        <select id="std-filter">
+                            <option value="all">All households</option>
+                            <option value="yes">Addressed</option>
+                            <option value="no">Not addressed</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="table-scroll">
                     <table>
@@ -120,6 +128,7 @@ const adminPage = `<!DOCTYPE html>
                                 <th scope="col">Guests</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Invitation</th>
+                                <th scope="col">STD</th>
                                 <th scope="col">Address</th>
                                 <th scope="col">RSVP</th>
                                 <th scope="col">Wedding</th>

@@ -19,6 +19,7 @@ interface HouseholdRow {
     country_code: string;
     notes: string | null;
     address_needed: number;
+    save_the_date_addressed: number;
     couple_side: string | null;
     relationship_type: string | null;
     family_side: string | null;
@@ -186,6 +187,7 @@ function householdJson(row: HouseholdRow) {
         householdName: row.household_name,
         email: row.email,
         addressNeeded: Boolean(row.address_needed),
+        saveTheDateAddressed: Boolean(row.save_the_date_addressed),
         notes: row.notes,
         classifications: {
             coupleSide: row.couple_side,
@@ -215,7 +217,7 @@ export async function getAdminHousehold(
             .prepare(`
                 SELECT id, household_key, household_name, email,
                     street, address_line_2, city, state, zip,
-                    country_code, notes, address_needed,
+                    country_code, notes, address_needed, save_the_date_addressed,
                     couple_side, relationship_type, family_side
                 FROM households
                 WHERE id = ?1 AND archived_at IS NULL
@@ -319,6 +321,49 @@ export async function getAdminHousehold(
             request,
             error,
             "Unable to load the household."
+        );
+    }
+}
+
+export async function updateAdminSaveTheDateAddressed(
+    request: Request,
+    env: Env,
+    householdId: number
+): Promise<Response> {
+    try {
+        await authenticateAdmin(request, env);
+        const input = await body(request);
+        let saveTheDateAddressed: boolean;
+        try {
+            saveTheDateAddressed = boolean(
+                input.saveTheDateAddressed,
+                "Save the Date addressed"
+            );
+        } catch (error) {
+            return json(request, {
+                error: error instanceof Error ? error.message : "Invalid Save the Date status."
+            }, 400);
+        }
+
+        const result = await env.wedding_rsvp_db.prepare(`
+            UPDATE households
+            SET save_the_date_addressed = ?1
+            WHERE id = ?2 AND archived_at IS NULL
+        `).bind(saveTheDateAddressed ? 1 : 0, householdId).run();
+
+        if (result.meta.changes === 0) {
+            return json(request, { error: "Household not found." }, 404);
+        }
+        return json(request, {
+            success: true,
+            householdId,
+            saveTheDateAddressed
+        });
+    } catch (error) {
+        return errorResponse(
+            request,
+            error,
+            "Unable to update the Save the Date status."
         );
     }
 }

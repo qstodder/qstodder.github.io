@@ -304,10 +304,19 @@ body {
 
 .admin-filters {
     display: grid;
-    grid-template-columns: minmax(260px, 1.5fr) repeat(3, minmax(150px, .6fr));
+    grid-template-columns: minmax(230px, 1.4fr) repeat(4, minmax(130px, .6fr));
     gap: var(--space-md);
     margin-bottom: var(--space-lg);
 }
+
+.std-cell { text-align: center; }
+.std-checkbox {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--color-deep-ocean);
+    cursor: pointer;
+}
+.std-checkbox:disabled { cursor: wait; opacity: .55; }
 
 .email-layout {
     display: grid;

@@ -28,6 +28,7 @@ const elements = {
     deliveryFilter: document.querySelector("#delivery-filter"),
     emailFilter: document.querySelector("#email-filter"),
     rsvpFilter: document.querySelector("#rsvp-filter"),
+    stdFilter: document.querySelector("#std-filter"),
     rows: document.querySelector("#household-rows"),
     emptyResults: document.querySelector("#empty-results"),
     resultsCount: document.querySelector("#results-count"),
@@ -38,6 +39,7 @@ let dashboardData = null;
 let dashboardCards = null;
 let editingHouseholdId = null;
 let savingHouseholdId = null;
+const savingSaveTheDateIds = new Set();
 
 const deliveryLabels = {
     addressNeeded: "Address needed",
@@ -205,6 +207,7 @@ function filteredHouseholds() {
     const delivery = elements.deliveryFilter.value;
     const email = elements.emailFilter.value;
     const rsvp = elements.rsvpFilter.value;
+    const saveTheDate = elements.stdFilter.value;
 
     return dashboardData.households.filter((household) => {
         const searchable = [
@@ -221,7 +224,10 @@ function filteredHouseholds() {
                 (email === "missing" && household.missingEmail) ||
                 (email === "present" && !household.missingEmail)) &&
             (rsvp === "all" ||
-                household.rsvpStatus === rsvp)
+                household.rsvpStatus === rsvp) &&
+            (saveTheDate === "all" ||
+                (saveTheDate === "yes" && household.saveTheDateAddressed) ||
+                (saveTheDate === "no" && !household.saveTheDateAddressed))
         );
     });
 }
@@ -263,6 +269,16 @@ function renderHouseholds() {
                     <span class="status-pill status-${household.deliveryStatus}">
                         ${deliveryLabels[household.deliveryStatus]}
                     </span>
+                </td>
+                <td data-label="STD" class="std-cell">
+                    <input
+                        class="std-checkbox"
+                        type="checkbox"
+                        data-household-id="${household.id}"
+                        aria-label="Save the Date addressed for ${escapeAttribute(household.householdName)}"
+                        ${household.saveTheDateAddressed ? "checked" : ""}
+                        ${savingSaveTheDateIds.has(household.id) ? "disabled" : ""}
+                    >
                 </td>
                 <td data-label="Address" class="address-cell">
                     ${renderAddressCell(household)}
@@ -322,7 +338,7 @@ function downloadCsv(filename, headings, rows) {
 function exportHouseholds() {
     const headings = [
         "Household", "Household Key", "Emails", "Guests",
-        "Guest Count", "Delivery Status", "Address Line 1",
+        "Guest Count", "Delivery Status", "STD Addressed", "Address Line 1",
         "Address Line 2", "City", "State/Province/Region",
         "Postal Code", "Country", "RSVP Status", "Responded Guests",
         "Welcome Attending", "Wedding Attending", "Brunch Attending"
@@ -334,6 +350,7 @@ function exportHouseholds() {
         household.guests.join("; "),
         household.guestCount,
         deliveryLabels[household.deliveryStatus],
+        household.saveTheDateAddressed ? "Yes" : "No",
         household.address.street,
         household.address.line2,
         household.address.city,
@@ -351,6 +368,47 @@ function exportHouseholds() {
         headings,
         rows
     );
+}
+
+async function saveSaveTheDateAddressed(checkbox) {
+    const householdId = Number(checkbox.dataset.householdId);
+    const household = findHousehold(householdId);
+    if (!household || savingSaveTheDateIds.has(householdId)) return;
+    const previous = household.saveTheDateAddressed;
+    const next = checkbox.checked;
+    household.saveTheDateAddressed = next;
+    savingSaveTheDateIds.add(householdId);
+    renderHouseholds();
+
+    try {
+        const response = await fetch(
+            `${API_BASE}/api/admin/households/${householdId}/save-the-date-addressed`,
+            {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ saveTheDateAddressed: next })
+            }
+        );
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.error || "Unable to update the Save the Date status.");
+        }
+        household.saveTheDateAddressed = result.saveTheDateAddressed;
+    } catch (error) {
+        household.saveTheDateAddressed = previous;
+        window.alert(
+            error instanceof Error
+                ? error.message
+                : "Unable to update the Save the Date status."
+        );
+    } finally {
+        savingSaveTheDateIds.delete(householdId);
+        renderHouseholds();
+    }
 }
 
 function beginAddressEdit(householdId) {
@@ -571,6 +629,11 @@ elements.householdSearch.addEventListener("input", renderHouseholds);
 elements.deliveryFilter.addEventListener("change", renderHouseholds);
 elements.emailFilter.addEventListener("change", renderHouseholds);
 elements.rsvpFilter.addEventListener("change", renderHouseholds);
+elements.stdFilter.addEventListener("change", renderHouseholds);
+elements.rows.addEventListener("change", (event) => {
+    const checkbox = event.target.closest(".std-checkbox");
+    if (checkbox) saveSaveTheDateAddressed(checkbox);
+});
 elements.rows.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
 

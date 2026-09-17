@@ -22,7 +22,8 @@ import {
     createAdminHousehold,
     getAdminHousehold,
     updateAdminGuest,
-    updateAdminHousehold
+    updateAdminHousehold,
+    updateAdminSaveTheDateAddressed
 } from "../src/routes/adminHouseholds";
 import { getAdminGuests } from "../src/routes/admin";
 import {
@@ -398,6 +399,35 @@ describe("Admin household detail editing", () => {
         expect(response.status, JSON.stringify(result)).toBe(201);
         expect(result.householdId).toBeGreaterThan(0);
         expect(result.householdKey).toBe("van-den-berg-family");
+    });
+
+    it("updates the Save the Date addressed status", async () => {
+        const created = await createAdminHousehold(
+            adminRequest("/api/admin/households", "POST", {
+                householdName: "Save the Date Household"
+            }),
+            env
+        );
+        const { householdId } = await created.json<{ householdId: number }>();
+        const response = await updateAdminSaveTheDateAddressed(
+            adminRequest(
+                `/api/admin/households/${householdId}/save-the-date-addressed`,
+                "PATCH",
+                { saveTheDateAddressed: true }
+            ),
+            env,
+            householdId
+        );
+
+        expect(response.status, await response.clone().text()).toBe(200);
+        expect(await response.json()).toMatchObject({
+            householdId,
+            saveTheDateAddressed: true
+        });
+        const stored = await env.wedding_rsvp_db.prepare(`
+            SELECT save_the_date_addressed FROM households WHERE id = ?1
+        `).bind(householdId).first<{ save_the_date_addressed: number }>();
+        expect(stored?.save_the_date_addressed).toBe(1);
     });
 
     it("stores an international household address", async () => {

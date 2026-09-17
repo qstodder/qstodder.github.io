@@ -32,7 +32,8 @@ import {
     createAdminHousehold,
     getAdminHousehold,
     updateAdminGuest,
-    updateAdminHousehold
+    updateAdminHousehold,
+    updateAdminSaveTheDateAddressed
 } from "./routes/adminHouseholds";
 import { handleWeddingSiteRequest } from "./routes/weddingSite";
 import { saveAdminDashboardCards } from "./routes/adminDashboardCards";
@@ -174,6 +175,17 @@ export default {
             url.pathname === "/api/admin/households"
         ) {
             return createAdminHousehold(request, env);
+        }
+
+        const saveTheDateMatch = url.pathname.match(
+            /^\/api\/admin\/households\/(\d+)\/save-the-date-addressed$/
+        );
+        if (request.method === "PATCH" && saveTheDateMatch) {
+            return updateAdminSaveTheDateAddressed(
+                request,
+                env,
+                Number(saveTheDateMatch[1])
+            );
         }
 
         const adminHouseholdMatch = url.pathname.match(

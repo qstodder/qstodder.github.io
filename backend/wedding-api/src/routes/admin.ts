@@ -19,6 +19,7 @@ interface AdminHouseholdRow {
     zip: string | null;
     country_code: string;
     address_needed: number;
+    save_the_date_addressed: number;
     guest_count: number;
     responded_guest_count: number;
     attending_welcome: number;
@@ -92,6 +93,7 @@ export async function getAdminData(
                         h.zip,
                         h.country_code,
                         h.address_needed,
+                        h.save_the_date_addressed,
                         h.couple_side,
                         h.relationship_type,
                         h.family_side,
@@ -174,6 +176,7 @@ export async function getAdminData(
                     countryCode: row.country_code
                 },
                 addressNeeded: Boolean(row.address_needed),
+                saveTheDateAddressed: Boolean(row.save_the_date_addressed),
                 missingAddress,
                 deliveryStatus: missingAddress
                     ? "addressNeeded"
