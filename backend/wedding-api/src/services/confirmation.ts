@@ -48,14 +48,6 @@ function attendanceText(
         : "Not attending";
 }
 
-function receptionInvitation(guest: ConfirmationGuest): boolean {
-    return guest.invitedToReception ?? guest.invitedToWedding;
-}
-
-function receptionAttendance(guest: ConfirmationGuest): boolean {
-    return guest.attendingReception ?? guest.attendingWedding;
-}
-
 async function getConfirmationDetails(
     env: Env,
     householdId: number
@@ -179,10 +171,7 @@ export function buildConfirmationEmail(
         "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM",
         "The Public House · 830 Kline St, La Jolla, CA 92037",
         "",
-        "Wedding Ceremony — Saturday, September 18, 2027 · 4 PM",
-        "Wedding Bowl · 590 Coast S Blvd, La Jolla, CA 92037",
-        "",
-        "Wedding Reception — Saturday, September 18, 2027 · 5–10 PM",
+        "Wedding — Saturday, September 18, 2027 · 4–10 PM",
         "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037",
         "",
         "Morning-After Brunch — Sunday, September 19, 2027 · 11 AM–2 PM",
@@ -193,8 +182,7 @@ export function buildConfirmationEmail(
         <section style="margin: 28px 0 34px; padding: 22px; background: #f4f8fa; border: 1px solid #d8e3e8;">
             <h2 style="margin: 0 0 18px; color: #52656a; font-size: 20px; font-weight: 500;">Weekend Details</h2>
             <p style="margin: 0 0 14px;"><strong>Welcome Gathering</strong><br>Friday, September 17, 2027 · 7–9 PM<br>The Public House · 830 Kline St, La Jolla, CA 92037</p>
-            <p style="margin: 0 0 14px;"><strong>Wedding Ceremony</strong><br>Saturday, September 18, 2027 · 4 PM<br>Wedding Bowl · 590 Coast S Blvd, La Jolla, CA 92037</p>
-            <p style="margin: 0 0 14px;"><strong>Wedding Reception</strong><br>Saturday, September 18, 2027 · 5–10 PM<br>La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037</p>
+            <p style="margin: 0 0 14px;"><strong>Wedding</strong><br>Saturday, September 18, 2027 · 4–10 PM<br>La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037</p>
             <p style="margin: 0;"><strong>Morning-After Brunch</strong><br>Sunday, September 19, 2027 · 11 AM–2 PM<br>Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037</p>
         </section>
     `;
@@ -206,20 +194,16 @@ export function buildConfirmationEmail(
                 guest.invitedToWelcome,
                 guest.attendingWelcome
             )}`,
-            `  Ceremony: ${attendanceText(
+            `  Wedding: ${attendanceText(
                 guest.invitedToWedding,
                 guest.attendingWedding
-            )}`,
-            `  Reception: ${attendanceText(
-                receptionInvitation(guest),
-                receptionAttendance(guest)
             )}`,
             `  Morning-After Brunch: ${attendanceText(
                 guest.invitedToBrunch,
                 guest.attendingBrunch
             )}`,
             `  Dietary restrictions: ${
-                receptionAttendance(guest)
+                guest.attendingWedding
                     ? guest.dietaryRestrictions.join(", ") || "None"
                     : "Not applicable"
             }`
@@ -241,17 +225,10 @@ export function buildConfirmationEmail(
                     )}
                 </p>
                 <p style="margin: 4px 0;">
-                    <strong>Ceremony:</strong>
+                    <strong>Wedding:</strong>
                     ${attendanceText(
                         guest.invitedToWedding,
                         guest.attendingWedding
-                    )}
-                </p>
-                <p style="margin: 4px 0;">
-                    <strong>Reception:</strong>
-                    ${attendanceText(
-                        receptionInvitation(guest),
-                        receptionAttendance(guest)
                     )}
                 </p>
                 <p style="margin: 4px 0;">
@@ -264,7 +241,7 @@ export function buildConfirmationEmail(
                 <p style="margin: 4px 0;">
                     <strong>Dietary restrictions:</strong>
                     ${escapeHtml(
-                        receptionAttendance(guest)
+                        guest.attendingWedding
                             ? guest.dietaryRestrictions.join(", ") || "None"
                             : "Not applicable"
                     )}

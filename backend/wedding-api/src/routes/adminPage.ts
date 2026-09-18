@@ -445,8 +445,8 @@ const adminGuestsPage = `<!DOCTYPE html>
                     <div class="filter-field"><label for="guest-relationship-filter">Friend / Family</label><select id="guest-relationship-filter"><option value="all">Either relationship</option><option value="friend">Friend</option><option value="family">Family</option><option value="unassigned">Unassigned</option></select></div>
                     <div class="filter-field"><label for="guest-family-side-filter">Family side</label><select id="guest-family-side-filter"><option value="all">Either family side</option><option value="moms-side">Mom's side</option><option value="dads-side">Dad's side</option><option value="unassigned">Unassigned</option></select></div>
                     <div class="filter-field"><label for="guest-dietary-filter">Dietary</label><select id="guest-dietary-filter"><option value="all">All dietary responses</option><option value="none">No restrictions</option></select></div>
-                    <div class="filter-field"><label for="guest-invitation-filter">Invited to</label><select id="guest-invitation-filter"><option value="all">Any event</option><option value="welcome">Welcome gathering</option><option value="wedding">Ceremony</option><option value="reception">Reception</option><option value="brunch">Brunch</option></select></div>
-                    <div class="filter-field"><label for="guest-rsvp-filter">RSVP</label><select id="guest-rsvp-filter"><option value="all">All responses</option><option value="pending">Not recorded</option><option value="responded">Response recorded</option><option value="weddingYes">Ceremony: attending</option><option value="weddingNo">Ceremony: not attending</option><option value="receptionYes">Reception: attending</option><option value="receptionNo">Reception: not attending</option></select></div>
+                    <div class="filter-field"><label for="guest-invitation-filter">Invited to</label><select id="guest-invitation-filter"><option value="all">Any event</option><option value="welcome">Welcome gathering</option><option value="wedding">Wedding</option><option value="brunch">Brunch</option></select></div>
+                    <div class="filter-field"><label for="guest-rsvp-filter">RSVP</label><select id="guest-rsvp-filter"><option value="all">All responses</option><option value="pending">Not recorded</option><option value="responded">Response recorded</option><option value="weddingYes">Wedding: attending</option><option value="weddingNo">Wedding: not attending</option></select></div>
                     <div class="filter-field"><label for="guest-sort">Sort</label><select id="guest-sort"><option value="lastNameAsc">Last name A–Z</option><option value="firstNameAsc">First name A–Z</option><option value="householdAsc">Household A–Z</option><option value="coupleSideAsc">Scott / Quiana</option><option value="relationshipAsc">Friend / Family</option><option value="familySideAsc">Family side</option><option value="dietaryAsc">Dietary A–Z</option><option value="weddingYesFirst">Wedding attending first</option></select></div>
                 </div>
                 <div class="table-scroll">
@@ -591,7 +591,7 @@ const adminSeatingPage = `<!DOCTYPE html>
             <div>
                 <p class="admin-eyebrow">Quiana &amp; Scott</p>
                 <h1>Seating Chart</h1>
-                <p class="admin-subtitle">Arrange tables, assign guests, and prepare reception materials</p>
+                <p class="admin-subtitle">Arrange tables, assign guests, and prepare wedding materials</p>
             </div>
             <div class="admin-identity">
                 <span id="admin-email">Secure access required</span>
@@ -615,7 +615,7 @@ const adminSeatingPage = `<!DOCTYPE html>
         <div id="seating-content" class="hidden">
             <section class="admin-panel seating-toolbar-panel">
                 <div class="panel-heading seating-heading">
-                    <div><p class="admin-eyebrow">Reception ballroom</p><h2>Guest seating</h2></div>
+                    <div><p class="admin-eyebrow">Wedding ballroom</p><h2>Guest seating</h2></div>
                     <div class="seating-summary" aria-live="polite">
                         <strong id="seated-count">0 seated</strong>
                         <span id="unseated-count">0 attending unseated</span>
@@ -658,7 +658,7 @@ const adminSeatingPage = `<!DOCTYPE html>
                 <section class="admin-panel ballroom-panel">
                     <p class="ballroom-help">Drag tables to reposition them. Drag guests between seats, or select several and drag them onto a table.</p>
                     <div class="ballroom-scroll">
-                        <div id="ballroom" class="ballroom" aria-label="Reception ballroom seating chart">
+                        <div id="ballroom" class="ballroom" aria-label="Wedding ballroom seating chart">
                             <div class="ballroom-stage">Stage</div>
                             <div id="seating-fixtures"></div>
                             <div class="ballroom-entrance"><span>Entrance</span></div>

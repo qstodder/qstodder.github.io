@@ -253,17 +253,15 @@ export async function saveCompleteRsvp(
             response.attendingWedding,
             "Wedding response"
         );
-        response.attendingReception = boolean(
-            response.attendingReception ?? response.attendingWedding,
-            "Reception response"
-        );
+        // Reception is now part of the single Wedding event. Mirror the value
+        // into the legacy column so existing queries and records stay valid.
+        response.attendingReception = response.attendingWedding;
         response.attendingBrunch = boolean(
             response.attendingBrunch,
             "Brunch response"
         );
         if ((response.attendingWelcome && !guest.is_invited_to_welcome) ||
             (response.attendingWedding && !guest.is_invited_to_wedding) ||
-            (response.attendingReception && !guest.is_invited_to_reception) ||
             (response.attendingBrunch && !guest.is_invited_to_brunch)) {
             throw new RsvpValidationError(
                 "An attendance response does not match the invitation."
@@ -275,7 +273,7 @@ export async function saveCompleteRsvp(
             dietaryResponse.restrictionIds,
             "Dietary restrictions"
         );
-        if (!response.attendingReception &&
+        if (!response.attendingWedding &&
             dietaryResponse.restrictionIds.length > 0) {
             throw new RsvpValidationError(
                 "Dietary selections are only accepted for wedding attendees."

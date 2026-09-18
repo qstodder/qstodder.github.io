@@ -109,7 +109,6 @@ function showScreen(screen) {
         contactScreen,
         welcomeScreen,
         weddingScreen,
-        receptionScreen,
         dietaryScreen,
         brunchScreen,
         reviewScreen
@@ -512,12 +511,6 @@ const weddingError =
 const backToWelcomeButton =
     document.getElementById("back-to-welcome");
 
-const receptionScreen = document.getElementById("reception-screen");
-const receptionForm = document.getElementById("reception-form");
-const receptionGuests = document.getElementById("reception-guests");
-const receptionError = document.getElementById("reception-error");
-const backToCeremonyButton = document.getElementById("back-to-ceremony");
-
 const dietaryScreen =
     document.getElementById("dietary-screen");
 
@@ -530,8 +523,8 @@ const dietaryGuests =
 const dietaryError =
     document.getElementById("dietary-error");
 
-const backToReceptionButton =
-    document.getElementById("back-to-reception");
+const backToWeddingButton =
+    document.getElementById("back-to-wedding");
 
 const backToDietaryButton =
     document.getElementById(
@@ -881,76 +874,23 @@ weddingForm.addEventListener(
             return;
         }
 
-        renderReceptionGuests();
-        showScreen(receptionScreen);
+        // The deployed database still has a legacy reception column. Keep it
+        // synchronized with the single Wedding response for compatibility.
+        for (const guest of state.rsvp.guests) {
+            guest.attendance.reception = guest.attendance?.wedding;
+        }
+
+        try {
+            if (!dietaryOptions.length) dietaryOptions = await getDietaryRestrictions();
+            renderDietaryGuests();
+            showScreen(dietaryScreen);
+        } catch (error) {
+            console.error("Dietary restrictions load failed:", error);
+            weddingError.textContent = "We couldn't load the dietary options. Please try again.";
+            weddingError.classList.remove("hidden");
+        }
     }
 );
-
-/* =========================================================
-   Reception attendance
-   ========================================================= */
-
-function renderReceptionGuests() {
-    receptionGuests.innerHTML = "";
-    const invitedGuests = state.rsvp.guests.filter(
-        (guest) => guest.isInvitedToReception
-    );
-    if (!invitedGuests.length) {
-        receptionGuests.innerHTML = "<p>No members of this household are invited to the reception.</p>";
-        return;
-    }
-    for (const guest of invitedGuests) {
-        const card = document.createElement("fieldset");
-        card.className = "guest-response-card";
-        const answer = guest.attendance?.reception;
-        card.innerHTML = `
-            <legend>${escapeHtml(guest.firstName)} ${escapeHtml(guest.lastName)}</legend>
-            <label class="attendance-option"><input type="radio" name="reception-${guest.id}" value="yes" ${answer === true ? "checked" : ""}>Yes, I'll be there</label>
-            <label class="attendance-option"><input type="radio" name="reception-${guest.id}" value="no" ${answer === false ? "checked" : ""}>No, I can't attend</label>`;
-        receptionGuests.appendChild(card);
-    }
-}
-
-function saveReceptionResponses() {
-    const invitedGuests = state.rsvp.guests.filter(
-        (guest) => guest.isInvitedToReception
-    );
-    for (const guest of invitedGuests) {
-        const selected = document.querySelector(
-            `input[name="reception-${guest.id}"]:checked`
-        );
-        if (!selected) return { success: false, guest };
-        guest.attendance.reception = selected.value === "yes";
-    }
-    saveDraft();
-    return { success: true };
-}
-
-backToCeremonyButton.addEventListener("click", () => {
-    renderWeddingGuests();
-    showScreen(weddingScreen);
-});
-
-receptionForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    receptionError.textContent = "";
-    receptionError.classList.add("hidden");
-    const result = saveReceptionResponses();
-    if (!result.success) {
-        receptionError.textContent = `Please select an answer for ${result.guest.firstName}.`;
-        receptionError.classList.remove("hidden");
-        return;
-    }
-    try {
-        if (!dietaryOptions.length) dietaryOptions = await getDietaryRestrictions();
-        renderDietaryGuests();
-        showScreen(dietaryScreen);
-    } catch (error) {
-        console.error("Dietary restrictions load failed:", error);
-        receptionError.textContent = "We couldn't load the dietary options. Please try again.";
-        receptionError.classList.remove("hidden");
-    }
-});
 
 
 /* =========================================================
@@ -964,8 +904,8 @@ function renderDietaryGuests() {
     const attendingGuests =
         state.rsvp.guests.filter(
             (guest) =>
-                guest.isInvitedToReception &&
-                guest.attendance?.reception === true
+                guest.isInvitedToWedding &&
+                guest.attendance?.wedding === true
         );
 
     if (attendingGuests.length === 0) {
@@ -974,7 +914,7 @@ function renderDietaryGuests() {
             <p>
                 No dietary information is needed because
                 no guests in this household are attending
-                the reception.
+                the wedding.
             </p>
         `;
 
@@ -1125,8 +1065,8 @@ function saveDietaryResponses() {
     const attendingGuests =
         state.rsvp.guests.filter(
             (guest) =>
-                guest.isInvitedToReception &&
-                guest.attendance?.reception === true
+                guest.isInvitedToWedding &&
+                guest.attendance?.wedding === true
         );
 
     for (const guest of attendingGuests) {
@@ -1185,15 +1125,15 @@ function saveDietaryResponses() {
 }
 
 
-backToReceptionButton.addEventListener(
+backToWeddingButton.addEventListener(
     "click",
     () => {
 
         dietaryError.textContent = "";
         dietaryError.classList.add("hidden");
 
-        renderReceptionGuests();
-        showScreen(receptionScreen);
+        renderWeddingGuests();
+        showScreen(weddingScreen);
     }
 );
 
@@ -1452,7 +1392,7 @@ function renderRsvpReview() {
                     );
 
             const dietarySummary =
-                guest.attendance?.reception
+                guest.attendance?.wedding
                     ? (
                         restrictions.length > 0
                             ? restrictions.join(", ")
@@ -1477,20 +1417,11 @@ function renderRsvpReview() {
                     </p>
 
                     <p>
-                        Ceremony:
+                        Wedding:
                         ${attendanceLabel(
                             guest,
                             "isInvitedToWedding",
                             "wedding"
-                        )}
-                    </p>
-
-                    <p>
-                        Reception:
-                        ${attendanceLabel(
-                            guest,
-                            "isInvitedToReception",
-                            "reception"
                         )}
                     </p>
 
@@ -1569,8 +1500,8 @@ function buildRsvpPayload() {
                     guest.isInvitedToWedding &&
                     guest.attendance?.wedding === true,
                 attendingReception:
-                    guest.isInvitedToReception &&
-                    guest.attendance?.reception === true,
+                    guest.isInvitedToWedding &&
+                    guest.attendance?.wedding === true,
                 attendingBrunch:
                     guest.isInvitedToBrunch &&
                     guest.attendance?.brunch === true
@@ -1580,7 +1511,7 @@ function buildRsvpPayload() {
             state.rsvp.guests.map((guest) => ({
                 guestId: guest.id,
                 restrictionIds:
-                    guest.attendance?.reception === true
+                    guest.attendance?.wedding === true
                         ? (
                             guest.dietaryRestrictions ?? []
                         ).map((restriction) =>
@@ -1588,7 +1519,7 @@ function buildRsvpPayload() {
                         )
                         : [],
                 otherDietaryDetails:
-                    guest.attendance?.reception === true
+                    guest.attendance?.wedding === true
                         ? guest.otherDietaryDetails ?? ""
                         : ""
             }))

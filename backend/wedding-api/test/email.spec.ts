@@ -89,7 +89,11 @@ describe("RSVP confirmation email", () => {
         expect(email.text).toContain(
             "Morning-After Brunch: Not attending"
         );
-        expect(email.text).toContain("Reception: Attending");
+        expect(email.text).toContain("Wedding: Attending");
+        expect(email.text).not.toContain("Reception:");
+        expect(email.text).toContain(
+            "Wedding — Saturday, September 18, 2027 · 4–10 PM"
+        );
         expect(email.text).toContain(
             "Vegetarian, Other: nut allergy"
         );
@@ -106,7 +110,7 @@ describe("RSVP confirmation email", () => {
             "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM"
         );
         expect(email.text).toContain(
-            "Wedding Bowl · 590 Coast S Blvd, La Jolla, CA 92037"
+            "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037"
         );
         expect(email.html).toContain(
             "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037"

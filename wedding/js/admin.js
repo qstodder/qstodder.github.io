@@ -194,8 +194,7 @@ const householdDashboardMetrics = {
     pending: { label: "RSVP not started", description: "Households not started", matches: (row) => row.rsvpStatus === "pending" },
     inProgress: { label: "RSVP in progress", description: "Households in progress", matches: (row) => row.rsvpStatus === "inProgress" },
     welcomeAttending: { label: "Welcome gathering", description: "Households attending", matches: (row) => row.attendance.welcome > 0 },
-    ceremonyAttending: { label: "Ceremony", description: "Households attending", matches: (row) => row.attendance.wedding > 0 },
-    receptionAttending: { label: "Reception", description: "Households attending", matches: (row) => row.attendance.reception > 0 },
+    ceremonyAttending: { label: "Wedding", description: "Households attending", matches: (row) => row.attendance.wedding > 0 },
     brunchAttending: { label: "Brunch", description: "Households attending", matches: (row) => row.attendance.brunch > 0 }
 };
 
@@ -557,7 +556,10 @@ async function loadDashboard() {
         dashboardData = result;
         if (!dashboardCards) {
             dashboardCards = window.initializeDashboardCards({
-                page: "households", cards: result.dashboardCards,
+                page: "households",
+                cards: result.dashboardCards.filter(
+                    (card) => card.metric !== "receptionAttending"
+                ),
                 metrics: householdDashboardMetrics,
                 getRows: () => dashboardData.households,
                 onFilterChanged: renderHouseholds

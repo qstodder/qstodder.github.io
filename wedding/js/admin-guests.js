@@ -53,8 +53,7 @@ function dietaryText(guest) {
 function eventLabels(values) {
     return [
         values.welcome ? "Welcome" : null,
-        values.wedding ? "Ceremony" : null,
-        values.reception ? "Reception" : null,
+        values.wedding ? "Wedding" : null,
         values.brunch ? "Brunch" : null
     ].filter(Boolean);
 }
@@ -65,8 +64,7 @@ function rsvpText(guest) {
     }
     return [
         `Welcome: ${guest.rsvp.welcome ? "Yes" : "No"}`,
-        `Ceremony: ${guest.rsvp.wedding ? "Yes" : "No"}`,
-        `Reception: ${guest.rsvp.reception ? "Yes" : "No"}`,
+        `Wedding: ${guest.rsvp.wedding ? "Yes" : "No"}`,
         `Brunch: ${guest.rsvp.brunch ? "Yes" : "No"}`
     ].join("; ");
 }
@@ -87,8 +85,7 @@ const guestDashboardMetrics = {
     submitted: { label: "RSVP submitted", description: "Guests in submitted households", matches: (row) => row.household.rsvpStatus === "submitted" },
     pending: { label: "RSVP not submitted", description: "Guests without a submitted household RSVP", matches: (row) => row.household.rsvpStatus !== "submitted" },
     welcomeAttending: { label: "Welcome gathering", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.welcome) },
-    ceremonyAttending: { label: "Ceremony", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.wedding) },
-    receptionAttending: { label: "Reception", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.reception) },
+    ceremonyAttending: { label: "Wedding", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.wedding) },
     brunchAttending: { label: "Brunch", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.brunch) }
 };
 
@@ -164,9 +161,7 @@ function filteredAndSortedGuests() {
             (rsvp === "pending" && !guest.rsvp) ||
             (rsvp === "responded" && Boolean(guest.rsvp)) ||
             (rsvp === "weddingYes" && guest.rsvp?.wedding) ||
-            (rsvp === "weddingNo" && guest.rsvp && !guest.rsvp.wedding) ||
-            (rsvp === "receptionYes" && guest.rsvp?.reception) ||
-            (rsvp === "receptionNo" && guest.rsvp && !guest.rsvp.reception);
+            (rsvp === "weddingNo" && guest.rsvp && !guest.rsvp.wedding);
 
         return (
             (!search || searchable.includes(search)) &&
@@ -283,9 +278,9 @@ function exportGuests() {
     const headings = [
         "First Name", "Last Name", "Household", "Household Key",
         "Guest Email", "Household Email", "Scott / Quiana", "Friend / Family", "Family Side",
-        "Invited: Welcome", "Invited: Ceremony", "Invited: Reception",
+        "Invited: Welcome", "Invited: Wedding",
         "Invited: Brunch", "RSVP Recorded", "Attending: Welcome",
-        "Attending: Ceremony", "Attending: Reception", "Attending: Brunch",
+        "Attending: Wedding", "Attending: Brunch",
         "Dietary Restrictions", "Dietary Details"
     ];
     const rows = visibleGuests.map((guest) => [
@@ -296,12 +291,10 @@ function exportGuests() {
         classificationLabels[guest.classifications.familySide] ?? "",
         guest.invitations.welcome ? "Yes" : "No",
         guest.invitations.wedding ? "Yes" : "No",
-        guest.invitations.reception ? "Yes" : "No",
         guest.invitations.brunch ? "Yes" : "No",
         guest.rsvp ? "Yes" : "No",
         guest.rsvp ? (guest.rsvp.welcome ? "Yes" : "No") : "",
         guest.rsvp ? (guest.rsvp.wedding ? "Yes" : "No") : "",
-        guest.rsvp ? (guest.rsvp.reception ? "Yes" : "No") : "",
         guest.rsvp ? (guest.rsvp.brunch ? "Yes" : "No") : "",
         guest.dietaryRestrictions.map((item) => item.name).join("; "),
         guest.dietaryRestrictions.map((item) => item.notes).filter(Boolean).join("; ")
@@ -329,7 +322,10 @@ async function loadGuests() {
         populateFilters();
         if (!dashboardCards) {
             dashboardCards = window.initializeDashboardCards({
-                page: "guests", cards: result.dashboardCards,
+                page: "guests",
+                cards: result.dashboardCards.filter(
+                    (card) => card.metric !== "receptionAttending"
+                ),
                 metrics: guestDashboardMetrics,
                 getRows: () => guestData.guests,
                 onFilterChanged: renderGuests

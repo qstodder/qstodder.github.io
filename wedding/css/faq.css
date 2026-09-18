@@ -1,22 +1,37 @@
-.faq-placeholder {
-    max-width: 620px;
+.faq-list {
+    display: grid;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 42px;
-    background: #f4f8fa;
-    border: 1px solid #d8e3e8;
-    text-align: center;
+    gap: 18px;
 }
 
-.faq-placeholder h3 {
+.faq-item {
+    padding: 30px 34px;
+    background: #f4f8fa;
+    border: 1px solid #d8e3e8;
+}
+
+.faq-item h3 {
     margin: 0 0 12px;
     color: #516f80;
     font-family: Copperplate, "Copperplate Gothic Light", serif;
-    font-size: 1.45rem;
+    font-size: 1.25rem;
     font-weight: 400;
     letter-spacing: .05em;
 }
 
-.faq-placeholder p {
+.faq-item p {
     margin: 0;
     font-size: 1.15rem;
+}
+
+@media (max-width: 520px) {
+    .faq-item {
+        padding: 24px 20px;
+    }
+
+    .faq-item h3 {
+        font-size: 1.05rem;
+        line-height: 1.4;
+    }
 }

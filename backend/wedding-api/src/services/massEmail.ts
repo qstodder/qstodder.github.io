@@ -29,8 +29,8 @@ function invitationCore(greeting: string, htmlBody: string): string {
         <h1 style="margin:18px 0 8px;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:34px;font-weight:500;letter-spacing:3px;line-height:1.25;text-transform:uppercase">Quiana <span style="color:#7a9db0;font-family:Georgia,serif;font-size:26px;font-style:italic;letter-spacing:0;text-transform:none">&amp;</span> Scott</h1>
         <p style="margin:8px auto 25px;color:#647a7e;font-size:17px;font-variant:small-caps;letter-spacing:1px">joyfully invite you to celebrate their marriage</p>
         <table role="presentation" style="width:100%;margin:28px 0;border-collapse:collapse"><tr><td style="width:30%;border-top:1px solid #7a9db0">&nbsp;</td><td style="padding:0 14px;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:12px;letter-spacing:2px;white-space:nowrap">09 · 18 · 27</td><td style="width:30%;border-top:1px solid #7a9db0">&nbsp;</td></tr></table>
-        <p style="margin:0;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase">Wedding Bowl · La Jolla, California</p>
-        <p style="margin:5px 0 0;color:#647a7e;font-size:16px">Saturday at four o’clock</p>
+        <p style="margin:0;color:#243746;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase">La Jolla Woman’s Club · La Jolla, California</p>
+        <p style="margin:5px 0 0;color:#647a7e;font-size:16px">Saturday at 4pm</p>
         <div style="margin:32px auto 24px;max-width:440px;color:#3e5965;text-align:left">${htmlBody}</div>
         <p style="margin:24px 0;color:#526b76;font-size:16px">Kindly respond by August 1, 2027</p>
         <a href="https://qstodder.com/wedding/rsvp.html" style="display:inline-block;padding:13px 27px;color:#fff;background:#365f74;border-radius:999px;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-decoration:none;text-transform:uppercase">View details &amp; RSVP</a>`;
@@ -47,7 +47,7 @@ export function buildHouseholdEmail(
     let html: string;
 
     if (template === "classic") {
-        html = frame(`<section style="padding:10px;background:#fbfdfe;border:1px solid #8faeba"><div style="padding:54px 42px;background:linear-gradient(180deg,#ffffff,#f2f7f9);border:1px solid #c4d6de;text-align:center">${invitationCore(greeting, htmlBody)}<p style="margin:28px 0 0;color:#647a7e;font-size:15px">Reception to follow at La Jolla Woman’s Club</p></div></section>`, "#e9f1f4");
+        html = frame(`<section style="padding:10px;background:#fbfdfe;border:1px solid #8faeba"><div style="padding:54px 42px;background:linear-gradient(180deg,#ffffff,#f2f7f9);border:1px solid #c4d6de;text-align:center">${invitationCore(greeting, htmlBody)}<p style="margin:28px 0 0;color:#647a7e;font-size:15px">Dinner and dancing to follow</p></div></section>`, "#e9f1f4");
     } else if (template === "animated") {
         html = frame(`<style>@keyframes tide{from{background-position:0 100%}to{background-position:75px 100%}}.coastal-motion{animation:tide 7s ease-in-out infinite alternate}</style><section class="coastal-motion" style="padding:54px 42px 165px;background-color:#f7fbfc;background-image:repeating-radial-gradient(ellipse at 50% 112%,#608da2 0,#608da2 24px,#a9c7d3 26px,#a9c7d3 48px,#dcebf0 50px,#dcebf0 72px);background-position:0 100%;background-repeat:repeat-x;background-size:680px 235px;text-align:center">${invitationCore(greeting, htmlBody)}</section><p style="margin:0;padding:12px;color:#fff;background:#365f74;text-align:center;font-family:Copperplate,'Trebuchet MS',Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase">A wedding by the sea</p>`, "#dfecef");
     } else if (template === "reveal") {

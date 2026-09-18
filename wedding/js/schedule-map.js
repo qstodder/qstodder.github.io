@@ -9,21 +9,12 @@ const weekendLocations = [
         mapUrl: "https://www.google.com/maps/search/?api=1&query=The+Public+House+830+Kline+St+La+Jolla+CA+92037"
     },
     {
-        name: "Ceremony",
-        venue: "Wedding Bowl",
-        address: "590 Coast S Blvd, La Jolla, CA 92037",
-        coordinates: [32.84412, -117.27919],
-        icon: "♥",
-        className: "icon-ceremony",
-        mapUrl: "https://www.google.com/maps/search/?api=1&query=Wedding+Bowl+590+Coast+S+Blvd+La+Jolla+CA+92037"
-    },
-    {
-        name: "Reception",
+        name: "Wedding",
         venue: "La Jolla Woman’s Club",
         address: "7791 Draper Ave, La Jolla, CA 92037",
         coordinates: [32.84413, -117.27752],
-        icon: "♪",
-        className: "icon-reception",
+        icon: "♥",
+        className: "icon-wedding",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=La+Jolla+Womans+Club+7791+Draper+Ave+La+Jolla+CA+92037"
     },
     {

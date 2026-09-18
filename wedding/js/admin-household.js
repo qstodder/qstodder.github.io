@@ -124,16 +124,14 @@ function renderGuest(guest) {
             </div>
             <fieldset class="guest-fieldset"><legend>Invited to</legend><div class="guest-options">
                 ${invitationCheckbox("inviteWelcome", "Welcome gathering", guest.invitations.welcome)}
-                ${invitationCheckbox("inviteWedding", "Ceremony", guest.invitations.wedding)}
-                ${invitationCheckbox("inviteReception", "Reception", guest.invitations.reception)}
+                ${invitationCheckbox("inviteWedding", "Wedding", guest.invitations.wedding)}
                 ${invitationCheckbox("inviteBrunch", "Morning-after brunch", guest.invitations.brunch)}
             </div></fieldset>
             <fieldset class="guest-fieldset"><legend>RSVP response</legend><div class="detail-form-grid guest-rsvp-grid">
                 ${rsvpSelect("rsvpWelcome", "Welcome", guest.rsvp?.welcome, Boolean(guest.rsvp))}
-                ${rsvpSelect("rsvpWedding", "Ceremony", guest.rsvp?.wedding, Boolean(guest.rsvp))}
-                ${rsvpSelect("rsvpReception", "Reception", guest.rsvp?.reception, Boolean(guest.rsvp))}
+                ${rsvpSelect("rsvpWedding", "Wedding", guest.rsvp?.wedding, Boolean(guest.rsvp))}
                 ${rsvpSelect("rsvpBrunch", "Brunch", guest.rsvp?.brunch, Boolean(guest.rsvp))}
-            </div><p class="field-help">Choose “Not recorded” for all four to clear this guest’s RSVP.</p></fieldset>
+            </div><p class="field-help">Choose “Not recorded” for all three to clear this guest’s RSVP.</p></fieldset>
             <fieldset class="guest-fieldset"><legend>Dietary preferences</legend><div class="guest-options">${restrictionOptions}</div>
                 <label class="address-field"><span>Additional dietary details</span><textarea name="dietaryNotes" rows="2" maxlength="1000">${escapeHtml(guest.dietaryNotes ?? "")}</textarea></label>
             </fieldset>
@@ -156,11 +154,11 @@ function renderGuests() {
 
 function guestPayload(form) {
     const formData = new FormData(form);
-    const rsvpValues = ["rsvpWelcome", "rsvpWedding", "rsvpReception", "rsvpBrunch"]
+    const rsvpValues = ["rsvpWelcome", "rsvpWedding", "rsvpBrunch"]
         .map((name) => formData.get(name));
     const hasRsvp = rsvpValues.some((answer) => answer !== "none");
     if (hasRsvp && rsvpValues.some((answer) => answer === "none")) {
-        throw new Error("Record all four RSVP answers, or set all four to Not recorded.");
+        throw new Error("Record all three RSVP answers, or set all three to Not recorded.");
     }
     const dietaryRestrictionIds = formData
         .getAll("dietaryRestrictionIds")
@@ -187,13 +185,13 @@ function guestPayload(form) {
         invitations: {
             welcome: formData.has("inviteWelcome"),
             wedding: formData.has("inviteWedding"),
-            reception: formData.has("inviteReception"),
+            reception: formData.has("inviteWedding"),
             brunch: formData.has("inviteBrunch")
         },
         rsvp: hasRsvp ? {
             welcome: formData.get("rsvpWelcome") === "yes",
             wedding: formData.get("rsvpWedding") === "yes",
-            reception: formData.get("rsvpReception") === "yes",
+            reception: formData.get("rsvpWedding") === "yes",
             brunch: formData.get("rsvpBrunch") === "yes"
         } : null,
         dietaryRestrictionIds,
