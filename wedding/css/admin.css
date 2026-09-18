@@ -916,7 +916,7 @@ tbody th {
 
 .detail-form-grid {
     display: grid;
-    gap: .65rem .8rem;
+    gap: .45rem .7rem;
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -939,11 +939,18 @@ tbody th {
 
 .admin-detail-main .address-field input,
 .admin-detail-main .address-field select {
-    min-height: 2.2rem;
-    padding: .42rem .58rem;
+    min-height: 1.85rem;
+    padding: .22rem .5rem;
+    font-size: .9rem;
 }
 
-.admin-detail-main .address-field textarea { padding: .48rem .6rem; }
+.admin-detail-main .address-field { gap: .1rem; }
+.admin-detail-main .address-field span { font-size: .59rem; line-height: 1.15; }
+.admin-detail-main .address-field textarea {
+    padding: .32rem .5rem;
+    font-size: .9rem;
+    line-height: 1.25;
+}
 
 .admin-checkbox {
     align-items: center;
@@ -1064,6 +1071,12 @@ tbody th {
     .detail-field-wide,
     .add-guest-form .form-status {
         grid-column: auto;
+    }
+
+    .admin-detail-main .address-field input,
+    .admin-detail-main .address-field select {
+        min-height: 2.35rem;
+        padding: .48rem .58rem;
     }
 }
 
