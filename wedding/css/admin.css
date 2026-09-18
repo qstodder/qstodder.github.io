@@ -886,31 +886,41 @@ tbody th {
 
 .admin-detail-header {
     align-items: flex-start;
+    padding-top: 1.35rem;
+    padding-bottom: 1.35rem;
 }
+
+.admin-detail-header h1 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
 
 .admin-back-link {
     color: inherit;
     display: inline-block;
     font-size: 0.9rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: .55rem;
     text-underline-offset: 0.2em;
 }
 
 .admin-detail-main,
 .admin-detail-layout {
     display: grid;
-    gap: 1.5rem;
+    gap: .9rem;
 }
 
+.admin-detail-main { padding-top: 1rem; padding-bottom: 1.5rem; }
+
 .detail-section {
-    padding: clamp(1.25rem, 3vw, 2.25rem);
+    padding: clamp(.9rem, 2vw, 1.35rem);
 }
+
+.detail-section > .panel-heading { margin-bottom: .75rem; }
 
 .detail-form-grid {
     display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .65rem .8rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+
+.guest-form .detail-field-wide { grid-column: auto; }
 
 .detail-field-wide {
     grid-column: 1 / -1;
@@ -926,6 +936,14 @@ tbody th {
     padding: 0.7rem 0.75rem;
     width: 100%;
 }
+
+.admin-detail-main .address-field input,
+.admin-detail-main .address-field select {
+    min-height: 2.2rem;
+    padding: .42rem .58rem;
+}
+
+.admin-detail-main .address-field textarea { padding: .48rem .6rem; }
 
 .admin-checkbox {
     align-items: center;
@@ -943,7 +961,7 @@ tbody th {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    margin-top: 1rem;
+    margin-top: .6rem;
 }
 
 .danger-button {
@@ -966,12 +984,15 @@ tbody th {
     min-height: 1.4em;
 }
 
+.guest-form .form-status:empty,
+#household-form-status:empty { display: none; }
+
 .add-guest-form {
     align-items: end;
     display: grid;
-    gap: 1rem;
+    gap: .65rem;
     grid-template-columns: 1fr 1fr auto;
-    margin-bottom: 1.5rem;
+    margin-bottom: .9rem;
 }
 
 .add-guest-form .form-status {
@@ -981,21 +1002,21 @@ tbody th {
 
 .guest-editor-list {
     display: grid;
-    gap: 1rem;
+    gap: .7rem;
 }
 
 .guest-editor-card {
     background: rgba(255, 255, 255, 0.65);
     border: 1px solid rgba(48, 55, 45, 0.16);
     border-radius: 0.75rem;
-    padding: clamp(1rem, 2.5vw, 1.5rem);
+    padding: clamp(.75rem, 1.5vw, 1rem);
 }
 
 .guest-editor-heading {
     align-items: baseline;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: .6rem;
 }
 
 .guest-editor-heading h3 {
@@ -1011,8 +1032,8 @@ tbody th {
 .guest-fieldset {
     border: 0;
     border-top: 1px solid rgba(48, 55, 45, 0.14);
-    margin: 1.25rem 0 0;
-    padding: 1.1rem 0 0;
+    margin: .75rem 0 0;
+    padding: .65rem 0 0;
 }
 
 .guest-fieldset legend {
@@ -1023,12 +1044,14 @@ tbody th {
 .guest-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem 1.4rem;
+    gap: .45rem 1rem;
 }
 
 .guest-rsvp-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
+
+.guest-fieldset .field-help { margin: .45rem 0 0; }
 
 @media (max-width: 700px) {
     .detail-form-grid,
