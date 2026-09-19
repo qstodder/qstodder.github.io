@@ -291,6 +291,13 @@ body {
     margin-top: 13px;
 }
 
+.something-blue {
+    color: #315f85;
+    font-size: 1.08em;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
 .swatches {
     display: flex;
     gap: 7px;
