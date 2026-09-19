@@ -1,12 +1,12 @@
 const weekendLocations = [
     {
         name: "Welcome Gathering",
-        venue: "The Public House",
-        address: "830 Kline St, La Jolla, CA 92037",
-        coordinates: [32.84336, -117.27529],
+        venue: "New English Brewing",
+        address: "11545 Sorrento Valley Rd, Suite 305, San Diego, CA 92121",
+        coordinates: [32.9128265, -117.2308502],
         icon: "✦",
         className: "icon-welcome",
-        mapUrl: "https://www.google.com/maps/search/?api=1&query=The+Public+House+830+Kline+St+La+Jolla+CA+92037"
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=New+English+Brewing+11545+Sorrento+Valley+Rd+Suite+305+San+Diego+CA+92121"
     },
     {
         name: "Wedding",
@@ -19,12 +19,12 @@ const weekendLocations = [
     },
     {
         name: "Morning-After Brunch",
-        venue: "Ellen Browning Scripps Park",
-        address: "1100 Coast Blvd, La Jolla, CA 92037",
-        coordinates: [32.84995087869962, -117.27439982883561],
+        venue: "La Jolla Shores",
+        address: "8300 Camino Del Oro, La Jolla, CA 92037",
+        coordinates: [32.8559, -117.2573],
         icon: "☀",
         className: "icon-brunch",
-        mapUrl: "https://www.google.com/maps/search/?api=1&query=Ellen+Browning+Scripps+Park+1100+Coast+Blvd+La+Jolla+CA+92037"
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=La+Jolla+Shores+Park+8300+Camino+Del+Oro+La+Jolla+CA+92037"
     },
     {
         name: "Empress Hotel La Jolla",

@@ -110,13 +110,16 @@ describe("RSVP confirmation email", () => {
             "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM"
         );
         expect(email.text).toContain(
+            "New English Brewing · 11545 Sorrento Valley Rd, Suite 305, San Diego, CA 92121"
+        );
+        expect(email.text).toContain(
             "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037"
         );
         expect(email.html).toContain(
             "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037"
         );
         expect(email.html).toContain(
-            "Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037"
+            "La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037"
         );
         expect(email.text).not.toContain(
             "Here is a copy of your responses"

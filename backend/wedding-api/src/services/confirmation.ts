@@ -169,21 +169,21 @@ export function buildConfirmationEmail(
     const textEvents = [
         "WEEKEND DETAILS",
         "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM",
-        "The Public House · 830 Kline St, La Jolla, CA 92037",
+        "New English Brewing · 11545 Sorrento Valley Rd, Suite 305, San Diego, CA 92121",
         "",
         "Wedding — Saturday, September 18, 2027 · 4–10 PM",
         "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037",
         "",
         "Morning-After Brunch — Sunday, September 19, 2027 · 11 AM–2 PM",
-        "Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037"
+        "La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037"
     ].join("\n");
 
     const htmlEvents = `
         <section style="margin: 28px 0 34px; padding: 22px; background: #f4f8fa; border: 1px solid #d8e3e8;">
             <h2 style="margin: 0 0 18px; color: #52656a; font-size: 20px; font-weight: 500;">Weekend Details</h2>
-            <p style="margin: 0 0 14px;"><strong>Welcome Gathering</strong><br>Friday, September 17, 2027 · 7–9 PM<br>The Public House · 830 Kline St, La Jolla, CA 92037</p>
+            <p style="margin: 0 0 14px;"><strong>Welcome Gathering</strong><br>Friday, September 17, 2027 · 7–9 PM<br>New English Brewing · 11545 Sorrento Valley Rd, Suite 305, San Diego, CA 92121</p>
             <p style="margin: 0 0 14px;"><strong>Wedding</strong><br>Saturday, September 18, 2027 · 4–10 PM<br>La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037</p>
-            <p style="margin: 0;"><strong>Morning-After Brunch</strong><br>Sunday, September 19, 2027 · 11 AM–2 PM<br>Ellen Browning Scripps Park · 1100 Coast Blvd, La Jolla, CA 92037</p>
+            <p style="margin: 0;"><strong>Morning-After Brunch</strong><br>Sunday, September 19, 2027 · 11 AM–2 PM<br>La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037</p>
         </section>
     `;
 
