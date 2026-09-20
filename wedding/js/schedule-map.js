@@ -21,7 +21,7 @@ const weekendLocations = [
         name: "Morning-After Brunch",
         venue: "La Jolla Shores",
         address: "8300 Camino Del Oro, La Jolla, CA 92037",
-        coordinates: [32.8559, -117.2573],
+        coordinates: [32.859383, -117.255721],
         icon: "☀",
         className: "icon-brunch",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=La+Jolla+Shores+Park+8300+Camino+Del+Oro+La+Jolla+CA+92037"
