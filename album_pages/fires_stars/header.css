@@ -1,21 +1,17 @@
- header{
-        padding: 100px;
-        padding-top: 60px;
-        /* top */
-        font-size: 20px;
-        color: black;
-        background-color: rgb(229, 230, 173);
-        text-align: center;
-    }
-    a.return {
-        color: black;
-        text-align: left;
-    }
-    a.return:link {text-decoration: none}
-    a.return:hover {text-decoration: underline}
-    h1 {text-align: center;}
-    p {
-        font-size: 20px;
-        color: rgb(90, 88, 88); 
-        text-align: center; 
-    }  
+header {
+    padding: 60px 100px 100px;
+    font-size: 20px;
+    color: black;
+    background-color: rgb(229, 230, 173);
+    text-align: center;
+}
+
+.album-return {
+    padding: 15px;
+    background: rgb(229, 230, 173);
+}
+
+a.return { color: black; text-decoration: none; }
+a.return:hover { text-decoration: underline; }
+h1 { text-align: center; }
+header p { font-size: 20px; color: rgb(90, 88, 88); text-align: center; }
