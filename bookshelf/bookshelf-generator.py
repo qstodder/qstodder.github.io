@@ -99,6 +99,11 @@ def book_style(seed_num):
 def render_book(book, shelf_index, year, idx):
     title = escape(book.get("Title") or "Untitled")
     cover = (book.get("Cover_File") or "").strip()
+    genre = escape((book.get("Genre") or "Not listed").strip(), quote=True)
+    author = escape((book.get("Author") or "Not listed").strip(), quote=True)
+    page_count = escape((book.get("Page_Count") or "Not listed").strip(), quote=True)
+    year_published = escape((book.get("Year_Published") or "Not listed").strip(), quote=True)
+    date_read = escape((book.get("Date_Read") or "Not listed").strip(), quote=True)
 
     seed_num = year * 1000 + idx
     sx, sy = book_style(seed_num)
@@ -111,7 +116,11 @@ def render_book(book, shelf_index, year, idx):
         fallback = DEFAULTS[shelf_index % len(DEFAULTS)]
 
         return f'''
-<div class="book has-cover" style="{style}">
+<div class="book has-cover" style="{style}" tabindex="0" role="button"
+     aria-label="View details for {title}"
+     data-title="{title}" data-cover="{src}" data-fallback="{fallback}"
+     data-genre="{genre}" data-author="{author}" data-pages="{page_count}"
+     data-year="{year_published}" data-read="{date_read}">
     <img src="{src}" alt="{title}"
          onerror="this.onerror=null;this.src='{fallback}'">
 </div>
@@ -121,7 +130,11 @@ def render_book(book, shelf_index, year, idx):
     src = DEFAULTS[shelf_index % len(DEFAULTS)]
 
     return f'''
-<div class="book no-cover" style="{style}">
+<div class="book no-cover" style="{style}" tabindex="0" role="button"
+     aria-label="View details for {title}"
+     data-title="{title}" data-cover="{src}" data-fallback="{src}"
+     data-genre="{genre}" data-author="{author}" data-pages="{page_count}"
+     data-year="{year_published}" data-read="{date_read}">
     <img src="{src}" alt="{title}">
     <div class="title-on-book">{title}</div>
 </div>
@@ -377,6 +390,14 @@ header h1 {{
     width:130px;
     bottom:{book_shift}px;
     text-align:center;
+    cursor:pointer;
+    outline:none;
+}}
+
+.book:focus-visible {{
+    outline:3px solid #f8f5e6;
+    outline-offset:5px;
+    border-radius:3px;
 }}
 
 .book::before {{
@@ -428,6 +449,88 @@ header h1 {{
 }}
 
 /* =========================
+   Book Details
+========================= */
+
+.book-dialog {{
+    width:min(620px, calc(100vw - 40px));
+    padding:0;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:14px;
+    color:#30271f;
+    background:#f4efe5;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+}}
+
+.book-dialog::backdrop {{
+    background:rgba(24,30,31,.78);
+    backdrop-filter:blur(5px);
+}}
+
+.dialog-close {{
+    position:absolute;
+    top:10px;
+    right:12px;
+    z-index:2;
+    width:38px;
+    height:38px;
+    border:0;
+    border-radius:50%;
+    background:rgba(48,39,31,.1);
+    color:#30271f;
+    font:28px/1 Georgia, serif;
+    cursor:pointer;
+}}
+
+.dialog-close:hover,
+.dialog-close:focus-visible {{
+    background:rgba(48,39,31,.2);
+    outline:2px solid #745f4c;
+}}
+
+.dialog-content {{
+    display:grid;
+    grid-template-columns:190px 1fr;
+    gap:28px;
+    padding:38px;
+}}
+
+.dialog-cover {{
+    width:190px;
+    height:285px;
+    object-fit:cover;
+    border-radius:4px;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}}
+
+.dialog-details {{
+    align-self:center;
+}}
+
+.dialog-details h2 {{
+    margin:0 28px 24px 0;
+    color:#48392c;
+    font-size:1.65rem;
+    line-height:1.15;
+}}
+
+.book-meta {{
+    display:grid;
+    grid-template-columns:max-content 1fr;
+    gap:10px 16px;
+    margin:0;
+}}
+
+.book-meta dt {{
+    color:#745f4c;
+    font-weight:bold;
+}}
+
+.book-meta dd {{
+    margin:0;
+}}
+
+/* =========================
    Responsive
 ========================= */
 
@@ -448,6 +551,26 @@ header h1 {{
 }}
 
 @media (max-width:640px) {{
+
+    .dialog-content {{
+        grid-template-columns:1fr;
+        justify-items:center;
+        gap:22px;
+        padding:32px 24px;
+    }}
+
+    .dialog-cover {{
+        width:150px;
+        height:225px;
+    }}
+
+    .dialog-details {{
+        width:100%;
+    }}
+
+    .dialog-details h2 {{
+        text-align:center;
+    }}
 
     .year-sign img {{
         width:190px;
@@ -497,6 +620,69 @@ header h1 {{
 <div class="wrap">
 {body}
 </div>
+
+<dialog class="book-dialog" id="book-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" aria-label="Close book details">&times;</button>
+    <div class="dialog-content">
+        <img class="dialog-cover" id="dialog-cover" src="" alt="">
+        <div class="dialog-details">
+            <h2 id="dialog-title"></h2>
+            <dl class="book-meta">
+                <dt>Genre</dt><dd id="dialog-genre"></dd>
+                <dt>Author</dt><dd id="dialog-author"></dd>
+                <dt>Page count</dt><dd id="dialog-pages"></dd>
+                <dt>Published</dt><dd id="dialog-year"></dd>
+                <dt>Date read</dt><dd id="dialog-read"></dd>
+            </dl>
+        </div>
+    </div>
+</dialog>
+
+<script>
+(function () {{
+    const dialog = document.getElementById("book-dialog");
+    const cover = document.getElementById("dialog-cover");
+    const fields = {{
+        title: document.getElementById("dialog-title"),
+        genre: document.getElementById("dialog-genre"),
+        author: document.getElementById("dialog-author"),
+        pages: document.getElementById("dialog-pages"),
+        year: document.getElementById("dialog-year"),
+        read: document.getElementById("dialog-read")
+    }};
+
+    function openBook(book) {{
+        Object.keys(fields).forEach(function (key) {{
+            fields[key].textContent = book.dataset[key];
+        }});
+        cover.src = book.dataset.cover;
+        cover.alt = "Cover of " + book.dataset.title;
+        cover.onerror = function () {{
+            cover.onerror = null;
+            cover.src = book.dataset.fallback;
+        }};
+        dialog.showModal();
+    }}
+
+    document.querySelectorAll(".book").forEach(function (book) {{
+        book.addEventListener("click", function () {{ openBook(book); }});
+        book.addEventListener("keydown", function (event) {{
+            if (event.key === "Enter" || event.key === " ") {{
+                event.preventDefault();
+                openBook(book);
+            }}
+        }});
+    }});
+
+    dialog.querySelector(".dialog-close").addEventListener("click", function () {{
+        dialog.close();
+    }});
+
+    dialog.addEventListener("click", function (event) {{
+        if (event.target === dialog) dialog.close();
+    }});
+}})();
+</script>
 
 </body>
 </html>

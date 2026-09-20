@@ -161,6 +161,14 @@ header h1 {
     width:130px;
     bottom:30px;
     text-align:center;
+    cursor:pointer;
+    outline:none;
+}
+
+.book:focus-visible {
+    outline:3px solid #f8f5e6;
+    outline-offset:5px;
+    border-radius:3px;
 }
 
 .book::before {
@@ -212,6 +220,88 @@ header h1 {
 }
 
 /* =========================
+   Book Details
+========================= */
+
+.book-dialog {
+    width:min(620px, calc(100vw - 40px));
+    padding:0;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:14px;
+    color:#30271f;
+    background:#f4efe5;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+}
+
+.book-dialog::backdrop {
+    background:rgba(24,30,31,.78);
+    backdrop-filter:blur(5px);
+}
+
+.dialog-close {
+    position:absolute;
+    top:10px;
+    right:12px;
+    z-index:2;
+    width:38px;
+    height:38px;
+    border:0;
+    border-radius:50%;
+    background:rgba(48,39,31,.1);
+    color:#30271f;
+    font:28px/1 Georgia, serif;
+    cursor:pointer;
+}
+
+.dialog-close:hover,
+.dialog-close:focus-visible {
+    background:rgba(48,39,31,.2);
+    outline:2px solid #745f4c;
+}
+
+.dialog-content {
+    display:grid;
+    grid-template-columns:190px 1fr;
+    gap:28px;
+    padding:38px;
+}
+
+.dialog-cover {
+    width:190px;
+    height:285px;
+    object-fit:cover;
+    border-radius:4px;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+
+.dialog-details {
+    align-self:center;
+}
+
+.dialog-details h2 {
+    margin:0 28px 24px 0;
+    color:#48392c;
+    font-size:1.65rem;
+    line-height:1.15;
+}
+
+.book-meta {
+    display:grid;
+    grid-template-columns:max-content 1fr;
+    gap:10px 16px;
+    margin:0;
+}
+
+.book-meta dt {
+    color:#745f4c;
+    font-weight:bold;
+}
+
+.book-meta dd {
+    margin:0;
+}
+
+/* =========================
    Responsive
 ========================= */
 
@@ -232,6 +322,26 @@ header h1 {
 }
 
 @media (max-width:640px) {
+
+    .dialog-content {
+        grid-template-columns:1fr;
+        justify-items:center;
+        gap:22px;
+        padding:32px 24px;
+    }
+
+    .dialog-cover {
+        width:150px;
+        height:225px;
+    }
+
+    .dialog-details {
+        width:100%;
+    }
+
+    .dialog-details h2 {
+        text-align:center;
+    }
 
     .year-sign img {
         width:190px;
@@ -287,22 +397,38 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:1.019; --sy:1;">
+<div class="book has-cover" style="--sx:1.019; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Starless Sea"
+     data-title="The Starless Sea" data-cover="./img/books/starless-sea.jpeg" data-fallback="./img/default-blue.png"
+     data-genre="Fantasy" data-author="Erin Morgenstern" data-pages="498"
+     data-year="2019" data-read="2/15/22">
     <img src="./img/books/starless-sea.jpeg" alt="The Starless Sea"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.013; --sy:1;">
+<div class="book has-cover" style="--sx:1.013; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Project Hail Mary"
+     data-title="Project Hail Mary" data-cover="./img/books/PHM.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Andy Weir" data-pages="476"
+     data-year="2021" data-read="2/12/23">
     <img src="./img/books/PHM.jpg" alt="Project Hail Mary"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.991; --sy:1;">
+<div class="book has-cover" style="--sx:0.991; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Ministry for the Future"
+     data-title="The Ministry for the Future" data-cover="./img/books/ministry-for-future.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Kim Stanley Robinson" data-pages="563"
+     data-year="2020" data-read="4/20/23">
     <img src="./img/books/ministry-for-future.jpg" alt="The Ministry for the Future"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.976; --sy:1;">
+<div class="book has-cover" style="--sx:0.976; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Three-Body Problem (Remembrance of Earth’s Past, #1)"
+     data-title="The Three-Body Problem (Remembrance of Earth’s Past, #1)" data-cover="./img/books/three-body-problem.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Liu Cixin" data-pages="472"
+     data-year="2014" data-read="12/27/25">
     <img src="./img/books/three-body-problem.jpg" alt="The Three-Body Problem (Remembrance of Earth’s Past, #1)"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
@@ -314,47 +440,83 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:0.99; --sy:1;">
+<div class="book has-cover" style="--sx:0.99; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Everything Is Tuberculosis"
+     data-title="Everything Is Tuberculosis" data-cover="./img/books/tuberculosis.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Non-Fiction" data-author="John Green" data-pages="198"
+     data-year="2025" data-read="5/30/2026">
     <img src="./img/books/tuberculosis.jpg" alt="Everything Is Tuberculosis"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.972; --sy:1;">
+<div class="book has-cover" style="--sx:0.972; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Broad Band"
+     data-title="Broad Band" data-cover="./img/books/broadband.jpg" data-fallback="./img/default-green.png"
+     data-genre="Non-Fiction" data-author="Claire L. Evans" data-pages="288"
+     data-year="2018" data-read="5/19/2026">
     <img src="./img/books/broadband.jpg" alt="Broad Band"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.973; --sy:1;">
+<div class="book has-cover" style="--sx:0.973; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Becoming"
+     data-title="Becoming" data-cover="./img/books/becoming.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Non-Fiction" data-author="Michelle Obama" data-pages="448"
+     data-year="2018" data-read="5/13/2026">
     <img src="./img/books/becoming.jpg" alt="Becoming"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.01; --sy:1;">
+<div class="book has-cover" style="--sx:1.01; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Notebook: A History of Thinking on Paper"
+     data-title="The Notebook: A History of Thinking on Paper" data-cover="./img/books/the-notebook-history.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Non-Fiction" data-author="Roland Allen" data-pages="416"
+     data-year="2023" data-read="5/12/2026">
     <img src="./img/books/the-notebook-history.jpg" alt="The Notebook: A History of Thinking on Paper"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.013; --sy:1;">
+<div class="book has-cover" style="--sx:1.013; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Careless People"
+     data-title="Careless People" data-cover="./img/books/careless_people.jpg" data-fallback="./img/default-green.png"
+     data-genre="Non-Fiction" data-author="Sarah Wynn-Williams" data-pages="382"
+     data-year="2025" data-read="5/8/26">
     <img src="./img/books/careless_people.jpg" alt="Careless People"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.976; --sy:1;">
+<div class="book has-cover" style="--sx:0.976; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Sapiens"
+     data-title="Sapiens" data-cover="./img/books/sapiens.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Non-Fiction" data-author="Yuval Noah Harari" data-pages="464"
+     data-year="2014" data-read="4/30/26">
     <img src="./img/books/sapiens.jpg" alt="Sapiens"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.003; --sy:1;">
+<div class="book has-cover" style="--sx:1.003; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Mona’s Eyes"
+     data-title="Mona’s Eyes" data-cover="./img/books/monas-eyes.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Fiction" data-author="Thomas Schlesser" data-pages="432"
+     data-year="2025" data-read="4/13/26">
     <img src="./img/books/monas-eyes.jpg" alt="Mona’s Eyes"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.0; --sy:1;">
+<div class="book has-cover" style="--sx:1.0; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Death&#x27;s End (Remembrance of Earth’s Past, #3)"
+     data-title="Death&#x27;s End (Remembrance of Earth’s Past, #3)" data-cover="./img/books/deaths-end.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Liu Cixin" data-pages="604"
+     data-year="2016" data-read="3/5/26">
     <img src="./img/books/deaths-end.jpg" alt="Death&#x27;s End (Remembrance of Earth’s Past, #3)"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.011; --sy:1;">
+<div class="book has-cover" style="--sx:1.011; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Dark Forest (Remembrance of Earth’s Past, #2)"
+     data-title="The Dark Forest (Remembrance of Earth’s Past, #2)" data-cover="./img/books/dark-forest.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Liu Cixin" data-pages="512"
+     data-year="2015" data-read="1/10/26">
     <img src="./img/books/dark-forest.jpg" alt="The Dark Forest (Remembrance of Earth’s Past, #2)"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
@@ -366,62 +528,110 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:0.999; --sy:1;">
+<div class="book has-cover" style="--sx:0.999; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Make Believe: Poems for Hoping Again"
+     data-title="Make Believe: Poems for Hoping Again" data-cover="./img/books/make-believe.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Poetry" data-author="Victoria Hutchins" data-pages="144"
+     data-year="2025" data-read="12/27/25">
     <img src="./img/books/make-believe.jpg" alt="Make Believe: Poems for Hoping Again"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.989; --sy:1;">
+<div class="book has-cover" style="--sx:0.989; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Three-Body Problem (Remembrance of Earth’s Past, #1)"
+     data-title="The Three-Body Problem (Remembrance of Earth’s Past, #1)" data-cover="./img/books/three-body-problem.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Liu Cixin" data-pages="472"
+     data-year="2014" data-read="12/27/25">
     <img src="./img/books/three-body-problem.jpg" alt="The Three-Body Problem (Remembrance of Earth’s Past, #1)"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.013; --sy:1;">
+<div class="book has-cover" style="--sx:1.013; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Lost Bookshop"
+     data-title="The Lost Bookshop" data-cover="./img/books/lost-bookshop.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Fantasy" data-author="Evie  Woods" data-pages="444"
+     data-year="2023" data-read="11/30/25">
     <img src="./img/books/lost-bookshop.jpg" alt="The Lost Bookshop"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:0.984; --sy:1;">
+<div class="book has-cover" style="--sx:0.984; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Pride and Prejudice"
+     data-title="Pride and Prejudice" data-cover="./img/books/pride-and-prejudice.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Romance" data-author="Jane Austen" data-pages="400"
+     data-year="2023" data-read="11/17/25">
     <img src="./img/books/pride-and-prejudice.jpg" alt="Pride and Prejudice"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.002; --sy:1;">
+<div class="book has-cover" style="--sx:1.002; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Murder of Mr. Wickham (Mr. Darcy &amp; Miss Tilney, #1)"
+     data-title="The Murder of Mr. Wickham (Mr. Darcy &amp; Miss Tilney, #1)" data-cover="./img/books/mr-wickham.jpg" data-fallback="./img/default-green.png"
+     data-genre="Murder Mystery, Fan-fiction" data-author="Claudia Gray" data-pages="386"
+     data-year="2022" data-read="10/21/25">
     <img src="./img/books/mr-wickham.jpg" alt="The Murder of Mr. Wickham (Mr. Darcy &amp; Miss Tilney, #1)"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.01; --sy:1;">
+<div class="book has-cover" style="--sx:1.01; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Bobiverse 4: Heaven&#x27;s River"
+     data-title="Bobiverse 4: Heaven&#x27;s River" data-cover="./img/books/heavens-river.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Dennis E. Taylor" data-pages="632"
+     data-year="2020" data-read="7/21/25">
     <img src="./img/books/heavens-river.jpg" alt="Bobiverse 4: Heaven&#x27;s River"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.005; --sy:1;">
+<div class="book has-cover" style="--sx:1.005; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Prophet"
+     data-title="The Prophet" data-cover="./img/books/prophet.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Poetry" data-author="Kahlil Gibran" data-pages="127"
+     data-year="2003" data-read="7/21/25">
     <img src="./img/books/prophet.jpg" alt="The Prophet"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.996; --sy:1;">
+<div class="book has-cover" style="--sx:0.996; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Bobiverse 3: All These Worlds"
+     data-title="Bobiverse 3: All These Worlds" data-cover="./img/books/all-these-worlds.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Dennis E. Taylor" data-pages="336"
+     data-year="2017" data-read="5/23/25">
     <img src="./img/books/all-these-worlds.jpg" alt="Bobiverse 3: All These Worlds"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.993; --sy:1;">
+<div class="book has-cover" style="--sx:0.993; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Bobiverse 2: For We Are Many"
+     data-title="Bobiverse 2: For We Are Many" data-cover="./img/books/we-are-many.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Dennis E. Taylor" data-pages="311"
+     data-year="2017" data-read="4/12/25">
     <img src="./img/books/we-are-many.jpg" alt="Bobiverse 2: For We Are Many"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.02; --sy:1;">
+<div class="book has-cover" style="--sx:1.02; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Hunger Games 0.5: Sunrise on the Reaping"
+     data-title="Hunger Games 0.5: Sunrise on the Reaping" data-cover="./img/books/sunrise-reaping.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Suzanne Collins" data-pages="387"
+     data-year="2025" data-read="3/24/25">
     <img src="./img/books/sunrise-reaping.jpg" alt="Hunger Games 0.5: Sunrise on the Reaping"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.02; --sy:1;">
+<div class="book has-cover" style="--sx:1.02; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Randomize"
+     data-title="Randomize" data-cover="./img/books/randomize.jpg" data-fallback="./img/default-green.png"
+     data-genre="Short Story" data-author="Andy Weir" data-pages="28"
+     data-year="2019" data-read="3/9/25">
     <img src="./img/books/randomize.jpg" alt="Randomize"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.004; --sy:1;">
+<div class="book has-cover" style="--sx:1.004; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Teixcalaan 2: A Desolation Called Peace"
+     data-title="Teixcalaan 2: A Desolation Called Peace" data-cover="./img/books/desolation-called-peace.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Arkady Martine" data-pages="496"
+     data-year="2021" data-read="2/12/25">
     <img src="./img/books/desolation-called-peace.jpg" alt="Teixcalaan 2: A Desolation Called Peace"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
@@ -433,27 +643,47 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:0.973; --sy:1;">
+<div class="book has-cover" style="--sx:0.973; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Teixcalaan 1: A Memory Called Empire"
+     data-title="Teixcalaan 1: A Memory Called Empire" data-cover="./img/books/memory-called-empire.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Arkady Martine" data-pages="448"
+     data-year="2019" data-read="11/12/24">
     <img src="./img/books/memory-called-empire.jpg" alt="Teixcalaan 1: A Memory Called Empire"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.015; --sy:1;">
+<div class="book has-cover" style="--sx:1.015; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Kingkiller Chronicle 1: The Name of the Wind"
+     data-title="Kingkiller Chronicle 1: The Name of the Wind" data-cover="./img/books/name-wind.jpg" data-fallback="./img/default-green.png"
+     data-genre="Fantasy" data-author="Patrick Rothfuss" data-pages="662"
+     data-year="2007" data-read="9/15/24">
     <img src="./img/books/name-wind.jpg" alt="Kingkiller Chronicle 1: The Name of the Wind"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.999; --sy:1;">
+<div class="book has-cover" style="--sx:0.999; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Dune"
+     data-title="Dune" data-cover="./img/books/dune.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi/Fantasy" data-author="Frank Herbert" data-pages="658"
+     data-year="2019" data-read="6/26/24">
     <img src="./img/books/dune.jpg" alt="Dune"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.002; --sy:1;">
+<div class="book has-cover" style="--sx:1.002; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Lessons in Chemistry"
+     data-title="Lessons in Chemistry" data-cover="./img/books/lessons-chemistry.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Tragicomedy" data-author="Bonnie Garmus" data-pages="390"
+     data-year="2022" data-read="4/11/24">
     <img src="./img/books/lessons-chemistry.jpg" alt="Lessons in Chemistry"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.973; --sy:1;">
+<div class="book has-cover" style="--sx:0.973; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Hunger Games 0: The Ballad of Songbirds and Snakes"
+     data-title="Hunger Games 0: The Ballad of Songbirds and Snakes" data-cover="./img/books/ballad-songbirds.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Suzanne Collins" data-pages="541"
+     data-year="2020" data-read="1/3/24">
     <img src="./img/books/ballad-songbirds.jpg" alt="Hunger Games 0: The Ballad of Songbirds and Snakes"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
@@ -465,67 +695,119 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:0.996; --sy:1;">
+<div class="book has-cover" style="--sx:0.996; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Armada"
+     data-title="Armada" data-cover="./img/books/armada.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Ernest Cline" data-pages="355"
+     data-year="2015" data-read="12/25/23">
     <img src="./img/books/armada.jpg" alt="Armada"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.0; --sy:1;">
+<div class="book has-cover" style="--sx:1.0; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Red Rising 6: Light Bringer"
+     data-title="Red Rising 6: Light Bringer" data-cover="./img/books/light-bringer.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Pierce Brown" data-pages="682"
+     data-year="2023" data-read="12/15/23">
     <img src="./img/books/light-bringer.jpg" alt="Red Rising 6: Light Bringer"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.009; --sy:1;">
+<div class="book has-cover" style="--sx:1.009; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Red Rising 5: Dark Age"
+     data-title="Red Rising 5: Dark Age" data-cover="./img/books/dark-age.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Pierce Brown" data-pages="704"
+     data-year="2019" data-read="11/6/23">
     <img src="./img/books/dark-age.jpg" alt="Red Rising 5: Dark Age"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.019; --sy:1;">
+<div class="book has-cover" style="--sx:1.019; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Red Rising 4: Iron Gold"
+     data-title="Red Rising 4: Iron Gold" data-cover="./img/books/iron-gold.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Pierce Brown" data-pages="602"
+     data-year="2018" data-read="8/27/23">
     <img src="./img/books/iron-gold.jpg" alt="Red Rising 4: Iron Gold"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.985; --sy:1;">
+<div class="book has-cover" style="--sx:0.985; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Red Rising 3: Morning Star"
+     data-title="Red Rising 3: Morning Star" data-cover="./img/books/morning-star.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Pierce Brown" data-pages="525"
+     data-year="2016" data-read="8/9/23">
     <img src="./img/books/morning-star.jpg" alt="Red Rising 3: Morning Star"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.015; --sy:1;">
+<div class="book has-cover" style="--sx:1.015; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Red Rising 2: Golden Son"
+     data-title="Red Rising 2: Golden Son" data-cover="./img/books/golden-son.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Pierce Brown" data-pages="466"
+     data-year="2015" data-read="7/23/23">
     <img src="./img/books/golden-son.jpg" alt="Red Rising 2: Golden Son"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:0.992; --sy:1;">
+<div class="book has-cover" style="--sx:0.992; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Inheritance of Orquidea Divina"
+     data-title="The Inheritance of Orquidea Divina" data-cover="./img/books/inheritance-orquidea.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Fantasy" data-author="Zoraida C‚àö‚â•rdova" data-pages="336"
+     data-year="2021" data-read="6/30/23">
     <img src="./img/books/inheritance-orquidea.jpg" alt="The Inheritance of Orquidea Divina"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.013; --sy:1;">
+<div class="book has-cover" style="--sx:1.013; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Red Rising"
+     data-title="Red Rising" data-cover="./img/books/red-rising.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="Pierce Brown" data-pages="382"
+     data-year="2014" data-read="6/14/23">
     <img src="./img/books/red-rising.jpg" alt="Red Rising"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.01; --sy:1;">
+<div class="book has-cover" style="--sx:1.01; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Bobiverse 1: We Are Legion (We Are Bob)"
+     data-title="Bobiverse 1: We Are Legion (We Are Bob)" data-cover="./img/books/we-are-bob.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="Dennis E. Taylor" data-pages="383"
+     data-year="2016" data-read="5/28/23">
     <img src="./img/books/we-are-bob.jpg" alt="Bobiverse 1: We Are Legion (We Are Bob)"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:0.977; --sy:1;">
+<div class="book has-cover" style="--sx:0.977; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Ministry for the Future"
+     data-title="The Ministry for the Future" data-cover="./img/books/ministry-for-future.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Kim Stanley Robinson" data-pages="563"
+     data-year="2020" data-read="4/20/23">
     <img src="./img/books/ministry-for-future.jpg" alt="The Ministry for the Future"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.984; --sy:1;">
+<div class="book has-cover" style="--sx:0.984; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Lean In: Women, Work, and the Will to Lead"
+     data-title="Lean In: Women, Work, and the Will to Lead" data-cover="./img/books/lean-in.jpg" data-fallback="./img/default-green.png"
+     data-genre="Non-Fiction" data-author="Sheryl Sandberg" data-pages="217"
+     data-year="2013" data-read="2/16/23">
     <img src="./img/books/lean-in.jpg" alt="Lean In: Women, Work, and the Will to Lead"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.003; --sy:1;">
+<div class="book has-cover" style="--sx:1.003; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Project Hail Mary"
+     data-title="Project Hail Mary" data-cover="./img/books/PHM.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Andy Weir" data-pages="476"
+     data-year="2021" data-read="2/12/23">
     <img src="./img/books/PHM.jpg" alt="Project Hail Mary"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.986; --sy:1;">
+<div class="book has-cover" style="--sx:0.986; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Harry Potter and the Sorcerer&#x27;s Stone"
+     data-title="Harry Potter and the Sorcerer&#x27;s Stone" data-cover="./img/books/socerers-stone.jpg" data-fallback="./img/default-green.png"
+     data-genre="Fantasy" data-author="J.K. Rowling" data-pages="309"
+     data-year="2003" data-read="1/31/23">
     <img src="./img/books/socerers-stone.jpg" alt="Harry Potter and the Sorcerer&#x27;s Stone"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
@@ -537,37 +819,65 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:0.987; --sy:1;">
+<div class="book has-cover" style="--sx:0.987; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for For the Love of My Brother"
+     data-title="For the Love of My Brother" data-cover="./img/books/love-of-my-brother.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Fiction" data-author="Sheilia Stodder" data-pages="217"
+     data-year="2021" data-read="11/20/22">
     <img src="./img/books/love-of-my-brother.jpg" alt="For the Love of My Brother"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.988; --sy:1;">
+<div class="book has-cover" style="--sx:0.988; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Iberian Claim"
+     data-title="Iberian Claim" data-cover="./img/books/iberian-claim.jpg" data-fallback="./img/default-green.png"
+     data-genre="Historical Fiction" data-author="Vincent Casciani" data-pages="196"
+     data-year="2021" data-read="10/10/22">
     <img src="./img/books/iberian-claim.jpg" alt="Iberian Claim"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.02; --sy:1;">
+<div class="book has-cover" style="--sx:1.02; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Utopia Avenue"
+     data-title="Utopia Avenue" data-cover="./img/books/utopia-avenue.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi/Fantasy" data-author="David Mitchell" data-pages="574"
+     data-year="2020" data-read="8/20/22">
     <img src="./img/books/utopia-avenue.jpg" alt="Utopia Avenue"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.007; --sy:1;">
+<div class="book has-cover" style="--sx:1.007; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for Artemis"
+     data-title="Artemis" data-cover="./img/books/artemis.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="Andy Weir" data-pages="305"
+     data-year="2017" data-read="7/29/22">
     <img src="./img/books/artemis.jpg" alt="Artemis"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.004; --sy:1;">
+<div class="book has-cover" style="--sx:1.004; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for What Are You Willing to Risk?"
+     data-title="What Are You Willing to Risk?" data-cover="./img/books/WRYWTR.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="P L Camery" data-pages="322"
+     data-year="2020" data-read="6/20/22">
     <img src="./img/books/WRYWTR.jpg" alt="What Are You Willing to Risk?"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:0.99; --sy:1;">
+<div class="book has-cover" style="--sx:0.99; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Night Circus"
+     data-title="The Night Circus" data-cover="./img/books/night-circus.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Fantasy" data-author="Erin Morgenstern" data-pages="506"
+     data-year="2011" data-read="4/30/22">
     <img src="./img/books/night-circus.jpg" alt="The Night Circus"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.011; --sy:1;">
+<div class="book has-cover" style="--sx:1.011; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Starless Sea"
+     data-title="The Starless Sea" data-cover="./img/books/starless-sea.jpeg" data-fallback="./img/default-green.png"
+     data-genre="Fantasy" data-author="Erin Morgenstern" data-pages="498"
+     data-year="2019" data-read="2/15/22">
     <img src="./img/books/starless-sea.jpeg" alt="The Starless Sea"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
@@ -579,32 +889,56 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:0.993; --sy:1;">
+<div class="book has-cover" style="--sx:0.993; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 9: Leviathan Falls"
+     data-title="The Expanse 9: Leviathan Falls" data-cover="./img/books/Leviathan-Falls.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="528"
+     data-year="2022" data-read="12/12/21">
     <img src="./img/books/Leviathan-Falls.jpg" alt="The Expanse 9: Leviathan Falls"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.991; --sy:1;">
+<div class="book has-cover" style="--sx:0.991; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 8: Tiamat&#x27;s Wrath"
+     data-title="The Expanse 8: Tiamat&#x27;s Wrath" data-cover="./img/books/tiamats-wrath.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="534"
+     data-year="2019" data-read="7/31/21">
     <img src="./img/books/tiamats-wrath.jpg" alt="The Expanse 8: Tiamat&#x27;s Wrath"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.974; --sy:1;">
+<div class="book has-cover" style="--sx:0.974; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 7: Persepolis Rising"
+     data-title="The Expanse 7: Persepolis Rising" data-cover="./img/books/persepolis.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="608"
+     data-year="2017" data-read="5/21/21">
     <img src="./img/books/persepolis.jpg" alt="The Expanse 7: Persepolis Rising"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div><div class="shelf">
-<div class="book has-cover" style="--sx:1.013; --sy:1;">
+<div class="book has-cover" style="--sx:1.013; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 6: Babylon&#x27;s Ashes"
+     data-title="The Expanse 6: Babylon&#x27;s Ashes" data-cover="./img/books/babylons-ashes.jpg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="532"
+     data-year="2016" data-read="4/25/21">
     <img src="./img/books/babylons-ashes.jpg" alt="The Expanse 6: Babylon&#x27;s Ashes"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:1.01; --sy:1;">
+<div class="book has-cover" style="--sx:1.01; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 5: Nemesis Games"
+     data-title="The Expanse 5: Nemesis Games" data-cover="./img/books/nemesis-games.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="536"
+     data-year="2015" data-read="3/21/21">
     <img src="./img/books/nemesis-games.jpg" alt="The Expanse 5: Nemesis Games"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.999; --sy:1;">
+<div class="book has-cover" style="--sx:0.999; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 4: Cibola Burn"
+     data-title="The Expanse 4: Cibola Burn" data-cover="./img/books/cibola-burn.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="581"
+     data-year="2014" data-read="2/15/21">
     <img src="./img/books/cibola-burn.jpg" alt="The Expanse 4: Cibola Burn"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
@@ -616,22 +950,97 @@ header h1 {
     </div>
 </div>
 <div class="shelf">
-<div class="book has-cover" style="--sx:1.01; --sy:1;">
+<div class="book has-cover" style="--sx:1.01; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 3: Abaddon&#x27;s Gate"
+     data-title="The Expanse 3: Abaddon&#x27;s Gate" data-cover="./img/books/abbadons-gate.jpeg" data-fallback="./img/default-blue.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="539"
+     data-year="2013" data-read="12/12/20">
     <img src="./img/books/abbadons-gate.jpeg" alt="The Expanse 3: Abaddon&#x27;s Gate"
          onerror="this.onerror=null;this.src='./img/default-blue.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.985; --sy:1;">
+<div class="book has-cover" style="--sx:0.985; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 2: Caliban&#x27;s War"
+     data-title="The Expanse 2: Caliban&#x27;s War" data-cover="./img/books/Calibans-War.jpg" data-fallback="./img/default-green.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="624"
+     data-year="2012" data-read="10/10/20">
     <img src="./img/books/Calibans-War.jpg" alt="The Expanse 2: Caliban&#x27;s War"
          onerror="this.onerror=null;this.src='./img/default-green.png'">
 </div>
 
-<div class="book has-cover" style="--sx:0.971; --sy:1;">
+<div class="book has-cover" style="--sx:0.971; --sy:1;" tabindex="0" role="button"
+     aria-label="View details for The Expanse 1: Leviathan Wakes"
+     data-title="The Expanse 1: Leviathan Wakes" data-cover="./img/books/leviathan-wakes.jpg" data-fallback="./img/default-grey.png"
+     data-genre="Sci-Fi" data-author="James S.A. Corey" data-pages="592"
+     data-year="2011" data-read="8/21/20">
     <img src="./img/books/leviathan-wakes.jpg" alt="The Expanse 1: Leviathan Wakes"
          onerror="this.onerror=null;this.src='./img/default-grey.png'">
 </div>
 </div>
 </div>
+
+<dialog class="book-dialog" id="book-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" aria-label="Close book details">&times;</button>
+    <div class="dialog-content">
+        <img class="dialog-cover" id="dialog-cover" src="" alt="">
+        <div class="dialog-details">
+            <h2 id="dialog-title"></h2>
+            <dl class="book-meta">
+                <dt>Genre</dt><dd id="dialog-genre"></dd>
+                <dt>Author</dt><dd id="dialog-author"></dd>
+                <dt>Page count</dt><dd id="dialog-pages"></dd>
+                <dt>Published</dt><dd id="dialog-year"></dd>
+                <dt>Date read</dt><dd id="dialog-read"></dd>
+            </dl>
+        </div>
+    </div>
+</dialog>
+
+<script>
+(function () {
+    const dialog = document.getElementById("book-dialog");
+    const cover = document.getElementById("dialog-cover");
+    const fields = {
+        title: document.getElementById("dialog-title"),
+        genre: document.getElementById("dialog-genre"),
+        author: document.getElementById("dialog-author"),
+        pages: document.getElementById("dialog-pages"),
+        year: document.getElementById("dialog-year"),
+        read: document.getElementById("dialog-read")
+    };
+
+    function openBook(book) {
+        Object.keys(fields).forEach(function (key) {
+            fields[key].textContent = book.dataset[key];
+        });
+        cover.src = book.dataset.cover;
+        cover.alt = "Cover of " + book.dataset.title;
+        cover.onerror = function () {
+            cover.onerror = null;
+            cover.src = book.dataset.fallback;
+        };
+        dialog.showModal();
+    }
+
+    document.querySelectorAll(".book").forEach(function (book) {
+        book.addEventListener("click", function () { openBook(book); });
+        book.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                openBook(book);
+            }
+        });
+    });
+
+    dialog.querySelector(".dialog-close").addEventListener("click", function () {
+        dialog.close();
+    });
+
+    dialog.addEventListener("click", function (event) {
+        if (event.target === dialog) dialog.close();
+    });
+})();
+</script>
 
 </body>
 </html>
