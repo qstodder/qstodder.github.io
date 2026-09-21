@@ -1,133 +1,144 @@
-"""
-Wedding Website Photo Optimizer
+#!/usr/bin/env python3
+"""Prepare a directory of photos for the wedding website carousel.
 
-Reads high-resolution photos from:
-    assets/photos/original/
-
-Creates optimized WebP files in:
-    assets/photos/carousel/
+Each source image is orientation-corrected, center-cropped to a 2:3 portrait
+aspect ratio, resized to 600 x 900 pixels, and saved as an optimized WebP file
+inside an ``output`` directory next to the source images.
 
 Usage:
-    python tools/optimize_photos.py
+    python3 wedding/tools/optimize_photos.py /path/to/photos
+
+Example:
+    python3 wedding/tools/optimize_photos.py wedding/assets/photos/original
 """
 
+from __future__ import annotations
+
+import argparse
+import sys
 from pathlib import Path
-from PIL import Image
+
+from PIL import Image, ImageOps, UnidentifiedImageError, features
 
 
-# ------------------------------------------------------------
-# Configuration
-# ------------------------------------------------------------
-
-SOURCE_DIR = Path("assets/photos/original")
-OUTPUT_DIR = Path("assets/photos/carousel")
-
-# Target width for website display.
-# Designed for retina displays (~2x display size)
-TARGET_WIDTH = 600
-
-# WebP quality:
-# 80-85 is usually visually indistinguishable
+TARGET_SIZE = (600, 900)
 WEBP_QUALITY = 85
+SUPPORTED_EXTENSIONS = {
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".tif",
+    ".tiff",
+}
 
 
-# ------------------------------------------------------------
-# Helper functions
-# ------------------------------------------------------------
-
-def resize_image(image: Image.Image, target_width: int) -> Image.Image:
-    """
-    Resize image while preserving aspect ratio.
-    """
-
-    if image.width <= target_width:
-        return image
-
-    ratio = target_width / image.width
-
-    new_height = int(image.height * ratio)
-
-    return image.resize(
-        (target_width, new_height),
-        Image.LANCZOS
-    )
-
-
-def process_photo(source_path: Path, output_path: Path):
-    """
-    Convert one image to optimized WebP.
-    """
-
-    print(f"Processing {source_path.name}")
-
-    with Image.open(source_path) as img:
-
-        # Convert unusual formats (ex: PNG transparency)
-        img = img.convert("RGB")
-
-        img = resize_image(
-            img,
-            TARGET_WIDTH
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Center-crop photos to 2:3, resize them to 600x900, and "
+            "save optimized WebP copies in SOURCE_DIRECTORY/output/."
         )
+    )
+    parser.add_argument(
+        "source_directory",
+        type=Path,
+        help="Directory containing the source photos.",
+    )
+    return parser.parse_args()
 
-        img.save(
+
+def prepare_image(source_path: Path, output_path: Path) -> None:
+    """Create one 600 x 900 carousel image."""
+
+    with Image.open(source_path) as opened_image:
+        oriented_image = ImageOps.exif_transpose(opened_image)
+        rgb_image = oriented_image.convert("RGB")
+        carousel_image = ImageOps.fit(
+            rgb_image,
+            TARGET_SIZE,
+            method=Image.LANCZOS,
+            centering=(0.5, 0.5),
+        )
+        carousel_image.save(
             output_path,
-            "WEBP",
+            format="WEBP",
             quality=WEBP_QUALITY,
-            method=6
+            method=6,
         )
 
+
+def main() -> int:
+    args = parse_args()
+    source_directory = args.source_directory.expanduser().resolve()
+
+    if not source_directory.is_dir():
+        print(f"Error: directory not found: {source_directory}", file=sys.stderr)
+        return 1
+
+    if not features.check("webp"):
         print(
-            f"  → {output_path.name} "
-            f"({img.width}x{img.height})"
+            "Error: this Pillow installation does not support WebP.",
+            file=sys.stderr,
         )
+        return 1
 
+    output_directory = source_directory / "output"
+    output_directory.mkdir(exist_ok=True)
 
-# ------------------------------------------------------------
-# Main
-# ------------------------------------------------------------
-
-def main():
-
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True
+    source_images = sorted(
+        path
+        for path in source_directory.iterdir()
+        if path.is_file() and path.suffix.lower() in SUPPORTED_EXTENSIONS
     )
 
-    supported_formats = {
-        ".jpg",
-        ".jpeg",
-        ".png"
+    if not source_images:
+        print(f"No supported images found in {source_directory}")
+        return 0
+
+    duplicate_stems = {
+        image.stem.lower()
+        for image in source_images
+        if sum(
+            candidate.stem.lower() == image.stem.lower()
+            for candidate in source_images
+        ) > 1
     }
-
-    photos = [
-        p for p in SOURCE_DIR.iterdir()
-        if p.suffix.lower() in supported_formats
-    ]
-
-    if not photos:
+    if duplicate_stems:
+        names = ", ".join(sorted(duplicate_stems))
         print(
-            "No photos found in "
-            f"{SOURCE_DIR}"
+            "Error: multiple source files would produce the same WebP name: "
+            f"{names}",
+            file=sys.stderr,
         )
-        return
+        return 1
 
+    processed = 0
+    failed = 0
 
-    for photo in sorted(photos):
+    for source_path in source_images:
+        output_path = output_directory / f"{source_path.stem}.webp"
+        try:
+            prepare_image(source_path, output_path)
+            original_size = source_path.stat().st_size
+            output_size = output_path.stat().st_size
+            savings = 100 * (1 - output_size / original_size)
+            print(
+                f"✓ {source_path.name} → output/{output_path.name} "
+                f"({TARGET_SIZE[0]}x{TARGET_SIZE[1]}, {output_size / 1024:.0f} KB, "
+                f"{savings:.0f}% smaller)"
+            )
+            processed += 1
+        except (OSError, UnidentifiedImageError) as error:
+            print(f"✗ {source_path.name}: {error}", file=sys.stderr)
+            failed += 1
 
-        output_file = (
-            OUTPUT_DIR /
-            f"{photo.stem}.webp"
-        )
-
-        process_photo(
-            photo,
-            output_file
-        )
-
-
-    print("\nDone! 🎉")
+    print(
+        f"\nFinished: {processed} processed, {failed} failed. "
+        f"Output: {output_directory}"
+    )
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
