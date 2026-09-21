@@ -104,7 +104,7 @@ describe("RSVP confirmation email", () => {
             "You may edit your responses until Aug 1st, 2027."
         );
         expect(email.html).toContain(
-            "You may edit your responses until Aug 1st, 2027."
+            "<strong>You may edit your responses until Aug 1st, 2027.</strong>"
         );
         expect(email.text).toContain(
             "Welcome Gathering — Friday, September 17, 2027 · 7–9 PM"

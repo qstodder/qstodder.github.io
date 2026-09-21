@@ -279,7 +279,7 @@ export function buildConfirmationEmail(
                         </h1>
                         <p>Hello ${escapeHtml(details.householdName)},</p>
                         <p>
-                            Thank you for submitting your RSVP. You may edit your responses until Aug 1st, 2027.
+                            Thank you for submitting your RSVP. <strong>You may edit your responses until Aug 1st, 2027.</strong>
                         </p>
                         ${htmlGuests}
                         ${htmlEvents}
