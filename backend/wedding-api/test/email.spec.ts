@@ -87,7 +87,7 @@ describe("RSVP confirmation email", () => {
             "Welcome Event: Attending"
         );
         expect(email.text).toContain(
-            "Morning-After Brunch: Not attending"
+            "Morning-After Beach Day: Not attending"
         );
         expect(email.text).toContain("Wedding: Attending");
         expect(email.text).not.toContain("Reception:");
@@ -120,6 +120,9 @@ describe("RSVP confirmation email", () => {
         );
         expect(email.html).toContain(
             "La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037"
+        );
+        expect(email.text).toContain(
+            "Morning-After Beach Day — Sunday, September 19, 2027 · 11 AM–3 PM"
         );
         expect(email.text).not.toContain(
             "Here is a copy of your responses"

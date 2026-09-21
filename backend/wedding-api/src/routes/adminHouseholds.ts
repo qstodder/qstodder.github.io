@@ -536,7 +536,7 @@ function guestFields(input: Record<string, unknown>) {
         welcome: boolean(invitations?.welcome, "Welcome invitation"),
         wedding: boolean(invitations?.wedding, "Wedding invitation"),
         reception: boolean(invitations?.wedding, "Wedding invitation"),
-        brunch: boolean(invitations?.brunch, "Brunch invitation")
+        brunch: boolean(invitations?.brunch, "Morning-after beach day invitation")
     };
 }
 
@@ -625,7 +625,7 @@ export async function updateAdminGuest(
             if (rsvp) {
                 boolean(rsvp.welcome, "Welcome RSVP");
                 boolean(rsvp.wedding, "Wedding RSVP");
-                boolean(rsvp.brunch, "Brunch RSVP");
+                boolean(rsvp.brunch, "Morning-after beach day RSVP");
             }
         } catch (error) {
             return json(request, { error: (error as Error).message }, 400);

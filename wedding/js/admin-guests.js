@@ -54,7 +54,7 @@ function eventLabels(values) {
     return [
         values.welcome ? "Welcome" : null,
         values.wedding ? "Wedding" : null,
-        values.brunch ? "Brunch" : null
+        values.brunch ? "Morning-After Beach Day" : null
     ].filter(Boolean);
 }
 
@@ -65,7 +65,7 @@ function rsvpText(guest) {
     return [
         `Welcome: ${guest.rsvp.welcome ? "Yes" : "No"}`,
         `Wedding: ${guest.rsvp.wedding ? "Yes" : "No"}`,
-        `Brunch: ${guest.rsvp.brunch ? "Yes" : "No"}`
+        `Morning-After Beach Day: ${guest.rsvp.brunch ? "Yes" : "No"}`
     ].join("; ");
 }
 
@@ -86,7 +86,7 @@ const guestDashboardMetrics = {
     pending: { label: "RSVP not submitted", description: "Guests without a submitted household RSVP", matches: (row) => row.household.rsvpStatus !== "submitted" },
     welcomeAttending: { label: "Welcome gathering", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.welcome) },
     ceremonyAttending: { label: "Wedding", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.wedding) },
-    brunchAttending: { label: "Brunch", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.brunch) }
+    brunchAttending: { label: "Morning-After Beach Day", description: "Guests attending", matches: (row) => Boolean(row.rsvp?.brunch) }
 };
 
 function classificationTags(guest) {
@@ -279,8 +279,8 @@ function exportGuests() {
         "First Name", "Last Name", "Household", "Household Key",
         "Guest Email", "Household Email", "Scott / Quiana", "Friend / Family", "Family Side",
         "Invited: Welcome", "Invited: Wedding",
-        "Invited: Brunch", "RSVP Recorded", "Attending: Welcome",
-        "Attending: Wedding", "Attending: Brunch",
+        "Invited: Morning-After Beach Day", "RSVP Recorded", "Attending: Welcome",
+        "Attending: Wedding", "Attending: Morning-After Beach Day",
         "Dietary Restrictions", "Dietary Details"
     ];
     const rows = visibleGuests.map((guest) => [

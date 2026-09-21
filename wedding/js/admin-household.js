@@ -125,12 +125,12 @@ function renderGuest(guest) {
             <fieldset class="guest-fieldset"><legend>Invited to</legend><div class="guest-options">
                 ${invitationCheckbox("inviteWelcome", "Welcome gathering", guest.invitations.welcome)}
                 ${invitationCheckbox("inviteWedding", "Wedding", guest.invitations.wedding)}
-                ${invitationCheckbox("inviteBrunch", "Morning-after brunch", guest.invitations.brunch)}
+                ${invitationCheckbox("inviteBrunch", "Morning-after beach day", guest.invitations.brunch)}
             </div></fieldset>
             <fieldset class="guest-fieldset"><legend>RSVP response</legend><div class="detail-form-grid guest-rsvp-grid">
                 ${rsvpSelect("rsvpWelcome", "Welcome", guest.rsvp?.welcome, Boolean(guest.rsvp))}
                 ${rsvpSelect("rsvpWedding", "Wedding", guest.rsvp?.wedding, Boolean(guest.rsvp))}
-                ${rsvpSelect("rsvpBrunch", "Brunch", guest.rsvp?.brunch, Boolean(guest.rsvp))}
+                ${rsvpSelect("rsvpBrunch", "Morning-after beach day", guest.rsvp?.brunch, Boolean(guest.rsvp))}
             </div><p class="field-help">Choose “Not recorded” for all three to clear this guest’s RSVP.</p></fieldset>
             <fieldset class="guest-fieldset"><legend>Dietary preferences</legend><div class="guest-options">${restrictionOptions}</div>
                 <label class="address-field"><span>Additional dietary details</span><textarea name="dietaryNotes" rows="2" maxlength="1000">${escapeHtml(guest.dietaryNotes ?? "")}</textarea></label>

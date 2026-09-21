@@ -195,7 +195,7 @@ const householdDashboardMetrics = {
     inProgress: { label: "RSVP in progress", description: "Households in progress", matches: (row) => row.rsvpStatus === "inProgress" },
     welcomeAttending: { label: "Welcome gathering", description: "Households attending", matches: (row) => row.attendance.welcome > 0 },
     ceremonyAttending: { label: "Wedding", description: "Households attending", matches: (row) => row.attendance.wedding > 0 },
-    brunchAttending: { label: "Brunch", description: "Households attending", matches: (row) => row.attendance.brunch > 0 }
+    brunchAttending: { label: "Morning-After Beach Day", description: "Households attending", matches: (row) => row.attendance.brunch > 0 }
 };
 
 function filteredHouseholds() {
@@ -340,7 +340,7 @@ function exportHouseholds() {
         "Guest Count", "Delivery Status", "STD Addressed", "Address Line 1",
         "Address Line 2", "City", "State/Province/Region",
         "Postal Code", "Country", "RSVP Status", "Responded Guests",
-        "Welcome Attending", "Wedding Attending", "Brunch Attending"
+        "Welcome Attending", "Wedding Attending", "Morning-After Beach Day Attending"
     ];
     const rows = filteredHouseholds().map((household) => [
         household.householdName,

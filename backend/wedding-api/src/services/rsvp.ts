@@ -258,7 +258,7 @@ export async function saveCompleteRsvp(
         response.attendingReception = response.attendingWedding;
         response.attendingBrunch = boolean(
             response.attendingBrunch,
-            "Brunch response"
+            "Morning-after beach day response"
         );
         if ((response.attendingWelcome && !guest.is_invited_to_welcome) ||
             (response.attendingWedding && !guest.is_invited_to_wedding) ||

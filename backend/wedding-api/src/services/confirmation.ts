@@ -174,7 +174,7 @@ export function buildConfirmationEmail(
         "Wedding — Saturday, September 18, 2027 · 4–10 PM",
         "La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037",
         "",
-        "Morning-After Brunch — Sunday, September 19, 2027 · 11 AM–2 PM",
+        "Morning-After Beach Day — Sunday, September 19, 2027 · 11 AM–3 PM",
         "La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037"
     ].join("\n");
 
@@ -183,7 +183,7 @@ export function buildConfirmationEmail(
             <h2 style="margin: 0 0 18px; color: #52656a; font-size: 20px; font-weight: 500;">Weekend Details</h2>
             <p style="margin: 0 0 14px;"><strong>Welcome Gathering</strong><br>Friday, September 17, 2027 · 7–9 PM<br>New English Brewing · 11545 Sorrento Valley Rd, Suite 305, San Diego, CA 92121</p>
             <p style="margin: 0 0 14px;"><strong>Wedding</strong><br>Saturday, September 18, 2027 · 4–10 PM<br>La Jolla Woman’s Club · 7791 Draper Ave, La Jolla, CA 92037</p>
-            <p style="margin: 0;"><strong>Morning-After Brunch</strong><br>Sunday, September 19, 2027 · 11 AM–2 PM<br>La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037</p>
+            <p style="margin: 0;"><strong>Morning-After Beach Day</strong><br>Sunday, September 19, 2027 · 11 AM–3 PM<br>La Jolla Shores · 8300 Camino Del Oro, La Jolla, CA 92037</p>
         </section>
     `;
 
@@ -198,7 +198,7 @@ export function buildConfirmationEmail(
                 guest.invitedToWedding,
                 guest.attendingWedding
             )}`,
-            `  Morning-After Brunch: ${attendanceText(
+            `  Morning-After Beach Day: ${attendanceText(
                 guest.invitedToBrunch,
                 guest.attendingBrunch
             )}`,
@@ -232,7 +232,7 @@ export function buildConfirmationEmail(
                     )}
                 </p>
                 <p style="margin: 4px 0;">
-                    <strong>Morning-After Brunch:</strong>
+                    <strong>Morning-After Beach Day:</strong>
                     ${attendanceText(
                         guest.invitedToBrunch,
                         guest.attendingBrunch

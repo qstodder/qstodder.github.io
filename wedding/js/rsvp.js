@@ -1175,7 +1175,7 @@ dietaryForm.addEventListener(
 
 
 /* =========================================================
-   Morning-after brunch
+   Morning-after beach day
    ========================================================= */
 
 function renderBrunchGuests() {
@@ -1193,7 +1193,7 @@ function renderBrunchGuests() {
         brunchGuests.innerHTML = `
             <p>
                 No members of this household are invited
-                to the morning-after brunch.
+                to the morning-after beach day.
             </p>
         `;
 
@@ -1426,7 +1426,7 @@ function renderRsvpReview() {
                     </p>
 
                     <p>
-                        Morning-After Brunch:
+                        Morning-After Beach Day:
                         ${attendanceLabel(
                             guest,
                             "isInvitedToBrunch",

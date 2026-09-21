@@ -18,7 +18,7 @@ const weekendLocations = [
         mapUrl: "https://www.google.com/maps/search/?api=1&query=La+Jolla+Womans+Club+7791+Draper+Ave+La+Jolla+CA+92037"
     },
     {
-        name: "Morning-After Brunch",
+        name: "Morning-After Beach Day",
         venue: "La Jolla Shores",
         address: "8300 Camino Del Oro, La Jolla, CA 92037",
         coordinates: [32.859383, -117.255721],

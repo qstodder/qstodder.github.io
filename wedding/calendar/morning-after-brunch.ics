@@ -7,9 +7,9 @@ BEGIN:VEVENT
 UID:morning-after-brunch-20270919@qstodder.com
 DTSTAMP:20260813T120000Z
 DTSTART:20270919T180000Z
-DTEND:20270919T210000Z
-SUMMARY:Quiana & Scott's Morning-After Brunch
-DESCRIPTION:Stop by for a relaxed brunch before we say goodbye.
+DTEND:20270919T220000Z
+SUMMARY:Quiana & Scott's Morning-After Beach Day
+DESCRIPTION:Stop by for a relaxed beach day before we say goodbye.
 LOCATION:La Jolla Shores\, 8300 Camino Del Oro\, La Jolla\, CA 92037
 END:VEVENT
 END:VCALENDAR
