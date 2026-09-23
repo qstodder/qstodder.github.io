@@ -711,10 +711,10 @@ describe("Public RSVP persistence", () => {
 
         const household = await env.wedding_rsvp_db.prepare(`
             SELECT email, street, address_line_2, city, state, zip,
-                country_code
+                country_code, rsvp_submitted_at
             FROM households WHERE id = ?1
         `).bind(householdId).first();
-        expect(household).toEqual({
+        expect(household).toMatchObject({
             email: "guest@example.com",
             street: "Prinsengracht 263",
             address_line_2: "3rd floor",
@@ -723,6 +723,7 @@ describe("Public RSVP persistence", () => {
             zip: "1016 GV",
             country_code: "NL"
         });
+        expect(household?.rsvp_submitted_at).toEqual(expect.any(String));
 
         const dietary = await env.wedding_rsvp_db.prepare(`
             SELECT restriction_id, notes
@@ -771,12 +772,17 @@ describe("Public RSVP persistence", () => {
         )).rejects.toThrow();
 
         const household = await env.wedding_rsvp_db.prepare(`
-            SELECT email FROM households WHERE id = ?1
-        `).bind(householdId).first<{ email: string | null }>();
+            SELECT email, rsvp_submitted_at
+            FROM households WHERE id = ?1
+        `).bind(householdId).first<{
+            email: string | null;
+            rsvp_submitted_at: string | null;
+        }>();
         const attendance = await env.wedding_rsvp_db.prepare(`
             SELECT guest_id FROM guest_rsvps WHERE guest_id = ?1
         `).bind(guestId).first();
         expect(household?.email).toBeNull();
+        expect(household?.rsvp_submitted_at).toBeNull();
         expect(attendance).toBeNull();
 
         await env.wedding_rsvp_db.prepare(

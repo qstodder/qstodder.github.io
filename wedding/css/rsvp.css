@@ -205,8 +205,10 @@ a:focus-visible {
     text-align: left;
 }
 
-.search-result:hover {
-    background: rgba(122, 157, 176, .18);
+.search-result:hover:not(:disabled),
+.search-result:focus-visible {
+    color: #fff;
+    background: #345064;
 }
 
 #search-status,

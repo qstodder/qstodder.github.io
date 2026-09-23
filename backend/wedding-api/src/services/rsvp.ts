@@ -298,7 +298,8 @@ export async function saveCompleteRsvp(
         env.wedding_rsvp_db.prepare(`
             UPDATE households SET street = ?1,
                 address_line_2 = ?2, city = ?3, state = ?4,
-                zip = ?5, country_code = ?6
+                zip = ?5, country_code = ?6,
+                rsvp_submitted_at = CURRENT_TIMESTAMP
             WHERE id = ?7 AND archived_at IS NULL
         `).bind(
             street || null, addressLine2 || null, city || null,

@@ -113,7 +113,7 @@ export async function getAdminData(
                             AS attending_reception,
                         SUM(COALESCE(gr.attending_brunch, 0))
                             AS attending_brunch,
-                        ha.updated_at AS submitted_at,
+                        h.rsvp_submitted_at AS submitted_at,
                         GROUP_CONCAT(
                             TRIM(
                                 g.first_name || ' ' ||
@@ -128,8 +128,6 @@ export async function getAdminData(
                         AND g.archived_at IS NULL
                     LEFT JOIN guest_rsvps gr
                         ON gr.guest_id = g.id
-                    LEFT JOIN household_acknowledgements ha
-                        ON ha.household_id = h.id
                     WHERE h.archived_at IS NULL
                     GROUP BY h.id
                     ORDER BY
@@ -311,12 +309,11 @@ export async function getAdminGuests(
                         gr.attending_wedding,
                         gr.attending_reception,
                         gr.attending_brunch,
-                        ha.updated_at AS household_submitted_at,
+                        h.rsvp_submitted_at AS household_submitted_at,
                         gr.updated_at AS rsvp_updated_at
                     FROM guests g
                     JOIN households h ON h.id = g.household_id
                     LEFT JOIN guest_rsvps gr ON gr.guest_id = g.id
-                    LEFT JOIN household_acknowledgements ha ON ha.household_id = h.id
                     WHERE g.archived_at IS NULL
                         AND h.archived_at IS NULL
                     ORDER BY LOWER(g.last_name), LOWER(g.first_name)

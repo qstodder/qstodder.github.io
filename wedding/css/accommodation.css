@@ -17,7 +17,10 @@
 }
 
 .lodging-image {
-    width: calc(100% + 48px);
+    display: block;
+    align-self: stretch;
+    width: auto;
+    max-width: none;
     height: 190px;
     margin: -30px -24px 24px;
     object-fit: cover;
