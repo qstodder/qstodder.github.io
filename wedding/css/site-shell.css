@@ -54,6 +54,11 @@ body {
     view-transition-name: wedding-header;
 }
 
+#header-placeholder:not(.header-ready):not(.header-load-failed) {
+    color: transparent;
+    font-size: 0;
+}
+
 #header-placeholder + .main-stage {
     visibility: hidden;
 }
