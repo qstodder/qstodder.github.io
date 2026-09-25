@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A private, US-focused retirement and family-planning calculator." />
+    <title>Financial Calculator | Quiana</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="home-link" href="../index.html">← Quiana’s website</a>
+      <p class="eyebrow">Financial planning, without the spreadsheet</p>
+      <h1>See the life choices behind your retirement date.</h1>
+      <p class="intro">Build a private, editable projection for your household. Nothing is saved or sent anywhere unless you choose to email yourself a summary.</p>
+    </header>
+
+    <main>
+      <div class="privacy-note" role="note">
+        <strong>Private by default.</strong> Your answers stay in this browser tab. Refreshing or closing it clears them.
+      </div>
+
+      <section class="calculator" aria-label="Financial calculator">
+        <form id="planner-form">
+          <section class="form-section">
+            <div class="section-heading"><span>01</span><div><h2>Household today</h2><p>Use annual, pre-tax income and a realistic view of everyday spending.</p></div></div>
+            <div class="input-grid">
+              <label>Your current age<input id="yourAge" type="number" min="18" max="75" value="32" /></label>
+              <label>Your annual salary<input id="yourSalary" type="number" min="0" step="1000" value="120000" /></label>
+              <label>Current invested savings<input id="currentSavings" type="number" min="0" step="1000" value="90000" /></label>
+              <label>Estimated total tax rate <span class="unit">%</span><input id="taxRate" type="number" min="0" max="60" step="1" value="25" /></label>
+              <label>Essential annual household spending<input id="annualExpenses" type="number" min="0" step="1000" value="60000" /></label>
+              <label>Annual salary growth <span class="unit">%</span><input id="incomeGrowth" type="number" min="0" max="15" step="0.1" value="3" /></label>
+            </div>
+            <label class="toggle"><input id="hasPartner" type="checkbox" checked /><span class="toggle-ui"></span><span>Include a partner’s income</span></label>
+            <div id="partnerFields" class="input-grid nested">
+              <label>Partner’s current age<input id="partnerAge" type="number" min="18" max="75" value="33" /></label>
+              <label>Partner’s annual salary<input id="partnerSalary" type="number" min="0" step="1000" value="100000" /></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-heading"><span>02</span><div><h2>Retirement target</h2><p>These assumptions determine the portfolio that supports the life you want later.</p></div></div>
+            <div class="input-grid">
+              <label>Desired annual retirement spending<input id="retirementSpending" type="number" min="0" step="1000" value="85000" /></label>
+              <label>Investment return after inflation <span class="unit">%</span><input id="returnRate" type="number" min="-5" max="15" step="0.1" value="5" /></label>
+              <label>Safe withdrawal rate <span class="unit">%</span><input id="withdrawalRate" type="number" min="2" max="8" step="0.1" value="4" /></label>
+            </div>
+          </section>
+
+          <section class="form-section optional-section" id="childrenSection">
+            <div class="section-heading"><span>03</span><div><h2>Children</h2><p>Compare a child-free path, paid care, and having a parent stay home.</p></div></div>
+            <label class="toggle"><input id="hasChildren" type="checkbox" checked /><span class="toggle-ui"></span><span>Include children in my plan</span></label>
+            <div class="optional-content input-grid">
+              <label>Number of children<input id="numberChildren" type="number" min="1" max="6" value="2" /></label>
+              <label>Years until first child<input id="firstChildYear" type="number" min="0" max="25" value="3" /></label>
+              <label>Childcare region
+                <select id="childcareRegion"><option value="national">US national average</option><option value="northeast">Northeast metro</option><option value="west">West Coast metro</option><option value="south">South</option><option value="midwest">Midwest</option></select>
+              </label>
+              <label>Care arrangement
+                <select id="careType"><option value="daycare">Center-based daycare</option><option value="nanny">Nanny</option><option value="family">Family / shared care</option></select>
+              </label>
+              <label>Childcare cost per child / year<input id="childcareCost" type="number" min="0" step="500" value="16000" /></label>
+              <label>Years of paid childcare<input id="childcareYears" type="number" min="0" max="18" value="5" /></label>
+              <label>College savings per child / year<input id="collegeSavings" type="number" min="0" step="500" value="5000" /></label>
+              <label>Gifts & activities per child / year<input id="giftCost" type="number" min="0" step="500" value="3000" /></label>
+            </div>
+            <p class="hint optional-content">Regional care costs are a planning starting point. They are always editable, and may not reflect your exact neighborhood or provider.</p>
+            <label class="toggle optional-content"><input id="stayHome" type="checkbox" /><span class="toggle-ui"></span><span>Also compare a stay-at-home-parent scenario</span></label>
+            <div id="stayHomeFields" class="input-grid nested optional-content is-hidden">
+              <label>Salary given up in stay-home scenario<input id="stayHomeSalary" type="number" min="0" step="1000" value="100000" /></label>
+              <label>Years away from paid work<input id="stayHomeYears" type="number" min="0" max="18" value="5" /></label>
+            </div>
+          </section>
+
+          <section class="form-section optional-section" id="homeSection">
+            <div class="section-heading"><span>04</span><div><h2>Home purchase</h2><p>Add the recurring costs—not just the down payment.</p></div></div>
+            <label class="toggle"><input id="hasHome" type="checkbox" /><span class="toggle-ui"></span><span>Include a future home purchase</span></label>
+            <div class="optional-content input-grid is-hidden">
+              <label>Years until purchase<input id="homeYear" type="number" min="0" max="30" value="3" /></label>
+              <label>Home price<input id="homePrice" type="number" min="0" step="5000" value="700000" /></label>
+              <label>Down payment <span class="unit">%</span><input id="downPayment" type="number" min="0" max="100" value="20" /></label>
+              <label>Mortgage rate <span class="unit">%</span><input id="mortgageRate" type="number" min="0" max="20" step="0.1" value="6.5" /></label>
+              <label>Mortgage term (years)<input id="mortgageTerm" type="number" min="1" max="40" value="30" /></label>
+              <label>Property tax + upkeep / year<input id="homeUpkeep" type="number" min="0" step="500" value="14000" /></label>
+            </div>
+          </section>
+
+          <section class="form-section optional-section" id="helpSection">
+            <div class="section-heading"><span>05</span><div><h2>Extra help</h2><p>Model a nanny, cleaner, cook, or any support that frees up your time.</p></div></div>
+            <label class="toggle"><input id="hasHelp" type="checkbox" /><span class="toggle-ui"></span><span>Include hired household help</span></label>
+            <div class="optional-content input-grid is-hidden">
+              <label>Annual cost of help<input id="helpCost" type="number" min="0" step="500" value="12000" /></label>
+              <label>Years you expect to use help<input id="helpYears" type="number" min="0" max="40" value="10" /></label>
+            </div>
+          </section>
+
+          <button class="calculate" type="submit">Update my projection <span>→</span></button>
+        </form>
+
+        <aside class="results" aria-live="polite">
+          <p class="eyebrow">Your projection</p>
+          <h2>What your choices could change</h2>
+          <div class="hero-result"><span>Baseline retirement age</span><strong id="baselineAge">—</strong><small id="baselineYear">—</small></div>
+          <div id="resultsMessage" class="results-message">Complete the form to see your personalized scenarios.</div>
+          <div id="scenarioCards" class="scenario-cards"></div>
+          <div class="chart-wrap"><h3>Years until retirement</h3><div id="barChart" class="bar-chart"></div></div>
+          <div class="target"><span>Target portfolio</span><strong id="targetPortfolio">—</strong></div>
+          <button id="emailResults" class="email-button" type="button">Email myself this summary</button>
+          <p class="disclaimer">For education and planning only—not personalized financial, tax, or investment advice. Estimates are in today’s dollars.</p>
+        </aside>
+      </section>
+    </main>
+    <script src="calculator.js"></script>
+  </body>
+</html>
