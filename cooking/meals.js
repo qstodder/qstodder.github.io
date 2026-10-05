@@ -1,6 +1,7 @@
 const mealGrid = document.getElementById("meal-grid");
 const searchInput = document.getElementById("meal-search");
 const timeFilter = document.getElementById("time-filter");
+const tagFilter = document.getElementById("tag-filter");
 const resultsCount = document.getElementById("results-count");
 const emptyState = document.getElementById("empty-state");
 const loadError = document.getElementById("load-error");
@@ -137,9 +138,11 @@ function mealCard(meal) {
 function renderMeals() {
     const search = searchInput.value.trim().toLocaleLowerCase();
     const selectedTime = timeFilter.value;
+    const selectedTag = tagFilter.value;
     const filtered = meals.filter((meal) => (
         meal.name.toLocaleLowerCase().includes(search) &&
-        (selectedTime === "all" || meal.timeCommitment === Number(selectedTime))
+        (selectedTime === "all" || meal.timeCommitment === Number(selectedTime)) &&
+        (!selectedTag || meal.tags.includes(selectedTag))
     ));
 
     mealGrid.replaceChildren(...filtered.map(mealCard));
@@ -156,6 +159,7 @@ async function loadMeals() {
             name: meal.name,
             timeCommitment: Math.min(5, Math.max(1, Number(meal.time_commitment) || 1)),
             coverImage: meal.cover_image,
+            tags: (meal.tags || "").split(",").map((tag) => tag.trim().toLocaleLowerCase()).filter(Boolean),
             additionalImages: meal.additional_images
                 ? meal.additional_images.split(",").map((name) => name.trim()).filter(Boolean)
                 : [],
@@ -163,6 +167,8 @@ async function loadMeals() {
             ingredients: meal.ingredients
         }));
 
+        const tags = [...new Set(meals.flatMap((meal) => meal.tags))].sort((a, b) => a.localeCompare(b));
+        tagFilter.replaceChildren(new Option("All meals", ""), ...tags.map((tag) => new Option(tag, tag)));
         renderMeals();
     } catch (error) {
         console.error(error);
@@ -173,6 +179,7 @@ async function loadMeals() {
 
 searchInput.addEventListener("input", renderMeals);
 timeFilter.addEventListener("change", renderMeals);
+tagFilter.addEventListener("change", renderMeals);
 dialogClose.addEventListener("click", () => dialog.close());
 dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
