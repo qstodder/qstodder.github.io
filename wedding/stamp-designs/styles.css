@@ -165,17 +165,17 @@ h1 { margin: 0; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 500; }
 .single-card .seal-hexagon .monogram { font-size: 3.4rem; }
 
 /* 7: circular seal with a double hexagon inside */
-.seal-circle-hexagon { background: #3e6477; }
+.seal-circle-hexagon { background: #feffff; }
 .seal-circle-hexagon::before {
     inset: 4px;
-    background: #c0d2da;
+    background: #3e6477;
     border: 0;
     border-radius: 0;
     clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
 }
 .seal-circle-hexagon::after {
     inset: 7px;
-    background: #3e6477;
+    background: #feffff;
     border: 0;
     border-radius: 0;
     clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
@@ -186,14 +186,14 @@ h1 { margin: 0; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 500; }
     clip-path: polygon(25% 6%, 75% 6%, 98% 50%, 75% 94%, 25% 94%, 2% 50%);
     content: "";
 }
-.seal-circle-hexagon .hex-ring { z-index: 1; inset: 12px; background: rgba(211,225,231,.82); }
-.seal-circle-hexagon .hex-ring::after { inset: 2px; background: #3e6477; }
+.seal-circle-hexagon .hex-ring { z-index: 1; inset: 12px; background: #3e6477; }
+.seal-circle-hexagon .hex-ring::after { inset: 2px; background: #feffff; }
 .seal-circle-hexagon .monogram,
 .seal-circle-nonagon .monogram { z-index: 2; font-size: 2.5rem; letter-spacing: .1em; line-height: .88; }
-.seal-circle-hexagon .monogram span,
+.seal-circle-hexagon .monogram span {color: #3e6477}
 .seal-circle-nonagon .monogram span { display: block; }
 .seal-circle-hexagon .monogram span + span,
-.seal-circle-nonagon .monogram span + span { margin-top: 5px; padding-top: 5px; border-top: 1px solid #c0d2da; }
+.seal-circle-nonagon .monogram span + span { margin-top: 5px; padding-top: 5px; border-top: 1px solid #3e6477; }
 .single-card .seal-circle-hexagon .monogram,
 .single-card .seal-circle-nonagon .monogram { font-size: 4.5rem; }
 
