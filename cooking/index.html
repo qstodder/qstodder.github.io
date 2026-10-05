@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quiana's collection of meal preps, homemade dinners, and favorite munchies.">
+    <title>Meal Preps &amp; Munchies</title>
+    <link rel="stylesheet" href="meals.css?v=1">
+</head>
+<body>
+    <header class="page-header">
+        <a class="home-link" href="../index.html" aria-label="Return to Quinotopia home">
+            <img src="../home_icon_light-green.svg" alt="">
+        </a>
+        <p class="eyebrow">From Quiana's kitchen</p>
+        <h1>Meal Preps <span>&amp;</span> Munchies</h1>
+        <p class="intro">Things I've cooked, loved, and occasionally spent all afternoon making.</p>
+    </header>
+
+    <main>
+        <section class="filter-panel" aria-label="Filter meals">
+            <label class="filter-field search-field">
+                <span>Find a meal</span>
+                <input id="meal-search" type="search" placeholder="Search by name" autocomplete="off">
+            </label>
+            <label class="filter-field">
+                <span>Time commitment</span>
+                <select id="time-filter">
+                    <option value="all">All levels</option>
+                    <option value="1">1 of 5</option>
+                    <option value="2">2 of 5</option>
+                    <option value="3">3 of 5</option>
+                    <option value="4">4 of 5</option>
+                    <option value="5">5 of 5</option>
+                </select>
+            </label>
+            <p id="results-count" class="results-count" aria-live="polite"></p>
+        </section>
+
+        <section id="meal-grid" class="meal-grid" aria-label="Meals"></section>
+        <p id="empty-state" class="empty-state" hidden>No meals match those filters. Try another search.</p>
+        <p id="load-error" class="load-error" role="alert" hidden>We couldn't load the meals. Please refresh and try again.</p>
+    </main>
+
+    <dialog id="meal-dialog" class="meal-dialog" aria-labelledby="dialog-title">
+        <div class="dialog-shell">
+            <button id="dialog-close" class="dialog-close" type="button" aria-label="Close meal details">×</button>
+            <div id="dialog-gallery" class="dialog-gallery"></div>
+            <div class="dialog-copy">
+                <p class="dialog-eyebrow">Meal prep notes</p>
+                <h2 id="dialog-title"></h2>
+                <div id="dialog-time" class="dialog-time"></div>
+                <section id="dialog-description-section" class="detail-section" hidden>
+                    <h3>About this meal</h3>
+                    <p id="dialog-description"></p>
+                </section>
+                <section id="dialog-ingredients-section" class="detail-section" hidden>
+                    <h3>Ingredients</h3>
+                    <p id="dialog-ingredients"></p>
+                </section>
+                <p id="dialog-placeholder" class="dialog-placeholder">More notes and ingredients coming soon.</p>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="meals.js?v=3" defer></script>
+</body>
+</html>
