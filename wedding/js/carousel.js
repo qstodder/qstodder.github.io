@@ -9,7 +9,7 @@
 
 function initializeCarousel() {
 
-    const PHOTO_COUNT = 12;
+    const PHOTO_COUNT = 53;
     const PHOTO_PATH = "assets/photos/carousel/";
     const BUFFER_PHOTOS = 4;
     const STORAGE_KEY = "weddingCarouselState";
